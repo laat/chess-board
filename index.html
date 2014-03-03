@@ -1,0 +1,70 @@
+<!doctype html>
+<head>
+    <meta charset="UTF-8">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/polymer/0.1.4/platform.js"></script>
+
+    <link rel="import" href="src/chess-board.html">
+
+    <style>
+        :unresolved {
+            opacity: 0;
+        }
+        chess-board {
+            font-size: 200%;
+        }
+    </style>
+</head>
+<body>
+    <h2>Starting Position</h2>
+    <pre>
+&lt;chess-board&gt;
+    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+&lt;/chess-board&gt;
+    </pre>
+
+<chess-board>
+    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+</chess-board>
+
+    <h2>Scholars Mate</h2>
+    <pre>
+&lt;chess-board&gt;
+    r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR
+&lt;/chess-board&gt;
+    </pre>
+<chess-board>
+    r1bqk1nr/pppp1Qpp/2n5/2b1p3/2B1P3/8/PPPP1PPP/RNB1K1NR
+</chess-board>
+
+    <h2>Show frame</h2>
+    <pre>
+&lt;chess-board framed&gt;
+    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+&lt;/chess-board&gt;
+    </pre>
+
+<chess-board framed>
+    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+</chess-board>
+
+    <h2>Starting Position (black on bottom)</h2>
+    <pre>
+&lt;chess-board framed reverse&gt;
+    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+&lt;/chess-board&gt;
+    </pre>
+
+<chess-board reverse framed>
+    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+</chess-board>
+
+    <h2>Unicode Pieces</h2>
+    <pre>
+&lt;chess-board unicode&gt;
+    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+&lt;/chess-board&gt;
+    </pre>
+<chess-board unicode>
+    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+</chess-board>
+</body>

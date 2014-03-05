@@ -1,0 +1,15 @@
+{
+  "name": "chess-board",
+  "version": "0.0.1",
+  "homepage": "https://github.com/laat/chess-board",
+  "authors": [
+    "Sigurd Fosseng <sigurd@fosseng.net>"
+  ],
+  "description": "A Web Component for displaying chess positions",
+  "main": "src/chess-board.html",
+  "keywords": [
+    "web-components",
+    "chess"
+  ],
+  "license": "MIT"
+}

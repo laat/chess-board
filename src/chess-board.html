@@ -30,6 +30,12 @@
             display: block;
         }
 
+        /* make unicode font a bit smaller */
+        :host([unicode]) .piece {
+            font-size: 90%;
+            margin: auto;
+        }
+
         /* reverse board */
         :host([framed][reverse]) .chessBoard {
             transform:rotate(0deg);

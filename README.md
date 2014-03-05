@@ -50,6 +50,7 @@ In order to run it locally you'll need a basic server setup.
     ```sh
     $ grunt connect
     ```
+
 ## Options
 
 Attribute  | Description

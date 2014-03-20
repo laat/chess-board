@@ -25,7 +25,7 @@ A web component for displaying chess positions.
 2. Import Custom Element:
 
     ```html
-    <link rel="import" href="src/chess-board.html">
+    <link rel="import" href="/bower_components/chess-board/dist/chess-board.html">
     ```
 
 3. Start using it!

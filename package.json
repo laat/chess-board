@@ -1,0 +1,19 @@
+{
+  "name": "chess-board",
+  "version": "0.0.3",
+  "description": "A web component for displaying chess positions.",
+  "author": "Sigurd Fosseng <sigurd@fosseng.net>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/laat/chess-board"
+  },
+  "bugs": {
+    "url": "https://github.com/laat/chess-board/issues"
+  },
+  "devDependencies": {
+    "gulp-traceur": "^0.2.0",
+    "gulp": "^3.5.6"
+  },
+  "dependencies": {}
+}

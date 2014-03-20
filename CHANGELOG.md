@@ -1,3 +1,9 @@
+0.0.3 / 2014-03-20
+==================
+ * Rewrite to Ecmascript 6, because learning.
+ * fixed an issue with reversing position
+ * resetBoard renamed to clearBoard
+ * applyFen removed in favour of setter
 
 0.0.2 / 2014-03-06
 ==================

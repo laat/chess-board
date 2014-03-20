@@ -1,3 +1,7 @@
+0.0.4 / 2014-03-20
+=================
+* previous release broken by a typo
+
 0.0.3 / 2014-03-20
 ==================
  * Rewrite to Ecmascript 6, because learning.

@@ -138,6 +138,7 @@ var ChessBoard = (function(document) {
         }
         fenIndex++;
       }
+      removeNodeContent(this.boardRoot);
       this.boardRoot.appendChild(clone);
     },
     get fen() {

@@ -148,6 +148,7 @@ class ChessBoard extends HTMLElement {
 
       fenIndex++;
     }
+    removeNodeContent(this.boardRoot);
     this.boardRoot.appendChild(clone);
   }
   get fen() {

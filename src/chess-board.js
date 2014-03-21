@@ -45,8 +45,9 @@ var emptySquare = owner.querySelector("#emptyTemplate"),
 class ChessBoard extends HTMLElement {
   constructor() {
     this.unicode = !!this.attributes.unicode;
-    this.boardRoot = this.createShadowRoot();
+    this.board = null; // keep a reference to the board table.
 
+    this.boardRoot = this.createShadowRoot();
     this.fen = this.innerHTML.trim();
 
     this.frameRoot = this.createShadowRoot();
@@ -58,18 +59,17 @@ class ChessBoard extends HTMLElement {
     var clone = template.content.cloneNode(true);
     removeNodeContent(this.boardRoot);
     this.boardRoot.appendChild(clone);
+    this.board = this.shadowRoot.querySelector(".chessBoard");
   }
 
   move(from, to) {
-    var board = this.shadowRoot.querySelector('.chessBoard');
-
     var fromFile = files[from[0]],
         fromRank = ranks[from[1]],
-        fromCell = board.rows[fromRank].cells[fromFile],
+        fromCell = this.board.rows[fromRank].cells[fromFile],
 
         toFile = files[to[0]],
         toRank = ranks[to[1]],
-        toCell = board.rows[toRank].cells[toFile];
+        toCell = this.board.rows[toRank].cells[toFile];
 
     var piece = fromCell.querySelector(".piece"),
         emptyPiece = emptySquare.content.cloneNode(true);
@@ -86,21 +86,17 @@ class ChessBoard extends HTMLElement {
   }
 
   clear(cell) {
-    var board = this.shadowRoot.querySelector('.chessBoard');
-
     var file = files[cell[0]],
         rank = ranks[cell[1]],
-        boardCell = board.rows[rank].cells[file];
+        boardCell = this.board.rows[rank].cells[file];
 
     removeNodeContent(boardCell);
   }
 
   put(cell, piece) {
-    var board = this.shadowRoot.querySelector('.chessBoard');
-
     var file = files[cell[0]],
         rank = ranks[cell[1]],
-        boardCell = board.rows[rank].cells[file];
+        boardCell = this.board.rows[rank].cells[file];
 
     removeNodeContent(boardCell);
     setPiece(board, file, rank, "", this.unicode);
@@ -148,6 +144,7 @@ class ChessBoard extends HTMLElement {
     }
     removeNodeContent(this.boardRoot);
     this.boardRoot.appendChild(clone);
+    this.board = this.shadowRoot.querySelector(".chessBoard");
   }
   get fen() {
     // its the beers coding, I promise.

@@ -1,5 +1,5 @@
 /* jshint esnext: true*/
-var ChessBoard = (function(document){ // es6, do I need this?
+var ChessBoard = (function(document, window){ // es6, do I need this?
 
 // TODO: polyfill, should check for support before using it.
 var owner = HTMLImports.currentScript.ownerDocument;
@@ -49,11 +49,9 @@ class ChessBoard extends HTMLElement {
 
     this.fen = this.innerHTML.trim();
 
-    if(this.attributes.frame) {
-      this.frameRoot = this.createShadowRoot();
-      var frameClone = frameTemplate.content.cloneNode(true);
-      this.frameRoot.appendChild(frameClone);
-    }
+    this.frameRoot = this.createShadowRoot();
+    var frameClone = frameTemplate.content.cloneNode(true);
+    this.frameRoot.appendChild(frameClone);
   }
 
   clearBoard() {
@@ -217,5 +215,13 @@ function getPieceClone(piece, unicode){
   return clone;
 }
 
+// shim css
+if(Platform.ShadowCSS) {
+  var templateClone = template.content.cloneNode(true);
+  Platform.ShadowCSS.shimStyling(templateClone, "chess-board", "");
+  var frameClone = frameTemplate.content.cloneNode(true);
+  Platform.ShadowCSS.shimStyling(frameClone, "chess-board", "");
+}
+
 return ChessBoard;
-})(document);
+})(document, window);

@@ -1,6 +1,6 @@
 "use strict";
 var __moduleName = (void 0);
-var ChessBoard = (function(document) {
+var ChessBoard = (function(document, window) {
   var owner = HTMLImports.currentScript.ownerDocument;
   var emptySquare = owner.querySelector("#emptyTemplate"),
       pieces = {
@@ -57,11 +57,9 @@ var ChessBoard = (function(document) {
     this.unicode = !!this.attributes.unicode;
     this.boardRoot = this.createShadowRoot();
     this.fen = this.innerHTML.trim();
-    if (this.attributes.frame) {
-      this.frameRoot = this.createShadowRoot();
-      var frameClone = frameTemplate.content.cloneNode(true);
-      this.frameRoot.appendChild(frameClone);
-    }
+    this.frameRoot = this.createShadowRoot();
+    var frameClone = frameTemplate.content.cloneNode(true);
+    this.frameRoot.appendChild(frameClone);
   };
   ($traceurRuntime.createClass)(ChessBoard, {
     clearBoard: function() {
@@ -194,5 +192,11 @@ var ChessBoard = (function(document) {
     }
     return clone;
   }
+  if (Platform.ShadowCSS) {
+    var templateClone = template.content.cloneNode(true);
+    Platform.ShadowCSS.shimStyling(templateClone, "chess-board", "");
+    var frameClone = frameTemplate.content.cloneNode(true);
+    Platform.ShadowCSS.shimStyling(frameClone, "chess-board", "");
+  }
   return ChessBoard;
-})(document);
+})(document, window);

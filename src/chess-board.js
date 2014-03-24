@@ -191,6 +191,12 @@ function setPiece(board, file, rank, piece, unicode) {
       cell = row.cells[file];
 
   removeNodeContent(cell);
+
+  //some polyfill (FF 24.3)
+  if(!(cell instanceof Node)) {
+      cell = ShadowDOMPolyfill.wrap(cell);
+  }
+
   cell.appendChild(getPieceClone(piece, unicode));
 }
 

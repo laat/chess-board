@@ -55,6 +55,7 @@ var ChessBoard = (function(document, window) {
       };
   var ChessBoard = function ChessBoard() {
     this.unicode = !!this.attributes.unicode;
+    this.board = null;
     this.boardRoot = this.createShadowRoot();
     this.fen = this.innerHTML.trim();
     this.frameRoot = this.createShadowRoot();
@@ -66,15 +67,15 @@ var ChessBoard = (function(document, window) {
       var clone = template.content.cloneNode(true);
       removeNodeContent(this.boardRoot);
       this.boardRoot.appendChild(clone);
+      this.board = this.shadowRoot.querySelector(".chessBoard");
     },
     move: function(from, to) {
-      var board = this.shadowRoot.querySelector('.chessBoard');
       var fromFile = files[from [0]],
           fromRank = ranks[from [1]],
-          fromCell = board.rows[fromRank].cells[fromFile],
+          fromCell = this.board.rows[fromRank].cells[fromFile],
           toFile = files[to[0]],
           toRank = ranks[to[1]],
-          toCell = board.rows[toRank].cells[toFile];
+          toCell = this.board.rows[toRank].cells[toFile];
       var piece = fromCell.querySelector(".piece"),
           emptyPiece = emptySquare.content.cloneNode(true);
       if (!piece) {
@@ -86,17 +87,15 @@ var ChessBoard = (function(document, window) {
       fromCell.appendChild(emptyPiece);
     },
     clear: function(cell) {
-      var board = this.shadowRoot.querySelector('.chessBoard');
       var file = files[cell[0]],
           rank = ranks[cell[1]],
-          boardCell = board.rows[rank].cells[file];
+          boardCell = this.board.rows[rank].cells[file];
       removeNodeContent(boardCell);
     },
     put: function(cell, piece) {
-      var board = this.shadowRoot.querySelector('.chessBoard');
       var file = files[cell[0]],
           rank = ranks[cell[1]],
-          boardCell = board.rows[rank].cells[file];
+          boardCell = this.board.rows[rank].cells[file];
       removeNodeContent(boardCell);
       setPiece(board, file, rank, "", this.unicode);
     },
@@ -138,6 +137,7 @@ var ChessBoard = (function(document, window) {
       }
       removeNodeContent(this.boardRoot);
       this.boardRoot.appendChild(clone);
+      this.board = this.shadowRoot.querySelector(".chessBoard");
     },
     get fen() {
       var board = this.shadowRoot.querySelector('.chessBoard');
@@ -172,6 +172,9 @@ var ChessBoard = (function(document, window) {
     var row = board.rows[rank],
         cell = row.cells[file];
     removeNodeContent(cell);
+    if (!(cell instanceof Node)) {
+      cell = ShadowDOMPolyfill.wrap(cell);
+    }
     cell.appendChild(getPieceClone(piece, unicode));
   }
   function removeNodeContent(node) {

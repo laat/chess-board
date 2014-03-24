@@ -1,6 +1,6 @@
 "use strict";
 var __moduleName = (void 0);
-var ChessBoard = (function(document, window) {
+(function(scope) {
   var owner = HTMLImports.currentScript.ownerDocument;
   var emptySquare = owner.querySelector("#emptyTemplate"),
       pieces = {
@@ -201,5 +201,5 @@ var ChessBoard = (function(document, window) {
     var frameClone = frameTemplate.content.cloneNode(true);
     Platform.ShadowCSS.shimStyling(frameClone, "chess-board", "");
   }
-  return ChessBoard;
-})(document, window);
+  scope.ChessBoard = ChessBoard;
+})(window);

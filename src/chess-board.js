@@ -1,5 +1,5 @@
 /* jshint esnext: true*/
-var ChessBoard = (function(document, window){ // es6, do I need this?
+(function(scope){ // es6, do I need this?
 
 // TODO: polyfill, should check for support before using it.
 var owner = HTMLImports.currentScript.ownerDocument;
@@ -226,5 +226,8 @@ if(Platform.ShadowCSS) {
   Platform.ShadowCSS.shimStyling(frameClone, "chess-board", "");
 }
 
-return ChessBoard;
-})(document, window);
+// export
+
+scope.ChessBoard = ChessBoard;
+
+})(window);

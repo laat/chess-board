@@ -1,8 +1,8 @@
 "use strict";
 var __moduleName = (void 0);
 (function(scope) {
-  var owner = HTMLImports.currentScript.ownerDocument;
-  var emptySquare = owner.querySelector("#emptyTemplate"),
+  var owner = document._currentScript.ownerDocument || document.currentScript.ownerDocument,
+      emptySquare = owner.querySelector("#emptyTemplate"),
       pieces = {
         P: owner.querySelector("#whitePawnTemplate"),
         N: owner.querySelector("#whiteKnightTemplate"),
@@ -53,30 +53,34 @@ var __moduleName = (void 0);
         g: 6,
         h: 7
       };
+  var removeNodeContent = function removeNodeContent(node) {
+    while (node.firstChild) {
+      node.removeChild(node.firstChild);
+    }
+  };
   var ChessBoard = function ChessBoard() {
     this.unicode = !!this.attributes.unicode;
-    this.board = null;
-    this.boardRoot = this.createShadowRoot();
+    this._board = null;
+    this._boardRoot = this.createShadowRoot();
     this.fen = this.innerHTML.trim();
-    this.frameRoot = this.createShadowRoot();
-    var frameClone = frameTemplate.content.cloneNode(true);
-    this.frameRoot.appendChild(frameClone);
+    this._frameRoot = this.createShadowRoot();
+    this._frameRoot.appendChild(frameTemplate.content.cloneNode(true));
   };
   ($traceurRuntime.createClass)(ChessBoard, {
     clearBoard: function() {
       var clone = template.content.cloneNode(true);
-      removeNodeContent(this.boardRoot);
-      this.boardRoot.appendChild(clone);
-      this.board = this.shadowRoot.querySelector(".chessBoard");
+      removeNodeContent(this._boardRoot);
+      this._boardRoot.appendChild(clone);
+      this._board = this.shadowRoot.querySelector(".chessBoard");
     },
     move: function(from, to) {
       var fromFile = files[from [0]],
           fromRank = ranks[from [1]],
-          fromCell = this.board.rows[fromRank].cells[fromFile],
+          fromCell = this._board.rows[fromRank].cells[fromFile],
           toFile = files[to[0]],
           toRank = ranks[to[1]],
-          toCell = this.board.rows[toRank].cells[toFile];
-      var piece = fromCell.querySelector(".piece"),
+          toCell = this._board.rows[toRank].cells[toFile],
+          piece = fromCell.querySelector(".piece"),
           emptyPiece = emptySquare.content.cloneNode(true);
       if (!piece) {
         throw "Move Error: the from square was empty";
@@ -89,31 +93,53 @@ var __moduleName = (void 0);
     clear: function(cell) {
       var file = files[cell[0]],
           rank = ranks[cell[1]],
-          boardCell = this.board.rows[rank].cells[file];
+          boardCell = this._board.rows[rank].cells[file];
       removeNodeContent(boardCell);
     },
     put: function(cell, piece) {
       var file = files[cell[0]],
           rank = ranks[cell[1]],
-          boardCell = this.board.rows[rank].cells[file];
+          boardCell = this._board.rows[rank].cells[file];
       removeNodeContent(boardCell);
-      setPiece(board, file, rank, "", this.unicode);
+      this._setPiece(board, file, rank, "", this.unicode);
+    },
+    _setPiece: function(board, file, rank, piece, unicode) {
+      var row = board.rows[rank],
+          cell = row.cells[file];
+      removeNodeContent(cell);
+      if (!(cell instanceof Node)) {
+        cell = ShadowDOMPolyfill.wrap(cell);
+      }
+      cell.appendChild(this._getPieceClone(piece, unicode));
+    },
+    _getPieceClone: function(piece, unicode) {
+      var clone;
+      if (pieces[piece]) {
+        if (!unicode) {
+          clone = svgPieces[piece].content.cloneNode(true);
+        } else {
+          clone = pieces[piece].content.cloneNode(true);
+        }
+      } else {
+        clone = emptySquare.content.cloneNode(true);
+      }
+      return clone;
     },
     set fen(fen) {
-      var clone = template.content.cloneNode(true);
-      var board = clone.children[1];
-      if (!fen) {
-        return;
-      }
-      if (fen === 'start') {
-        fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
-      }
-      var rank = 0,
+      if (!fen) return;
+      if (fen === 'start') fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+      var clone = template.content.cloneNode(true),
+          board = clone.children[1],
+          rank = 0,
           file = 0,
-          fenIndex = 0;
+          fenIndex = 0,
+          fenChar,
+          piece,
+          count,
+          i;
       while (fenIndex < fen.length) {
-        var fenChar = fen[fenIndex],
-            piece = null;
+        fenChar = fen[fenIndex];
+        piece = null;
         if (fenChar === ' ') {
           break;
         }
@@ -124,35 +150,40 @@ var __moduleName = (void 0);
           continue;
         }
         if (isNaN(parseInt(fenChar, 10))) {
-          setPiece(board, file, rank, fenChar, this.unicode);
+          this._setPiece(board, file, rank, fenChar, this.unicode);
           file++;
         } else {
-          var count = parseInt(fenChar, 10);
-          for (var i = 0; i < count; i++) {
-            setPiece(board, file, rank, "", this.unicode);
+          count = parseInt(fenChar, 10);
+          for (i = 0; i < count; i++) {
+            this._setPiece(board, file, rank, "", this.unicode);
             file++;
           }
         }
         fenIndex++;
       }
-      removeNodeContent(this.boardRoot);
-      this.boardRoot.appendChild(clone);
-      this.board = this.shadowRoot.querySelector(".chessBoard");
+      removeNodeContent(this._boardRoot);
+      this._boardRoot.appendChild(clone);
+      this._board = this.shadowRoot.querySelector(".chessBoard");
     },
     get fen() {
-      var board = this.shadowRoot.querySelector('.chessBoard');
-      var fen = [];
-      for (var i = 0; i < 8; i++) {
-        var count = 0;
-        for (var j = 0; j < 8; j++) {
-          var cell = board.rows[i].cells[j];
-          var ascii = cell.querySelector('[ascii]');
-          if (ascii) {
+      var board = this.shadowRoot.querySelector('.chessBoard'),
+          fen = [],
+          i,
+          j,
+          count,
+          cell,
+          piece;
+      for (i = 0; i < 8; i++) {
+        count = 0;
+        for (j = 0; j < 8; j++) {
+          cell = board.rows[i].cells[j];
+          piece = cell.querySelector('[ascii]');
+          if (piece) {
             if (count > 0) {
               fen.push(count);
               count = 0;
             }
-            fen.push(ascii.attributes.ascii.value);
+            fen.push(piece.attributes.ascii.value);
           } else {
             count++;
           }
@@ -166,40 +197,13 @@ var __moduleName = (void 0);
       return fen.join("");
     }
   }, {}, HTMLElement);
-  ChessBoard.prototype.createdCallback = ChessBoard.prototype.constructor;
-  ChessBoard = document.registerElement('chess-board', ChessBoard);
-  function setPiece(board, file, rank, piece, unicode) {
-    var row = board.rows[rank],
-        cell = row.cells[file];
-    removeNodeContent(cell);
-    if (!(cell instanceof Node)) {
-      cell = ShadowDOMPolyfill.wrap(cell);
-    }
-    cell.appendChild(getPieceClone(piece, unicode));
-  }
-  function removeNodeContent(node) {
-    while (node.firstChild) {
-      node.removeChild(node.firstChild);
-    }
-  }
-  function getPieceClone(piece, unicode) {
-    var clone;
-    if (pieces[piece]) {
-      if (!unicode) {
-        clone = svgPieces[piece].content.cloneNode(true);
-      } else {
-        clone = pieces[piece].content.cloneNode(true);
-      }
-    } else {
-      clone = emptySquare.content.cloneNode(true);
-    }
-    return clone;
-  }
   if (Platform.ShadowCSS) {
     var templateClone = template.content.cloneNode(true);
-    Platform.ShadowCSS.shimStyling(templateClone, "chess-board", "");
     var frameClone = frameTemplate.content.cloneNode(true);
+    Platform.ShadowCSS.shimStyling(templateClone, "chess-board", "");
     Platform.ShadowCSS.shimStyling(frameClone, "chess-board", "");
   }
+  ChessBoard.prototype.createdCallback = ChessBoard.prototype.constructor;
+  ChessBoard = document.registerElement('chess-board', ChessBoard);
   scope.ChessBoard = ChessBoard;
 })(window);

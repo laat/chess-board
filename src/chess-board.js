@@ -1,10 +1,9 @@
 /* jshint esnext: true*/
-(function(scope){ // es6, do I need this?
+(function(scope){
 
-// TODO: polyfill, should check for support before using it.
-var owner = HTMLImports.currentScript.ownerDocument;
+var owner = document._currentScript.ownerDocument || document.currentScript.ownerDocument,
 
-var emptySquare = owner.querySelector("#emptyTemplate"),
+    emptySquare = owner.querySelector("#emptyTemplate"),
 
     pieces = {
       P: owner.querySelector("#whitePawnTemplate"),      // ♙ white
@@ -42,36 +41,40 @@ var emptySquare = owner.querySelector("#emptyTemplate"),
     ranks = {1: 7, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 0},
     files = {a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7};
 
+var removeNodeContent = function removeNodeContent(node) {
+  while (node.firstChild) { node.removeChild(node.firstChild); }
+};
+
 class ChessBoard extends HTMLElement {
+
   constructor() {
     this.unicode = !!this.attributes.unicode;
-    this.board = null; // keep a reference to the board table.
 
-    this.boardRoot = this.createShadowRoot();
+    this._board = null; // keep a reference to the board table.
+    this._boardRoot = this.createShadowRoot();
     this.fen = this.innerHTML.trim();
 
-    this.frameRoot = this.createShadowRoot();
-    var frameClone = frameTemplate.content.cloneNode(true);
-    this.frameRoot.appendChild(frameClone);
+    this._frameRoot = this.createShadowRoot();
+    this._frameRoot.appendChild(frameTemplate.content.cloneNode(true));
   }
 
   clearBoard() {
     var clone = template.content.cloneNode(true);
-    removeNodeContent(this.boardRoot);
-    this.boardRoot.appendChild(clone);
-    this.board = this.shadowRoot.querySelector(".chessBoard");
+    removeNodeContent(this._boardRoot);
+    this._boardRoot.appendChild(clone);
+    this._board = this.shadowRoot.querySelector(".chessBoard");
   }
 
   move(from, to) {
     var fromFile = files[from[0]],
         fromRank = ranks[from[1]],
-        fromCell = this.board.rows[fromRank].cells[fromFile],
+        fromCell = this._board.rows[fromRank].cells[fromFile],
 
         toFile = files[to[0]],
         toRank = ranks[to[1]],
-        toCell = this.board.rows[toRank].cells[toFile];
+        toCell = this._board.rows[toRank].cells[toFile],
 
-    var piece = fromCell.querySelector(".piece"),
+        piece = fromCell.querySelector(".piece"),
         emptyPiece = emptySquare.content.cloneNode(true);
 
     if(!piece) {
@@ -88,7 +91,7 @@ class ChessBoard extends HTMLElement {
   clear(cell) {
     var file = files[cell[0]],
         rank = ranks[cell[1]],
-        boardCell = this.board.rows[rank].cells[file];
+        boardCell = this._board.rows[rank].cells[file];
 
     removeNodeContent(boardCell);
   }
@@ -96,28 +99,58 @@ class ChessBoard extends HTMLElement {
   put(cell, piece) {
     var file = files[cell[0]],
         rank = ranks[cell[1]],
-        boardCell = this.board.rows[rank].cells[file];
+        boardCell = this._board.rows[rank].cells[file];
 
     removeNodeContent(boardCell);
-    setPiece(board, file, rank, "", this.unicode);
+    this._setPiece(board, file, rank, "", this.unicode);
+  }
+
+  _setPiece(board, file, rank, piece, unicode) {
+    var row = board.rows[rank],
+        cell = row.cells[file];
+
+    removeNodeContent(cell);
+
+    //some polyfill (FF 24.3)
+    if(!(cell instanceof Node)) {
+      cell = ShadowDOMPolyfill.wrap(cell);
+    }
+
+    cell.appendChild(this._getPieceClone(piece, unicode));
+  }
+
+  _getPieceClone(piece, unicode){
+    var clone;
+    if(pieces[piece]) {
+      if(!unicode) {
+        clone = svgPieces[piece].content.cloneNode(true);
+      } else {
+        clone = pieces[piece].content.cloneNode(true);
+      }
+    } else {
+      clone = emptySquare.content.cloneNode(true);
+    }
+    return clone;
   }
 
   set fen(fen) {
-    var clone = template.content.cloneNode(true);
-    var board = clone.children[1]; // TODO: better selector please =)
-    if(!fen) { return; }
+    if(!fen) return;
+    if(fen === 'start') fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
-    if(fen === 'start'){
-      fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
-    }
+    var clone = template.content.cloneNode(true),
+        // TODO: this._board may not be initialized.
+        // need better selectors in documentFragment.
+        board = clone.children[1],
 
-    var rank = 0,
+        rank = 0,
         file = 0,
-        fenIndex = 0;
+        fenIndex = 0,
+
+        fenChar, piece, count, i;
 
     while(fenIndex < fen.length){
-      var fenChar = fen[fenIndex],
-        piece = null;
+      fenChar = fen[fenIndex];
+      piece = null;
 
       if(fenChar === ' '){
         break; //ignore the rest
@@ -130,40 +163,42 @@ class ChessBoard extends HTMLElement {
       }
 
       if(isNaN(parseInt(fenChar, 10))) {
-        setPiece(board, file, rank, fenChar, this.unicode);
+        this._setPiece(board, file, rank, fenChar, this.unicode);
         file++;
       } else {
-        var count = parseInt(fenChar, 10);
-        for(var i = 0; i < count; i++) {
-          setPiece(board, file, rank, "", this.unicode);
+        count = parseInt(fenChar, 10);
+        for(i = 0; i < count; i++) {
+          this._setPiece(board, file, rank, "", this.unicode);
           file++;
         }
       }
 
       fenIndex++;
     }
-    removeNodeContent(this.boardRoot);
-    this.boardRoot.appendChild(clone);
-    this.board = this.shadowRoot.querySelector(".chessBoard");
+    removeNodeContent(this._boardRoot);
+    this._boardRoot.appendChild(clone);
+    this._board = this.shadowRoot.querySelector(".chessBoard");
   }
-  get fen() {
-    // its the beers coding, I promise.
-    var board = this.shadowRoot.querySelector('.chessBoard');
-    var fen = [];
-    for(var i = 0; i < 8; i++) {
-      var count = 0;
-      for(var j=0; j < 8; j++) {
-        var cell = board.rows[i].cells[j];
-        var ascii = cell.querySelector('[ascii]');
 
-        if(ascii) {
+  get fen() {
+    var board = this.shadowRoot.querySelector('.chessBoard'),
+        fen = [],
+        i, j, count, cell, piece;
+
+    for(i = 0; i < 8; i++) {
+      count = 0;
+      for(j=0; j < 8; j++) {
+        cell = board.rows[i].cells[j];
+        piece = cell.querySelector('[ascii]');
+
+        if(piece) {
           if(count > 0) {
             fen.push(count);
             count = 0;
           }
-          fen.push(ascii.attributes.ascii.value);
+          fen.push(piece.attributes.ascii.value);
         } else {
-          count ++;
+          count++;
         }
 
       }
@@ -177,57 +212,20 @@ class ChessBoard extends HTMLElement {
     return fen.join("");
   }
 }
-ChessBoard.prototype.createdCallback = ChessBoard.prototype.constructor;
-ChessBoard = document.registerElement('chess-board', ChessBoard);
-
-/*
- *
- * Private helpers
- *
- */
-
-function setPiece(board, file, rank, piece, unicode) {
-  var row = board.rows[rank],
-      cell = row.cells[file];
-
-  removeNodeContent(cell);
-
-  //some polyfill (FF 24.3)
-  if(!(cell instanceof Node)) {
-      cell = ShadowDOMPolyfill.wrap(cell);
-  }
-
-  cell.appendChild(getPieceClone(piece, unicode));
-}
-
-function removeNodeContent(node) {
-  while (node.firstChild) { node.removeChild(node.firstChild); }
-}
-
-function getPieceClone(piece, unicode){
-  var clone;
-  if(pieces[piece]) {
-    if(!unicode) {
-      clone = svgPieces[piece].content.cloneNode(true);
-    } else {
-      clone = pieces[piece].content.cloneNode(true);
-    }
-  } else {
-    clone = emptySquare.content.cloneNode(true);
-  }
-  return clone;
-}
 
 // shim css
 if(Platform.ShadowCSS) {
   var templateClone = template.content.cloneNode(true);
-  Platform.ShadowCSS.shimStyling(templateClone, "chess-board", "");
   var frameClone = frameTemplate.content.cloneNode(true);
+  Platform.ShadowCSS.shimStyling(templateClone, "chess-board", "");
   Platform.ShadowCSS.shimStyling(frameClone, "chess-board", "");
 }
 
 // export
 
-scope.ChessBoard = ChessBoard;
+ChessBoard.prototype.createdCallback = ChessBoard.prototype.constructor;
+ChessBoard = document.registerElement('chess-board', ChessBoard);
+
+scope.ChessBoard = ChessBoard;  // es6, do I need this?
 
 })(window);

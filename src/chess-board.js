@@ -48,7 +48,7 @@ var removeNodeContent = function removeNodeContent(node) {
 class ChessBoard extends HTMLElement {
 
   constructor() {
-    this.unicode = !!this.attributes.unicode;
+    this._unicode = !!this.attributes.unicode;
 
     this._board = null; // keep a reference to the board table.
     this._boardRoot = this.createShadowRoot();
@@ -58,11 +58,22 @@ class ChessBoard extends HTMLElement {
     this._frameRoot.appendChild(frameTemplate.content.cloneNode(true));
   }
 
+  attributeChanged(attribute, oldVal, newVal) {
+    if(attribute === 'unicode'){
+      var fen = this.fen;
+
+      this._unicode = !!this.attributes.unicode;
+      removeNodeContent(this._boardRoot);
+
+      this.fen = fen;
+    }
+  }
+
   clearBoard() {
     var clone = template.content.cloneNode(true);
     removeNodeContent(this._boardRoot);
     this._boardRoot.appendChild(clone);
-    this._board = this.shadowRoot.querySelector(".chessBoard");
+    this._board = this._boardRoot.querySelector(".chessBoard");
   }
 
   move(from, to) {
@@ -102,7 +113,7 @@ class ChessBoard extends HTMLElement {
         boardCell = this._board.rows[rank].cells[file];
 
     removeNodeContent(boardCell);
-    this._setPiece(board, file, rank, "", this.unicode);
+    this._setPiece(board, file, rank, "", this._unicode);
   }
 
   _setPiece(board, file, rank, piece, unicode) {
@@ -163,12 +174,12 @@ class ChessBoard extends HTMLElement {
       }
 
       if(isNaN(parseInt(fenChar, 10))) {
-        this._setPiece(board, file, rank, fenChar, this.unicode);
+        this._setPiece(board, file, rank, fenChar, this._unicode);
         file++;
       } else {
         count = parseInt(fenChar, 10);
         for(i = 0; i < count; i++) {
-          this._setPiece(board, file, rank, "", this.unicode);
+          this._setPiece(board, file, rank, "", this._unicode);
           file++;
         }
       }
@@ -177,11 +188,11 @@ class ChessBoard extends HTMLElement {
     }
     removeNodeContent(this._boardRoot);
     this._boardRoot.appendChild(clone);
-    this._board = this.shadowRoot.querySelector(".chessBoard");
+    this._board = this._boardRoot.querySelector(".chessBoard");
   }
 
   get fen() {
-    var board = this.shadowRoot.querySelector('.chessBoard'),
+    var board = this._boardRoot.querySelector('.chessBoard'),
         fen = [],
         i, j, count, cell, piece;
 
@@ -224,6 +235,7 @@ if(Platform.ShadowCSS) {
 // export
 
 ChessBoard.prototype.createdCallback = ChessBoard.prototype.constructor;
+ChessBoard.prototype.attributeChangedCallback = ChessBoard.prototype.attributeChanged;
 ChessBoard = document.registerElement('chess-board', ChessBoard);
 
 scope.ChessBoard = ChessBoard;  // es6, do I need this?

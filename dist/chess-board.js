@@ -59,7 +59,7 @@ var __moduleName = (void 0);
     }
   };
   var ChessBoard = function ChessBoard() {
-    this.unicode = !!this.attributes.unicode;
+    this._unicode = !!this.attributes.unicode;
     this._board = null;
     this._boardRoot = this.createShadowRoot();
     this.fen = this.innerHTML.trim();
@@ -67,11 +67,19 @@ var __moduleName = (void 0);
     this._frameRoot.appendChild(frameTemplate.content.cloneNode(true));
   };
   ($traceurRuntime.createClass)(ChessBoard, {
+    attributeChanged: function(attribute, oldVal, newVal) {
+      if (attribute === 'unicode') {
+        var fen = this.fen;
+        this._unicode = !!this.attributes.unicode;
+        removeNodeContent(this._boardRoot);
+        this.fen = fen;
+      }
+    },
     clearBoard: function() {
       var clone = template.content.cloneNode(true);
       removeNodeContent(this._boardRoot);
       this._boardRoot.appendChild(clone);
-      this._board = this.shadowRoot.querySelector(".chessBoard");
+      this._board = this._boardRoot.querySelector(".chessBoard");
     },
     move: function(from, to) {
       var fromFile = files[from [0]],
@@ -101,7 +109,7 @@ var __moduleName = (void 0);
           rank = ranks[cell[1]],
           boardCell = this._board.rows[rank].cells[file];
       removeNodeContent(boardCell);
-      this._setPiece(board, file, rank, "", this.unicode);
+      this._setPiece(board, file, rank, "", this._unicode);
     },
     _setPiece: function(board, file, rank, piece, unicode) {
       var row = board.rows[rank],
@@ -150,12 +158,12 @@ var __moduleName = (void 0);
           continue;
         }
         if (isNaN(parseInt(fenChar, 10))) {
-          this._setPiece(board, file, rank, fenChar, this.unicode);
+          this._setPiece(board, file, rank, fenChar, this._unicode);
           file++;
         } else {
           count = parseInt(fenChar, 10);
           for (i = 0; i < count; i++) {
-            this._setPiece(board, file, rank, "", this.unicode);
+            this._setPiece(board, file, rank, "", this._unicode);
             file++;
           }
         }
@@ -163,10 +171,10 @@ var __moduleName = (void 0);
       }
       removeNodeContent(this._boardRoot);
       this._boardRoot.appendChild(clone);
-      this._board = this.shadowRoot.querySelector(".chessBoard");
+      this._board = this._boardRoot.querySelector(".chessBoard");
     },
     get fen() {
-      var board = this.shadowRoot.querySelector('.chessBoard'),
+      var board = this._boardRoot.querySelector('.chessBoard'),
           fen = [],
           i,
           j,
@@ -204,6 +212,7 @@ var __moduleName = (void 0);
     Platform.ShadowCSS.shimStyling(frameClone, "chess-board", "");
   }
   ChessBoard.prototype.createdCallback = ChessBoard.prototype.constructor;
+  ChessBoard.prototype.attributeChangedCallback = ChessBoard.prototype.attributeChanged;
   ChessBoard = document.registerElement('chess-board', ChessBoard);
   scope.ChessBoard = ChessBoard;
 })(window);

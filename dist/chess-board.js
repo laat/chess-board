@@ -103,15 +103,15 @@ var __moduleName = (void 0);
       toCell.appendChild(piece);
       fromCell.appendChild(emptyPiece);
     },
-    clear: function(cell) {
-      var $__1 = this._getFileRank(cell),
+    clear: function(square) {
+      var $__1 = this._getFileRank(square),
           file = $__1[0],
           rank = $__1[1],
           boardCell = this._board.rows[rank].cells[file];
       removeNodeContent(boardCell);
     },
-    put: function(cell, piece) {
-      var $__1 = this._getFileRank(cell),
+    put: function(square, piece) {
+      var $__1 = this._getFileRank(square),
           file = $__1[0],
           rank = $__1[1],
           boardCell = this._board.rows[rank].cells[file];
@@ -189,8 +189,7 @@ var __moduleName = (void 0);
       this._board = this._boardRoot.querySelector(".chessBoard");
     },
     get fen() {
-      var board = this._boardRoot.querySelector('.chessBoard'),
-          fen = [],
+      var fen = [],
           i,
           j,
           count,
@@ -199,7 +198,7 @@ var __moduleName = (void 0);
       for (i = 0; i < 8; i++) {
         count = 0;
         for (j = 0; j < 8; j++) {
-          cell = board.rows[i].cells[j];
+          cell = this._board.rows[i].cells[j];
           piece = cell.querySelector('[ascii]');
           if (piece) {
             if (count > 0) {

@@ -72,6 +72,9 @@ class ChessBoard extends HTMLElement {
     }
   }
 
+  /**
+   * Replaces the current board with an empty one.
+   */
   clearBoard() {
     var clone = template.content.cloneNode(true);
     removeNodeContent(this._boardRoot);
@@ -79,6 +82,12 @@ class ChessBoard extends HTMLElement {
     this._board = this._boardRoot.querySelector(".chessBoard");
   }
 
+  /**
+   * Moves a piece.
+   *
+   * @param {string} from - The square to move from. Eg: "a2"
+   * @param {string} to - The square to move to. Eg: "a3"
+   */
   move(from, to) {
     var [fromFile, fromRank]  = this._getFileRank(from),
         fromCell = this._board.rows[fromRank].cells[fromFile],
@@ -100,15 +109,26 @@ class ChessBoard extends HTMLElement {
     fromCell.appendChild(emptyPiece);
   }
 
-  clear(cell) {
-    var [file, rank]  = this._getFileRank(cell),
+  /**
+   * Removes the piece at the given square.
+   *
+   * @param {string} square - The square. Eg: "a2"
+   */
+  clear(square) {
+    var [file, rank]  = this._getFileRank(square),
         boardCell = this._board.rows[rank].cells[file];
 
     removeNodeContent(boardCell);
   }
 
-  put(cell, piece) {
-    var [file, rank]  = this._getFileRank(cell),
+  /**
+   * Places a piece in the given square.
+   *
+   * @param {string} square - The square. Eg: "a2"
+   * @param {string} piece - the ascii representation of a piece. Eg: "K"
+   */
+  put(square, piece) {
+    var [file, rank]  = this._getFileRank(square),
         boardCell = this._board.rows[rank].cells[file];
 
     removeNodeContent(boardCell);
@@ -148,6 +168,12 @@ class ChessBoard extends HTMLElement {
     return clone;
   }
 
+  /**
+   * Set the current position.
+   * (appends a new board to this._rootBoard)
+   *
+   * @param {string} fen - a position string as FEN
+   */
   set fen(fen) {
     if(!fen) return;
     if(fen === 'start') fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
@@ -194,15 +220,17 @@ class ChessBoard extends HTMLElement {
     this._board = this._boardRoot.querySelector(".chessBoard");
   }
 
+  /**
+   * Get the current position as FEN.
+   */
   get fen() {
-    var board = this._boardRoot.querySelector('.chessBoard'),
-        fen = [],
+    var fen = [],
         i, j, count, cell, piece;
 
     for(i = 0; i < 8; i++) {
       count = 0;
       for(j=0; j < 8; j++) {
-        cell = board.rows[i].cells[j];
+        cell = this._board.rows[i].cells[j];
         piece = cell.querySelector('[ascii]');
 
         if(piece) {

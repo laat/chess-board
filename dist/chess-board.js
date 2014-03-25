@@ -1,9 +1,11 @@
 "use strict";
 var __moduleName = (void 0);
 ((function(scope) {
-  var owner = document.currentScript.ownerDocument;
+  var owner;
   if (HTMLImports && !HTMLImports.useNative) {
     owner = document._currentScript.ownerDocument;
+  } else {
+    owner = document.currentScript.ownerDocument;
   }
   var emptySquare = owner.querySelector("#emptyTemplate"),
       pieces = {

@@ -1,8 +1,11 @@
 "use strict";
 var __moduleName = (void 0);
-(function(scope) {
-  var owner = document._currentScript.ownerDocument || document.currentScript.ownerDocument,
-      emptySquare = owner.querySelector("#emptyTemplate"),
+((function(scope) {
+  var owner = document.currentScript.ownerDocument;
+  if (HTMLImports && !HTMLImports.useNative) {
+    owner = document._currentScript.ownerDocument;
+  }
+  var emptySquare = owner.querySelector("#emptyTemplate"),
       pieces = {
         P: owner.querySelector("#whitePawnTemplate"),
         N: owner.querySelector("#whiteKnightTemplate"),
@@ -82,11 +85,13 @@ var __moduleName = (void 0);
       this._board = this._boardRoot.querySelector(".chessBoard");
     },
     move: function(from, to) {
-      var fromFile = files[from [0]],
-          fromRank = ranks[from [1]],
+      var $__1 = this._getFileRank(from),
+          fromFile = $__1[0],
+          fromRank = $__1[1],
           fromCell = this._board.rows[fromRank].cells[fromFile],
-          toFile = files[to[0]],
-          toRank = ranks[to[1]],
+          $__2 = this._getFileRank(to),
+          toFile = $__2[0],
+          toRank = $__2[1],
           toCell = this._board.rows[toRank].cells[toFile],
           piece = fromCell.querySelector(".piece"),
           emptyPiece = emptySquare.content.cloneNode(true);
@@ -99,19 +104,28 @@ var __moduleName = (void 0);
       fromCell.appendChild(emptyPiece);
     },
     clear: function(cell) {
-      var file = files[cell[0]],
-          rank = ranks[cell[1]],
+      var $__1 = this._getFileRank(cell),
+          file = $__1[0],
+          rank = $__1[1],
           boardCell = this._board.rows[rank].cells[file];
       removeNodeContent(boardCell);
     },
     put: function(cell, piece) {
-      var file = files[cell[0]],
-          rank = ranks[cell[1]],
+      var $__1 = this._getFileRank(cell),
+          file = $__1[0],
+          rank = $__1[1],
           boardCell = this._board.rows[rank].cells[file];
       removeNodeContent(boardCell);
-      this._setPiece(board, file, rank, "", this._unicode);
+      this._setPiece(this._board, file, rank, piece, this._unicode);
     },
-    _setPiece: function(board, file, rank, piece, unicode) {
+    _getFileRank: function(cell) {
+      var $__1 = cell,
+          file = $__1[0],
+          rank = $__1[1];
+      return [files[file], ranks[rank]];
+    },
+    _setPiece: function(board, file, rank, piece) {
+      var unicode = arguments[4] !== (void 0) ? arguments[4]: false;
       var row = board.rows[rank],
           cell = row.cells[file];
       removeNodeContent(cell);
@@ -120,7 +134,8 @@ var __moduleName = (void 0);
       }
       cell.appendChild(this._getPieceClone(piece, unicode));
     },
-    _getPieceClone: function(piece, unicode) {
+    _getPieceClone: function(piece) {
+      var unicode = arguments[1] !== (void 0) ? arguments[1]: false;
       var clone;
       if (pieces[piece]) {
         if (!unicode) {
@@ -215,4 +230,4 @@ var __moduleName = (void 0);
   ChessBoard.prototype.attributeChangedCallback = ChessBoard.prototype.attributeChanged;
   ChessBoard = document.registerElement('chess-board', ChessBoard);
   scope.ChessBoard = ChessBoard;
-})(window);
+}))(window);

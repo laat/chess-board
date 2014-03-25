@@ -1,9 +1,12 @@
 /* jshint esnext: true*/
-(function(scope){
+((scope) => {
 
-var owner = document._currentScript.ownerDocument || document.currentScript.ownerDocument,
+var owner = document.currentScript.ownerDocument;
+if(HTMLImports && !HTMLImports.useNative) {
+  owner = document._currentScript.ownerDocument;
+}
 
-    emptySquare = owner.querySelector("#emptyTemplate"),
+var emptySquare = owner.querySelector("#emptyTemplate"),
 
     pieces = {
       P: owner.querySelector("#whitePawnTemplate"),      // ♙ white
@@ -77,12 +80,10 @@ class ChessBoard extends HTMLElement {
   }
 
   move(from, to) {
-    var fromFile = files[from[0]],
-        fromRank = ranks[from[1]],
+    var [fromFile, fromRank]  = this._getFileRank(from),
         fromCell = this._board.rows[fromRank].cells[fromFile],
 
-        toFile = files[to[0]],
-        toRank = ranks[to[1]],
+        [toFile, toRank]  = this._getFileRank(to),
         toCell = this._board.rows[toRank].cells[toFile],
 
         piece = fromCell.querySelector(".piece"),
@@ -100,23 +101,26 @@ class ChessBoard extends HTMLElement {
   }
 
   clear(cell) {
-    var file = files[cell[0]],
-        rank = ranks[cell[1]],
+    var [file, rank]  = this._getFileRank(cell),
         boardCell = this._board.rows[rank].cells[file];
 
     removeNodeContent(boardCell);
   }
 
   put(cell, piece) {
-    var file = files[cell[0]],
-        rank = ranks[cell[1]],
+    var [file, rank]  = this._getFileRank(cell),
         boardCell = this._board.rows[rank].cells[file];
 
     removeNodeContent(boardCell);
-    this._setPiece(board, file, rank, "", this._unicode);
+    this._setPiece(this._board, file, rank, piece, this._unicode);
   }
 
-  _setPiece(board, file, rank, piece, unicode) {
+  _getFileRank(cell) {
+    var [file, rank] = cell;
+    return [files[file], ranks[rank]];
+  }
+
+  _setPiece(board, file, rank, piece, unicode=false) {
     var row = board.rows[rank],
         cell = row.cells[file];
 
@@ -130,7 +134,7 @@ class ChessBoard extends HTMLElement {
     cell.appendChild(this._getPieceClone(piece, unicode));
   }
 
-  _getPieceClone(piece, unicode){
+  _getPieceClone(piece, unicode=false){
     var clone;
     if(pieces[piece]) {
       if(!unicode) {
@@ -149,8 +153,7 @@ class ChessBoard extends HTMLElement {
     if(fen === 'start') fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
     var clone = template.content.cloneNode(true),
-        // TODO: this._board may not be initialized.
-        // need better selectors in documentFragment.
+        // TODO: need better selectors in documentFragment.
         board = clone.children[1],
 
         rank = 0,

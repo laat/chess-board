@@ -1,6 +1,6 @@
 {
   "name": "chess-board",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A web component for displaying chess positions.",
   "author": "Sigurd Fosseng <sigurd@fosseng.net>",
   "license": "MIT",

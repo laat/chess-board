@@ -1,3 +1,7 @@
+0.0.5 / 2014-07-14
+=================
+* Fixed: #2 Chashing in Chrome 36
+
 0.0.4 / 2014-03-20
 =================
 * previous release broken by a typo

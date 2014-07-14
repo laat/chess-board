@@ -22,7 +22,7 @@
     "tests"
   ],
   "dependencies": {
-    "polymer-platform": "~0.2.1",
+    "polymer-platform": "~0.3.4",
     "traceur-runtime": "~0.0.24"
   }
 }

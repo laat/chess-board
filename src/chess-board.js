@@ -58,9 +58,19 @@ class ChessBoard extends HTMLElement {
     this._board = null; // keep a reference to the board table.
     this._boardRoot = this.createShadowRoot();
     this.fen = this.innerHTML.trim();
-
+    
     this._frameRoot = this.createShadowRoot();
     this._frameRoot.appendChild(frameTemplate.content.cloneNode(true));
+
+    /* 
+     * A stinky fugly workaround to redraw the board when created. 
+     *
+     * (Chrome 36/38) The chessboard will not rotate with css if I do not force
+     * a redraw of the component. It's difficult to reproduce a minimal example
+     * for bugreports.
+     */
+    var self = this; self.style.display = 'run-in'; setTimeout(function () {self.style.display = 'block'; }, 0);
+    // end of stinky fugly workaround
   }
 
   attributeChanged(attribute, oldVal, newVal) {
@@ -181,8 +191,7 @@ class ChessBoard extends HTMLElement {
     if(fen === 'start') fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
     var clone = template.content.cloneNode(true),
-        // TODO: need better selectors in documentFragment.
-        board = clone.children[1],
+        board = clone.children[1],  // TODO: need better selectors in documentFragment.
 
         rank = 0,
         file = 0,
@@ -266,11 +275,10 @@ if(Platform.ShadowCSS) {
 }
 
 // export
-
 ChessBoard.prototype.createdCallback = ChessBoard.prototype.constructor;
 ChessBoard.prototype.attributeChangedCallback = ChessBoard.prototype.attributeChanged;
 ChessBoard = document.registerElement('chess-board', ChessBoard);
 
-scope.ChessBoard = ChessBoard;  // es6, do I need this?
+scope.ChessBoard = ChessBoard;
 
 })(window);

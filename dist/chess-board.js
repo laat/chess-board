@@ -70,6 +70,11 @@ var __moduleName = (void 0);
     this.fen = this.innerHTML.trim();
     this._frameRoot = this.createShadowRoot();
     this._frameRoot.appendChild(frameTemplate.content.cloneNode(true));
+    var self = this;
+    self.style.display = 'run-in';
+    setTimeout(function() {
+      self.style.display = 'block';
+    }, 0);
   };
   ($traceurRuntime.createClass)(ChessBoard, {
     attributeChanged: function(attribute, oldVal, newVal) {

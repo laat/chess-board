@@ -121,6 +121,3 @@ For detailed changelog, check [Releases](https://github.com/laat/chess-board/rel
 ## License
 
 [MIT License](http://opensource.org/licenses/MIT)
-
-### Notes / Rambeling
-Web Components are FUN! I hope to be able to add a few more features in the future, like context menu, drag and drop, and animation.

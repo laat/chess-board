@@ -8,4 +8,4 @@ node_js:
 install:
   - npm i
 after_success:
-  - .tools/gh_pages.sh
+  - ./tools/gh_pages.sh

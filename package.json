@@ -10,7 +10,7 @@
     "watch:js": "watchify -d src/chess-board.js -o lib/chess-board.js",
     "build": "mkdir -p lib && npm run build:js && npm run build:html",
     "lint": "eslint src/.",
-    "prebublish": "npm run build"
+    "prepublish": "npm run build"
   },
   "author": "Sigurd Fosseng <sigurd@fosseng.net>",
   "license": "MIT",

@@ -1,0 +1,11 @@
+env:
+  global:
+    secure: qOYqDLqzn+rKB9aebJIRq4NSaiWdgQrjtXeSCsU7NsGLt3TaVsqomUYBIhEFhmjOUy3Wdd6S4uprzZHfBKUk2NbaPkhDhZTXIAbn+54Rf1U5BVojfr4h/YZPulF5sQF+UOarNtVJkt7NB5iskKcBeIuN01hg4895fAoha2vwMqw=
+
+language: node_js
+node_js:
+  - "4"
+install:
+  - npm i
+after_success:
+  - .tools/gh_pages.sh

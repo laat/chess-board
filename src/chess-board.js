@@ -4,8 +4,6 @@ import { getFileRank } from './chess-utils'
 
 class ChessBoard extends HTMLElement {
   createdCallback () {
-    this._unicode = !!this.attributes.unicode
-
     this._board = null // keep a reference to the board table.
     this._boardRoot = this.createShadowRoot()
     this.fen = this.innerHTML.trim()
@@ -27,11 +25,8 @@ class ChessBoard extends HTMLElement {
   attributeChangedCallback (attribute, oldVal, newVal) {
     if (attribute === 'unicode') {
       var fen = this.fen
-
-      this._unicode = !!this.attributes.unicode
       removeNodeContent(this._boardRoot)
-
-      this.fen = fen
+      this.fen = fen // redraws
     }
   }
 
@@ -95,10 +90,11 @@ class ChessBoard extends HTMLElement {
     const boardCell = this._board.rows[rank].cells[file]
 
     removeNodeContent(boardCell)
-    this._setPiece(this._board, file, rank, piece, this._unicode)
+    this._setPiece(this._board, file, rank, piece)
   }
 
-  _setPiece (board, file, rank, piece, unicode = false) {
+  _setPiece (board, file, rank, piece) {
+    const unicode = !!this.attributes.unicode
     const row = board.rows[rank]
     let cell = row.cells[file]
 
@@ -146,12 +142,12 @@ class ChessBoard extends HTMLElement {
       }
 
       if (isNaN(parseInt(fenChar, 10))) {
-        this._setPiece(board, file, rank, fenChar, this._unicode)
+        this._setPiece(board, file, rank, fenChar)
         file++
       } else {
         count = parseInt(fenChar, 10)
         for (i = 0; i < count; i++) {
-          this._setPiece(board, file, rank, '', this._unicode)
+          this._setPiece(board, file, rank, '')
           file++
         }
       }

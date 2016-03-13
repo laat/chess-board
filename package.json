@@ -1,6 +1,6 @@
 {
   "name": "chess-board",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A web component for displaying chess positions.",
   "main": "lib/chess-board.html",
   "scripts": {

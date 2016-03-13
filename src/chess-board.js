@@ -1,8 +1,6 @@
 import { template, emptySquare, frameTemplate, getPieceClone } from './templates'
 import { removeNodeContent } from './dom-utils'
-
-const ranks = {1: 7, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 0}
-const files = {a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7}
+import { getFileRank } from './chess-utils'
 
 class ChessBoard extends HTMLElement {
   createdCallback () {
@@ -57,10 +55,10 @@ class ChessBoard extends HTMLElement {
    * @param {string} to - The square to move to. Eg: "a3"
    */
   move (from, to) {
-    const [fromFile, fromRank] = this._getFileRank(from)
+    const [fromFile, fromRank] = getFileRank(from)
     const fromCell = this._board.rows[fromRank].cells[fromFile]
 
-    const [toFile, toRank] = this._getFileRank(to)
+    const [toFile, toRank] = getFileRank(to)
     const toCell = this._board.rows[toRank].cells[toFile]
 
     const piece = fromCell.querySelector('.piece')
@@ -83,7 +81,7 @@ class ChessBoard extends HTMLElement {
    * @param {string} square - The square. Eg: "a2"
    */
   clear (square) {
-    const [file, rank] = this._getFileRank(square)
+    const [file, rank] = getFileRank(square)
     const boardCell = this._board.rows[rank].cells[file]
 
     removeNodeContent(boardCell)
@@ -96,16 +94,11 @@ class ChessBoard extends HTMLElement {
    * @param {string} piece - the ascii representation of a piece. Eg: "K"
    */
   put (square, piece) {
-    const [file, rank] = this._getFileRank(square)
+    const [file, rank] = getFileRank(square)
     const boardCell = this._board.rows[rank].cells[file]
 
     removeNodeContent(boardCell)
     this._setPiece(this._board, file, rank, piece, this._unicode)
-  }
-
-  _getFileRank (cell) {
-    const [file, rank] = cell
-    return [files[file], ranks[rank]]
   }
 
   _setPiece (board, file, rank, piece, unicode = false) {

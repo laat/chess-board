@@ -1,0 +1,134 @@
+<meta charset="UTF-8">
+<template id="sgCodeExample">
+    <style>
+     code {
+         font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+     }
+     .sg-example {
+         position: relative;
+         padding: 45px 15px 15px;
+         background: #fff;
+
+         border-style: solid;
+         border-color: #ddd;
+         border-width: 1px;
+         border-radius: 4px 4px 0 0;
+     }
+     .sg-example:after {
+         position: absolute;
+         top: 15px;
+         left: 15px;
+
+         font-size: 12px;
+         font-weight: 700;
+         color: #959595;
+         text-transform: uppercase;
+         letter-spacing: 1px;
+         content: "Example";
+     }
+     .sg-copy {
+         position: relative;
+     }
+     .sg-copy-button {
+         position: absolute;
+         top: -1px;
+         right: 0;
+         z-index: 10;
+         display: block;
+         padding: 5px 8px;
+
+         font-size: 12px;
+         color: #767676;
+         cursor: pointer;
+         background-color: #fff;
+         border: 1px solid #e1e1e8;
+         border-bottom-left-radius: 4px;
+     }
+     .sg-copy-button:hover {
+         background: #5cb85c;
+         color: #fff;
+     }
+     .sg-copy-data {
+         position:absolute;
+         left:-10000px;
+         top:auto;
+         width:1px;
+         height:1px;
+         overflow:hidden;
+     }
+     .highlight {
+         margin: 0;
+         margin-top: -1px;
+         padding: 9px 15px;
+         border: 1px solid #e1e1e8;
+         border-radius: 0 0 4px 4px;
+
+         background: #eaeef3;
+         color: #00193a;
+     }
+     .highlight-pre {
+         margin: 0;
+     }
+
+     .hljs-keyword,
+     .hljs-selector-tag,
+     .hljs-title,
+     .hljs-section,
+     .hljs-doctag,
+     .hljs-name,
+     .hljs-strong {
+         font-weight: bold;
+     }
+
+     .hljs-comment {
+         color: #738191;
+     }
+
+     .hljs-string,
+     .hljs-title,
+     .hljs-section,
+     .hljs-built_in,
+     .hljs-literal,
+     .hljs-type,
+     .hljs-addition,
+     .hljs-tag,
+     .hljs-quote,
+     .hljs-name,
+     .hljs-selector-id,
+     .hljs-selector-class {
+         color: #0048ab;
+     }
+
+     .hljs-meta,
+     .hljs-subst,
+     .hljs-symbol,
+     .hljs-regexp,
+     .hljs-attribute,
+     .hljs-deletion,
+     .hljs-variable,
+     .hljs-template-variable,
+     .hljs-link,
+     .hljs-bullet {
+         color: #4c81c9;
+     }
+
+     .hljs-emphasis {
+         font-style: italic;
+     }
+    </style>
+
+    <div class="sg-example">
+        <shadow></shadow>
+    </div>
+
+    <div class="sg-copy">
+        <textarea class="sg-copy-data"></textarea>
+        <span class="sg-copy-button">Copy</span>
+    </div>
+
+    <figure class="highlight">
+        <pre class="highlight-pre"><code class="html"></code></pre>
+    </figure>
+
+</template>
+<script src="sg-example.js"></script>

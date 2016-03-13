@@ -22,10 +22,9 @@ class ChessBoard extends HTMLElement {
      * a redraw of the component. It's difficult to reproduce a minimal example
      * for bugreports.
      */
-    var self = this
-    self.style.display = 'run-in'
-    setTimeout(function () {
-      self.style.display = 'block'
+    this.style.display = 'run-in'
+    setTimeout(() => {
+      this.style.display = 'block'
     }, 0)
     // end of stinky fugly workaround
   }

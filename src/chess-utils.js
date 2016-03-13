@@ -17,3 +17,11 @@ export function getFileRank (square) {
   const [file, rank] = square
   return [files[file], ranks[rank]]
 }
+
+export function emptyBoard () {
+  const board = []
+  for (let i = 0; i < 8; i++) {
+    board[i] = []
+  }
+  return board
+}

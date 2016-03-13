@@ -1,5 +1,5 @@
 import { ASCIIBoard } from './ascii-chess-board'
-import { template, getPieceClone } from './templates'
+import { template, frameTemplate, getPieceClone } from './templates'
 import { removeNodeContent } from './dom-utils'
 
 class ChessBoard extends HTMLElement {
@@ -11,6 +11,10 @@ class ChessBoard extends HTMLElement {
 
     this._asciiBoard = new ASCIIBoard(this.innerHTML.trim())
     this._board = this._boardRoot.querySelector('.chessBoard')
+
+    this._frameRoot = this.createShadowRoot()
+    this._frameRoot.appendChild(frameTemplate.content.cloneNode(true))
+
     this._renderBoard()
 
     /*

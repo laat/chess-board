@@ -24,12 +24,6 @@ A web component for displaying chess positions.
     <script src="/bower_components/polymer-platform/platform.js"></script>
     ```
 
-1. Traceur Runtime:  (Ecmascript 6)
-
-    ```html
-    <script src="/bower_components/traceur-runtime/traceur-runtime.js"></script>
-    ```
-
 2. Import Custom Element:
 
     ```html

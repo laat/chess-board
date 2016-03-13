@@ -1,4 +1,4 @@
-import { template, emptySquare, frameTemplate, getPieceClone } from './templates'
+import { template, emptySquare, getPieceClone } from './templates'
 import { removeNodeContent } from './dom-utils'
 import { getFileRank } from './chess-utils'
 
@@ -9,9 +9,6 @@ class ChessBoard extends HTMLElement {
     this._board = null // keep a reference to the board table.
     this._boardRoot = this.createShadowRoot()
     this.fen = this.innerHTML.trim()
-
-    this._frameRoot = this.createShadowRoot()
-    this._frameRoot.appendChild(frameTemplate.content.cloneNode(true))
 
     /*
      * A stinky fugly workaround to redraw the board when created.
@@ -202,14 +199,6 @@ class ChessBoard extends HTMLElement {
     fen.pop()
     return fen.join('')
   }
-}
-
-// shim css
-if (window.Platform.ShadowCSS) {
-  const templateClone = template.content.cloneNode(true)
-  const frameClone = frameTemplate.content.cloneNode(true)
-  window.Platform.ShadowCSS.shimStyling(templateClone, 'chess-board', '')
-  window.Platform.ShadowCSS.shimStyling(frameClone, 'chess-board', '')
 }
 
 window.ChessBoard = document.registerElement('chess-board', ChessBoard)

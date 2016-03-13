@@ -1,3 +1,14 @@
+
+1.0.3 / 2016-03-13
+==================
+
+* Bumped webcomponents.js
+* Removed ShadowCSS polyfills
+* Refactor to multiple files
+* StandardJS syntax
+* New build
+
+
 0.0.5 / 2014-07-14
 =================
 * Fixed: #2 Chashing in Chrome 36

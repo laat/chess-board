@@ -5,6 +5,8 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; th
 
  mkdir -p $HOME/gh-ready
  cp -R lib index.html $HOME/gh-ready
+ mkdir -p $HOME/gh-ready/node_modules/
+ cp -R node_modules/sg-example $HOME/gh-ready/node_modules
 
  cd $HOME
  git config --global user.email "travis@travis-ci.org"

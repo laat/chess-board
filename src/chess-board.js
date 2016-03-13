@@ -12,6 +12,19 @@ class ChessBoard extends HTMLElement {
     this._asciiBoard = new ASCIIBoard(this.innerHTML.trim())
     this._board = this._boardRoot.querySelector('.chessBoard')
     this._renderBoard()
+
+    /*
+     * A stinky fugly workaround to redraw the board.
+     *
+     * (Chrome 36/38) The chessboard will not rotate with css if I do not force
+     * a redraw of the component. It's difficult to reproduce a minimal example
+     * for bugreports.
+     */
+    this.style.display = 'run-in'
+    setTimeout(() => {
+      this.style.display = 'block'
+    }, 0)
+    // end of stinky fugly workaround
   }
 
   attributeChangedCallback (attribute, oldVal, newVal) {

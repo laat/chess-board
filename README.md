@@ -21,7 +21,7 @@ A web component for displaying chess positions.
 1. Import Web Components' polyfill:
 
     ```html
-    <script src="/bower_components/polymer-platform/platform.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.21/webcomponents.min.js"></script>
     ```
 
 2. Import Custom Element:

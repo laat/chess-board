@@ -1,4 +1,4 @@
-import { ASCIIBoard } from './ascii-chess-board'
+import FENBoard from 'fen-chess-board'
 import { template, frameTemplate, getPieceClone } from './templates'
 import { removeNodeContent } from './dom-utils'
 
@@ -9,7 +9,7 @@ class ChessBoard extends HTMLElement {
     var clone = template.content.cloneNode(true)
     this._boardRoot.appendChild(clone)
 
-    this._asciiBoard = new ASCIIBoard(this.innerHTML.trim())
+    this._asciiBoard = new FENBoard(this.innerHTML.trim())
     this._board = this._boardRoot.querySelector('.chessBoard')
 
     this._frameRoot = this.createShadowRoot()
@@ -41,7 +41,7 @@ class ChessBoard extends HTMLElement {
    * Replaces the current board with an empty one.
    */
   clearBoard () {
-    this._asciiBoard = new ASCIIBoard()
+    this._asciiBoard = new FENBoard()
     this._renderBoard()
   }
 

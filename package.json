@@ -34,6 +34,7 @@
     "eslint-config-standard": "^5.1.0",
     "eslint-plugin-promise": "^1.1.0",
     "eslint-plugin-standard": "^1.3.2",
+    "fen-chess-board": "^1.0.1",
     "http-server": "^0.9.0",
     "sg-example": "^1.0.3",
     "watchify": "^3.7.0"

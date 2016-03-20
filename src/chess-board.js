@@ -41,7 +41,7 @@ class ChessBoard extends HTMLElement {
    * Replaces the current board with an empty one.
    */
   clearBoard () {
-    this._asciiBoard = new ASCIIBoard(this.innerHTML.trim())
+    this._asciiBoard = new ASCIIBoard()
     this._renderBoard()
   }
 

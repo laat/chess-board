@@ -1,6 +1,6 @@
 import FENBoard from 'fen-chess-board'
 import { template, frameTemplate, getPieceClone } from './templates'
-import { removeNodeContent } from './dom-utils'
+import removeChildren from 'remove-children'
 
 class ChessBoard extends HTMLElement {
   createdCallback () {
@@ -66,7 +66,7 @@ class ChessBoard extends HTMLElement {
 
     // supersimple diff
     if (asciiChar !== currentAscii || unicode !== currentUnicode) {
-      removeNodeContent(cell)
+      removeChildren(cell)
       cell.appendChild(getPieceClone(asciiChar, unicode))
     }
   }

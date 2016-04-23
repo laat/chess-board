@@ -1,12 +1,12 @@
 # &lt;chess-board&gt;
 
 [![npm][npm-image]][npm-url]
-[![js-standard-style][standard-style-image]][standard-style-url]
+[![travis][travis-image]][travis-url]
 
 [npm-image]: https://img.shields.io/npm/v/chess-board.svg?style=flat
 [npm-url]: https://npmjs.org/package/chess-board
-[standard-style-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat
-[standard-style-url]: https://github.com/feross/standard
+[travis-image]: https://img.shields.io/travis/laat/chess-board.svg?style=flat
+[travis-url]: https://travis-ci.org/laat/chess-board
 
 A web component for displaying chess positions.
 
@@ -106,18 +106,6 @@ board.move("a2", "a3");
 var currentFen = board.fen;
 ```
 
-## Contributing
-
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -m 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
-
-## History
-
-For detailed changelog, check [Releases](https://github.com/laat/chess-board/releases).
-
 ## License
 
-[MIT License](http://opensource.org/licenses/MIT)
+MIT © [Sigurd Fosseng](https://github.com/laat)

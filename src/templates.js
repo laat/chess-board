@@ -1,11 +1,11 @@
-var owner
+let owner;
 if (window.HTMLImports && !window.HTMLImports.useNative) {
-  owner = document._currentScript.ownerDocument
+  owner = document._currentScript.ownerDocument; // eslint-disable-line
 } else {
-  owner = document.currentScript.ownerDocument
+  owner = document.currentScript.ownerDocument;
 }
 
-export const emptySquare = owner.querySelector('#emptyTemplate')
+export const emptySquare = owner.querySelector('#emptyTemplate');
 
 export const pieces = {
   P: owner.querySelector('#whitePawnTemplate'),      // ♙ white
@@ -19,8 +19,8 @@ export const pieces = {
   b: owner.querySelector('#blackBishopTemplate'),    // ♝
   r: owner.querySelector('#blackRookTemplate'),      // ♜
   q: owner.querySelector('#blackQueenTemplate'),     // ♛
-  k: owner.querySelector('#blackKingTemplate')       // ♚
-}
+  k: owner.querySelector('#blackKingTemplate'),      // ♚
+};
 
 export const svgPieces = {
   P: owner.querySelector('#whitePawnSvgTemplate'),   // ♙ white
@@ -34,22 +34,22 @@ export const svgPieces = {
   b: owner.querySelector('#blackBishopSvgTemplate'), // ♝
   r: owner.querySelector('#blackRookSvgTemplate'),   // ♜
   q: owner.querySelector('#blackQueenSvgTemplate'),  // ♛
-  k: owner.querySelector('#blackKingSvgTemplate')    // ♚
-}
+  k: owner.querySelector('#blackKingSvgTemplate'),   // ♚
+};
 
-export const template = owner.querySelector('#chessBoardTemplate')
-export const frameTemplate = owner.querySelector('#chessBoardFrameTemplate')
+export const template = owner.querySelector('#chessBoardTemplate');
+export const frameTemplate = owner.querySelector('#chessBoardFrameTemplate');
 
-export function getPieceClone (piece, unicode = false) {
-  let clone
+export function getPieceClone(piece, unicode = false) {
+  let clone;
   if (pieces[piece]) {
     if (!unicode) {
-      clone = svgPieces[piece].content.cloneNode(true)
+      clone = svgPieces[piece].content.cloneNode(true);
     } else {
-      clone = pieces[piece].content.cloneNode(true)
+      clone = pieces[piece].content.cloneNode(true);
     }
   } else {
-    clone = emptySquare.content.cloneNode(true)
+    clone = emptySquare.content.cloneNode(true);
   }
-  return clone
+  return clone;
 }

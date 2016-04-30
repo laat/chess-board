@@ -1,16 +1,10 @@
-# &lt;chess-board&gt;
-
-[![npm][npm-image]][npm-url]
-[![travis][travis-image]][travis-url]
-
+# &lt;chess-board&gt; [![travis][travis-image]][travis-url] [![npm][npm-image]][npm-url]
 [npm-image]: https://img.shields.io/npm/v/chess-board.svg?style=flat
 [npm-url]: https://npmjs.org/package/chess-board
 [travis-image]: https://img.shields.io/travis/laat/chess-board.svg?style=flat
 [travis-url]: https://travis-ci.org/laat/chess-board
 
-A web component for displaying chess positions.
-
-> Maintained by [Sigurd Fosseng](https://github.com/laat).
+> A web component for displaying chess positions.
 
 ## Demo
 

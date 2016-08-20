@@ -1,6 +1,39 @@
 <meta charset="UTF-8">
 <template id="chessBoardTemplate">
   <style>
+    /* the frame */
+    .frame{
+      display: none;
+    }
+
+    :host([frame]) .frame {
+      width: 1em;
+      height: 1em;
+      display: table-cell;
+      font-size: 40%;
+    }
+    :host([frame]) .frame.left,
+    :host([frame]) .frame.right {
+      vertical-align: middle;
+      padding: 0.2em;
+    }
+    :host([frame]) .frame.top,
+    :host([frame]) .frame.bottom {
+      text-align: center;
+    }
+
+    :host([reverse]) .boardFrame {
+      transform:rotate(180deg);
+      -ms-transform:rotate(180deg);
+      -webkit-transform:rotate(180deg);
+    }
+    :host([reverse]) .frame{
+      transform:rotate(180deg);
+      -ms-transform:rotate(180deg);
+      -webkit-transform:rotate(180deg);
+    }
+
+    /* the board */
     :host {
       display: inline-block;
     }
@@ -35,124 +68,6 @@
       -webkit-transform:rotate(180deg);
     }
   </style>
-  <table class="chessBoard" cellpadding="0" cellspacing="0">
-    <tr>
-      <td class="a8 light"><span class="empty"></span></td>
-      <td class="b8 dark"><span class="empty"></span></td>
-      <td class="c8 light"><span class="empty"></span></td>
-      <td class="d8 dark"><span class="empty"></span></td>
-      <td class="e8 light"><span class="empty"></span></td>
-      <td class="f8 dark"><span class="empty"></span></td>
-      <td class="g8 light"><span class="empty"></span></td>
-      <td class="h8 dark"><span class="empty"></span></td>
-    </tr>
-    <tr>
-      <td class="a7 dark"><span class="empty"></span></td>
-      <td class="b7 light"><span class="empty"></span></td>
-      <td class="c7 dark"><span class="empty"></span></td>
-      <td class="d7 light"><span class="empty"></span></td>
-      <td class="e7 dark"><span class="empty"></span></td>
-      <td class="f7 light"><span class="empty"></span></td>
-      <td class="g7 dark"><span class="empty"></span></td>
-      <td class="h7 light"><span class="empty"></span></td>
-    </tr>
-    <tr>
-      <td class="a6 light"><span class="empty"></span></td>
-      <td class="b6 dark"><span class="empty"></span></td>
-      <td class="c6 light"><span class="empty"></span></td>
-      <td class="d6 dark"><span class="empty"></span></td>
-      <td class="e6 light"><span class="empty"></span></td>
-      <td class="f6 dark"><span class="empty"></span></td>
-      <td class="g6 light"><span class="empty"></span></td>
-      <td class="h6 dark"><span class="empty"></span></td>
-    </tr>
-    <tr>
-      <td class="a5 dark"><span class="empty"></span></td>
-      <td class="b5 light"><span class="empty"></span></td>
-      <td class="c5 dark"><span class="empty"></span></td>
-      <td class="d5 light"><span class="empty"></span></td>
-      <td class="e5 dark"><span class="empty"></span></td>
-      <td class="f5 light"><span class="empty"></span></td>
-      <td class="g5 dark"><span class="empty"></span></td>
-      <td class="h5 light"><span class="empty"></span></td>
-    </tr>
-    <tr>
-      <td class="a4 light"><span class="empty"></span></td>
-      <td class="b4 dark"><span class="empty"></span></td>
-      <td class="c4 light"><span class="empty"></span></td>
-      <td class="d4 dark"><span class="empty"></span></td>
-      <td class="e4 light"><span class="empty"></span></td>
-      <td class="f4 dark"><span class="empty"></span></td>
-      <td class="g4 light"><span class="empty"></span></td>
-      <td class="h4 dark"><span class="empty"></span></td>
-    </tr>
-    <tr>
-      <td class="a3 dark"><span class="empty"></span></td>
-      <td class="b3 light"><span class="empty"></span></td>
-      <td class="c3 dark"><span class="empty"></span></td>
-      <td class="d3 light"><span class="empty"></span></td>
-      <td class="e3 dark"><span class="empty"></span></td>
-      <td class="f3 light"><span class="empty"></span></td>
-      <td class="g3 dark"><span class="empty"></span></td>
-      <td class="h3 light"><span class="empty"></span></td>
-    </tr>
-    <tr>
-      <td class="a2 light"><span class="empty"></span></td>
-      <td class="b2 dark"><span class="empty"></span></td>
-      <td class="c2 light"><span class="empty"></span></td>
-      <td class="d2 dark"><span class="empty"></span></td>
-      <td class="e2 light"><span class="empty"></span></td>
-      <td class="f2 dark"><span class="empty"></span></td>
-      <td class="g2 light"><span class="empty"></span></td>
-      <td class="h2 dark"><span class="empty"></span></td>
-    </tr>
-    <tr>
-      <td class="a1 dark"><span class="empty"></span></td>
-      <td class="b1 light"><span class="empty"></span></td>
-      <td class="c1 dark"><span class="empty"></span></td>
-      <td class="d1 light"><span class="empty"></span></td>
-      <td class="e1 dark"><span class="empty"></span></td>
-      <td class="f1 light"><span class="empty"></span></td>
-      <td class="g1 dark"><span class="empty"></span></td>
-      <td class="h1 light"><span class="empty"></span></td>
-    </tr>
-  </table>
-</template>
-<template id="chessBoardFrameTemplate">
-  <style>
-    .frame{
-      display: none;
-    }
-
-    :host([frame]) .frame {
-      width: 1em;
-      height: 1em;
-      display: table-cell;
-      font-size: 40%;
-    }
-
-    :host([frame]) .frame.left,
-    :host([frame]) .frame.right {
-      vertical-align: middle;
-      padding: 0.2em;
-    }
-    :host([frame]) .frame.top,
-    :host([frame]) .frame.bottom {
-      text-align: center;
-    }
-
-    :host([reverse]) .boardFrame {
-      transform:rotate(180deg);
-      -ms-transform:rotate(180deg);
-      -webkit-transform:rotate(180deg);
-    }
-    :host([reverse]) .frame{
-      transform:rotate(180deg);
-      -ms-transform:rotate(180deg);
-      -webkit-transform:rotate(180deg);
-    }
-
-  </style>
   <table class="boardFrame" cellpadding="0" cellspacing="0">
     <tr>
       <td class="frame top left"></td>
@@ -169,7 +84,88 @@
     <tr>
       <td class="frame left">8</td>
       <td colspan="8" rowspan="8" class="boardWrap">
-        <shadow></shadow>
+        <table class="chessBoard" cellpadding="0" cellspacing="0">
+          <tr>
+            <td class="a8 light"><span class="empty"></span></td>
+            <td class="b8 dark"><span class="empty"></span></td>
+            <td class="c8 light"><span class="empty"></span></td>
+            <td class="d8 dark"><span class="empty"></span></td>
+            <td class="e8 light"><span class="empty"></span></td>
+            <td class="f8 dark"><span class="empty"></span></td>
+            <td class="g8 light"><span class="empty"></span></td>
+            <td class="h8 dark"><span class="empty"></span></td>
+          </tr>
+          <tr>
+            <td class="a7 dark"><span class="empty"></span></td>
+            <td class="b7 light"><span class="empty"></span></td>
+            <td class="c7 dark"><span class="empty"></span></td>
+            <td class="d7 light"><span class="empty"></span></td>
+            <td class="e7 dark"><span class="empty"></span></td>
+            <td class="f7 light"><span class="empty"></span></td>
+            <td class="g7 dark"><span class="empty"></span></td>
+            <td class="h7 light"><span class="empty"></span></td>
+          </tr>
+          <tr>
+            <td class="a6 light"><span class="empty"></span></td>
+            <td class="b6 dark"><span class="empty"></span></td>
+            <td class="c6 light"><span class="empty"></span></td>
+            <td class="d6 dark"><span class="empty"></span></td>
+            <td class="e6 light"><span class="empty"></span></td>
+            <td class="f6 dark"><span class="empty"></span></td>
+            <td class="g6 light"><span class="empty"></span></td>
+            <td class="h6 dark"><span class="empty"></span></td>
+          </tr>
+          <tr>
+            <td class="a5 dark"><span class="empty"></span></td>
+            <td class="b5 light"><span class="empty"></span></td>
+            <td class="c5 dark"><span class="empty"></span></td>
+            <td class="d5 light"><span class="empty"></span></td>
+            <td class="e5 dark"><span class="empty"></span></td>
+            <td class="f5 light"><span class="empty"></span></td>
+            <td class="g5 dark"><span class="empty"></span></td>
+            <td class="h5 light"><span class="empty"></span></td>
+          </tr>
+          <tr>
+            <td class="a4 light"><span class="empty"></span></td>
+            <td class="b4 dark"><span class="empty"></span></td>
+            <td class="c4 light"><span class="empty"></span></td>
+            <td class="d4 dark"><span class="empty"></span></td>
+            <td class="e4 light"><span class="empty"></span></td>
+            <td class="f4 dark"><span class="empty"></span></td>
+            <td class="g4 light"><span class="empty"></span></td>
+            <td class="h4 dark"><span class="empty"></span></td>
+          </tr>
+          <tr>
+            <td class="a3 dark"><span class="empty"></span></td>
+            <td class="b3 light"><span class="empty"></span></td>
+            <td class="c3 dark"><span class="empty"></span></td>
+            <td class="d3 light"><span class="empty"></span></td>
+            <td class="e3 dark"><span class="empty"></span></td>
+            <td class="f3 light"><span class="empty"></span></td>
+            <td class="g3 dark"><span class="empty"></span></td>
+            <td class="h3 light"><span class="empty"></span></td>
+          </tr>
+          <tr>
+            <td class="a2 light"><span class="empty"></span></td>
+            <td class="b2 dark"><span class="empty"></span></td>
+            <td class="c2 light"><span class="empty"></span></td>
+            <td class="d2 dark"><span class="empty"></span></td>
+            <td class="e2 light"><span class="empty"></span></td>
+            <td class="f2 dark"><span class="empty"></span></td>
+            <td class="g2 light"><span class="empty"></span></td>
+            <td class="h2 dark"><span class="empty"></span></td>
+          </tr>
+          <tr>
+            <td class="a1 dark"><span class="empty"></span></td>
+            <td class="b1 light"><span class="empty"></span></td>
+            <td class="c1 dark"><span class="empty"></span></td>
+            <td class="d1 light"><span class="empty"></span></td>
+            <td class="e1 dark"><span class="empty"></span></td>
+            <td class="f1 light"><span class="empty"></span></td>
+            <td class="g1 dark"><span class="empty"></span></td>
+            <td class="h1 light"><span class="empty"></span></td>
+          </tr>
+        </table>
       </td>
       <td class="frame right">8</td>
     </tr>

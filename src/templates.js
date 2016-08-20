@@ -38,7 +38,6 @@ export const svgPieces = {
 };
 
 export const template = owner.querySelector('#chessBoardTemplate');
-export const frameTemplate = owner.querySelector('#chessBoardFrameTemplate');
 
 export function getPieceClone(piece, unicode = false) {
   let clone;

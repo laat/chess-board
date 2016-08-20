@@ -1,5 +1,5 @@
 import FENBoard from 'fen-chess-board';
-import { template, frameTemplate, getPieceClone } from './templates';
+import { template, getPieceClone } from './templates';
 import removeChildren from 'remove-children';
 
 class ChessBoard extends HTMLElement {
@@ -11,9 +11,6 @@ class ChessBoard extends HTMLElement {
 
     this._asciiBoard = new FENBoard(this.innerHTML.trim());
     this._board = this._boardRoot.querySelector('.chessBoard');
-
-    this._frameRoot = this.createShadowRoot();
-    this._frameRoot.appendChild(frameTemplate.content.cloneNode(true));
 
     this._renderBoard();
 

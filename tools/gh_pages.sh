@@ -17,7 +17,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; th
  git rm -rf $HOME/gh-pages/*
  cp -Rf $HOME/gh-ready/* .
  git add -f .
- git commit -m "Latest javadoc on successful travis build $TRAVIS_BUILD_NUMBER auto-pushed to gh-pages"
+ git commit -m "Latest successful travis build $TRAVIS_BUILD_NUMBER auto-pushed to gh-pages"
  git push -fq origin gh-pages > /dev/null
 
  echo -e "Published gh-pages.\n"

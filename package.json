@@ -40,11 +40,6 @@
     "sg-example": "^1.0.3",
     "watchify": "^3.7.0"
   },
-  "babel": {
-    "presets": [
-      "es2015"
-    ]
-  },
   "browserify": {
     "transform": [
       "babelify"

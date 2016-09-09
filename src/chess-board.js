@@ -1,6 +1,6 @@
 import FENBoard from 'fen-chess-board';
-import { template, getPieceClone } from './templates';
 import removeChildren from 'remove-children';
+import { template, getPieceClone } from './templates';
 
 class ChessBoard extends HTMLElement {
   createdCallback() {

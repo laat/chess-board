@@ -49,7 +49,7 @@ class ChessBoard extends HTMLElement {
       const row = board.rows[i];
       for (let j = 0; j < ascii.length; j++) {
         const cell = row.cells[j];
-        const asciiChar = ascii[j][i];
+        const asciiChar = ascii[i][j];
         this._updateCell(cell, asciiChar);
       }
     }

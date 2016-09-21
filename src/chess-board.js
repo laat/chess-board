@@ -41,8 +41,9 @@ class ChessBoard extends HTMLElement {
   /**
    * Replaces the current board with an empty one.
    */
-  clearBoard() {
-    this._asciiBoard = new FENBoard();
+  clearBoard(boardDefinition) {
+    let newDefinition = boardDefinition || '';
+    this._asciiBoard = new FENBoard(newDefinition);
     this._renderBoard();
   }
 
@@ -60,7 +61,6 @@ class ChessBoard extends HTMLElement {
   }
 
   _bindControls() {   
-    let self = this;
     // append controls
     let clone = sequenceControls.content.cloneNode(true);
     this._boardRoot.appendChild(clone);
@@ -68,21 +68,20 @@ class ChessBoard extends HTMLElement {
 
     // bind control events
     const buttons = Array.prototype.slice.call(this._boardRoot.querySelectorAll('.controls button'));
-    buttons.forEach(function(button){
-      button.addEventListener('click', function(){
-        let action = this.dataset.action;
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        let action = button.dataset.action;
         switch(action) {
             case 'prev':
-                if (self._sequencePosition > 1) self._sequencePosition = self._sequencePosition - 1;
+                if (this._sequencePosition > 1) this._sequencePosition = this._sequencePosition - 1;
                 break;
             case 'next':
-                if (self._sequencePosition < self._sequenceLength) self._sequencePosition = self._sequencePosition + 1;
+                if (this._sequencePosition < this._sequenceLength) this._sequencePosition = this._sequencePosition + 1;
                 break;
         }
-        self._updateControls();                
-        let boardDefinition = self._boardDefinition[self._sequencePosition - 1].trim();
-        self._asciiBoard = new FENBoard(boardDefinition);
-        self._renderBoard();
+        this._updateControls();                
+        let boardDefinition = this._boardDefinition[this._sequencePosition - 1].trim();
+        this.clearBoard(boardDefinition)
       });
     });
 

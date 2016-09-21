@@ -1,6 +1,6 @@
 import FENBoard from 'fen-chess-board';
 import removeChildren from 'remove-children';
-import { template, getPieceClone } from './templates';
+import { template, getPieceClone, sequenceControls } from './templates';
 
 class ChessBoard extends HTMLElement {
   createdCallback() {
@@ -8,8 +8,9 @@ class ChessBoard extends HTMLElement {
 
     const clone = template.content.cloneNode(true);
     this._boardRoot.appendChild(clone);
-
-    this._asciiBoard = new FENBoard(this.innerHTML.trim());
+    this._boardDefinition = this.innerHTML.trim().split("\n");
+    this._isSequence = this._boardDefinition.length > 1 ? true : false;
+    this._asciiBoard = new FENBoard(this._boardDefinition[0]);
     this._board = this._boardRoot.querySelector('.chessBoard');
 
     this._renderBoard();
@@ -43,6 +44,7 @@ class ChessBoard extends HTMLElement {
   }
 
   _renderBoard() {
+    console.log('render board');
     const ascii = this._asciiBoard.board;
     const board = this._board;
     for (let i = 0; i < ascii.length; i++) {
@@ -53,6 +55,13 @@ class ChessBoard extends HTMLElement {
         this._updateCell(cell, asciiChar);
       }
     }
+    if (this._isSequence) this._showSequenceControls();
+  }
+
+  _showSequenceControls() {
+    console.log('show controls');
+    const controls = sequenceControls.content.cloneNode(true);
+    this._boardRoot.appendChild(controls);
   }
 
   _updateCell(cell, asciiChar) {

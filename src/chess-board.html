@@ -67,6 +67,16 @@
       -ms-transform:rotate(180deg);
       -webkit-transform:rotate(180deg);
     }
+
+    .controls span {
+      font-size: 18px;
+      font-weight: bold;
+      background: #CCC;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
   </style>
   <table class="boardFrame" cellpadding="0" cellspacing="0">
     <tr>
@@ -521,5 +531,12 @@
 </template>
 <template id="emptyTemplate">
   <span class="empty" ascii=""></span>
+</template>
+<template id="sequenceControls">
+    <div class="controls">
+      <span class="previous">PREV</span>
+      <span class="previous">PLAY</span>
+      <span class="next">NEXT</span>
+  </div>
 </template>
 <script src="chess-board.js"></script>

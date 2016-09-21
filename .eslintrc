@@ -3,6 +3,7 @@
   "rules": {
     "no-underscore-dangle": 0,
     "no-plusplus": 0,
+    "no-console": 2,
     "import/no-extraneous-dependencies": 0
   },
   "env": {

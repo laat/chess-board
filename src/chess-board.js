@@ -9,11 +9,14 @@ class ChessBoard extends HTMLElement {
     const clone = template.content.cloneNode(true);
     this._boardRoot.appendChild(clone);
     this._boardDefinition = this.innerHTML.trim().split("\n");
-    this._isSequence = this._boardDefinition.length > 1 ? true : false;
-    this._asciiBoard = new FENBoard(this._boardDefinition[0]);
+    this._sequenceLength = this._boardDefinition.length;
+    this._isSequence = this._sequenceLength > 1 ? true : false;
+    this._sequencePosition = 1,
+    this._asciiBoard = new FENBoard(this._boardDefinition[0].trim());
     this._board = this._boardRoot.querySelector('.chessBoard');
 
     this._renderBoard();
+    if (this._isSequence) this._bindControls();
 
     /*
      * A stinky fugly workaround to redraw the board.
@@ -44,7 +47,6 @@ class ChessBoard extends HTMLElement {
   }
 
   _renderBoard() {
-    console.log('render board');
     const ascii = this._asciiBoard.board;
     const board = this._board;
     for (let i = 0; i < ascii.length; i++) {
@@ -55,13 +57,42 @@ class ChessBoard extends HTMLElement {
         this._updateCell(cell, asciiChar);
       }
     }
-    if (this._isSequence) this._showSequenceControls();
   }
 
-  _showSequenceControls() {
-    console.log('show controls');
-    const controls = sequenceControls.content.cloneNode(true);
-    this._boardRoot.appendChild(controls);
+  _bindControls() {   
+    let self = this;
+    // append controls
+    let clone = sequenceControls.content.cloneNode(true);
+    this._boardRoot.appendChild(clone);
+    this._updateControls();
+
+    // bind control events
+    const buttons = Array.prototype.slice.call(this._boardRoot.querySelectorAll('.controls button'));
+    buttons.forEach(function(button){
+      button.addEventListener('click', function(){
+        let action = this.dataset.action;
+        switch(action) {
+            case 'prev':
+                if (self._sequencePosition > 1) self._sequencePosition = self._sequencePosition - 1;
+                break;
+            case 'next':
+                if (self._sequencePosition < self._sequenceLength) self._sequencePosition = self._sequencePosition + 1;
+                break;
+        }
+        self._updateControls();                
+        let boardDefinition = self._boardDefinition[self._sequencePosition - 1].trim();
+        self._asciiBoard = new FENBoard(boardDefinition);
+        self._renderBoard();
+      });
+    });
+
+  }
+
+  _updateControls(cell, asciiChar) {
+    const current = this._boardRoot.querySelector('.controls .current');
+    const total = this._boardRoot.querySelector('.controls .total');
+    current.innerHTML = this._sequencePosition;
+    total.innerHTML = this._boardDefinition.length;
   }
 
   _updateCell(cell, asciiChar) {

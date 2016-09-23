@@ -14,6 +14,12 @@ class ChessBoard extends HTMLElement {
 
     this._renderBoard();
 
+    // Observe innerHTML for new FEN-strings;
+    const observer = new MutationObserver(() => {
+      this.fen = this.innerHTML.trim();
+    });
+    observer.observe(this, { subtree: true, characterData: true });
+
     /*
      * A stinky fugly workaround to redraw the board.
      *

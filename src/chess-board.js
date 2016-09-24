@@ -3,41 +3,32 @@ import removeChildren from 'remove-children';
 import { template, getPieceClone } from './templates';
 
 class ChessBoard extends HTMLElement {
-  createdCallback() {
-    this._boardRoot = this.createShadowRoot();
+  constructor() {
+    super();
 
+    const shadowRoot = this.attachShadow({ mode: 'closed' });
     const clone = template.content.cloneNode(true);
-    this._boardRoot.appendChild(clone);
+    shadowRoot.appendChild(clone);
 
     this._asciiBoard = new FENBoard(this.innerHTML.trim());
-    this._board = this._boardRoot.querySelector('.chessBoard');
+    this._board = shadowRoot.querySelector('.chessBoard');
+  }
 
+  connectedCallback() {
     this._renderBoard();
-
     // Observe innerHTML for new FEN-strings;
     const observer = new MutationObserver(() => {
       this.fen = this.innerHTML.trim();
     });
     observer.observe(this, { subtree: true, characterData: true });
-
-    /*
-     * A stinky fugly workaround to redraw the board.
-     *
-     * (Chrome 36/38) The chessboard will not rotate with css if I do not force
-     * a redraw of the component. It's difficult to reproduce a minimal example
-     * for bugreports.
-     */
-    this.style.display = 'run-in';
-    setTimeout(() => {
-      this.style.display = 'block';
-    }, 0);
-    // end of stinky fugly workaround
   }
 
-  attributeChangedCallback(attribute) {
-    if (attribute === 'unicode') {
-      this._renderBoard();
-    }
+  static get observedAttributes() {
+    return ['unicode'];
+  }
+
+  attributeChangedCallback() {
+    this._renderBoard();
   }
 
   /**
@@ -135,4 +126,5 @@ class ChessBoard extends HTMLElement {
   }
 }
 
-window.ChessBoard = document.registerElement('chess-board', ChessBoard);
+customElements.define('chess-board', ChessBoard);
+window.ChessBoard = ChessBoard;

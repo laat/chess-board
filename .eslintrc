@@ -8,5 +8,8 @@
   "env": {
     "browser": true,
     "node": true
+  },
+  "globals": {
+    "customElements": false
   }
 }

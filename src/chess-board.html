@@ -522,4 +522,20 @@
 <template id="emptyTemplate">
   <span class="empty" ascii=""></span>
 </template>
+<template id="sequenceControls">
+    <style>
+      .controls .status {
+        font-size: 18px;
+        font-weight: bold;
+      }
+    </style>
+    <div class="controls">
+      <button data-action="prev">PREV</button>
+      <button data-action="next">NEXT</button>
+      <div class="status">
+        <span class="current"></span> of&nbsp;
+        <span class="total"></span>
+      </div>
+  </div>
+</template>
 <script src="chess-board.js"></script>

@@ -1,6 +1,6 @@
 import FENBoard from 'fen-chess-board';
 import removeChildren from 'remove-children';
-import { template, getPieceClone } from './templates';
+import { template, getPieceClone, sequenceControls } from './templates';
 
 class ChessBoard extends HTMLElement {
   createdCallback() {
@@ -8,11 +8,15 @@ class ChessBoard extends HTMLElement {
 
     const clone = template.content.cloneNode(true);
     this._boardRoot.appendChild(clone);
-
-    this._asciiBoard = new FENBoard(this.innerHTML.trim());
+    this._boardDefinition = this.innerHTML.trim().split("\n");
+    this._sequenceLength = this._boardDefinition.length;
+    this._isSequence = this._sequenceLength > 1 ? true : false;
+    this._sequencePosition = 1,
+    this._asciiBoard = new FENBoard(this._boardDefinition[0].trim());
     this._board = this._boardRoot.querySelector('.chessBoard');
 
     this._renderBoard();
+    if (this._isSequence) this._bindControls();
 
     // Observe innerHTML for new FEN-strings;
     const observer = new MutationObserver(() => {
@@ -43,8 +47,9 @@ class ChessBoard extends HTMLElement {
   /**
    * Replaces the current board with an empty one.
    */
-  clearBoard() {
-    this._asciiBoard = new FENBoard();
+  clearBoard(boardDefinition) {
+    let newDefinition = boardDefinition || '';
+    this._asciiBoard = new FENBoard(newDefinition);
     this._renderBoard();
   }
 
@@ -59,6 +64,40 @@ class ChessBoard extends HTMLElement {
         this._updateCell(cell, asciiChar);
       }
     }
+  }
+
+  _bindControls() {   
+    // append controls
+    let clone = sequenceControls.content.cloneNode(true);
+    this._boardRoot.appendChild(clone);
+    this._updateControls();
+
+    // bind control events
+    const buttons = Array.prototype.slice.call(this._boardRoot.querySelectorAll('.controls button'));
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        let action = button.dataset.action;
+        switch(action) {
+            case 'prev':
+                if (this._sequencePosition > 1) this._sequencePosition = this._sequencePosition - 1;
+                break;
+            case 'next':
+                if (this._sequencePosition < this._sequenceLength) this._sequencePosition = this._sequencePosition + 1;
+                break;
+        }
+        this._updateControls();                
+        let boardDefinition = this._boardDefinition[this._sequencePosition - 1].trim();
+        this.clearBoard(boardDefinition)
+      });
+    });
+
+  }
+
+  _updateControls(cell, asciiChar) {
+    const current = this._boardRoot.querySelector('.controls .current');
+    const total = this._boardRoot.querySelector('.controls .total');
+    current.innerHTML = this._sequencePosition;
+    total.innerHTML = this._boardDefinition.length;
   }
 
   _updateCell(cell, asciiChar) {

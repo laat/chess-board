@@ -52,3 +52,5 @@ export function getPieceClone(piece, unicode = false) {
   }
   return clone;
 }
+
+export const sequenceControls = owner.querySelector('#sequenceControls');

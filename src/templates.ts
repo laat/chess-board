@@ -7,10 +7,6 @@ emptySquare.innerHTML = html`
   <span class="empty" ascii=""></span>
 `;
 
-const whitePawnTemplate = document.createElement("template");
-whitePawnTemplate.innerHTML = html`
-  <span class="piece white pawn" unicode ascii="P">♙</span>
-`;
 const whitePawnSvgTemplate = document.createElement("template");
 whitePawnSvgTemplate.innerHTML = html`
   <svg
@@ -27,10 +23,6 @@ whitePawnSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const whiteKnightTemplate = document.createElement("template");
-whiteKnightTemplate.innerHTML = html`
-  <span class="piece white knight" unicode ascii="N">♘</span>
-`;
 const whiteKnightSvgTemplate = document.createElement("template");
 whiteKnightSvgTemplate.innerHTML = html`
   <svg
@@ -64,10 +56,6 @@ whiteKnightSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const whiteBishopTemplate = document.createElement("template");
-whiteBishopTemplate.innerHTML = html`
-  <span class="piece white bishop" unicode ascii="B">♗</span>
-`;
 const whiteBishopSvgTemplate = document.createElement("template");
 whiteBishopSvgTemplate.innerHTML = html`
   <svg
@@ -97,10 +85,6 @@ whiteBishopSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const whiteRookTemplate = document.createElement("template");
-whiteRookTemplate.innerHTML = html`
-  <span class="piece white rook" unicode ascii="R">♖</span>
-`;
 const whiteRookSvgTemplate = document.createElement("template");
 whiteRookSvgTemplate.innerHTML = html`
   <svg
@@ -139,10 +123,6 @@ whiteRookSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const whiteQueenTemplate = document.createElement("template");
-whiteQueenTemplate.innerHTML = html`
-  <span class="piece white queen" unicode ascii="Q">♕</span>
-`;
 const whiteQueenSvgTemplate = document.createElement("template");
 whiteQueenSvgTemplate.innerHTML = html`
   <svg
@@ -189,11 +169,6 @@ whiteQueenSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const whiteKingTemplate = document.createElement("template");
-whiteKingTemplate.innerHTML = html`
-  <span class="piece white king" unicode ascii="K">♔</span>
-`;
-
 const whiteKingSvgTemplate = document.createElement("template");
 whiteKingSvgTemplate.innerHTML = html`
   <svg
@@ -237,10 +212,6 @@ whiteKingSvgTemplate.innerHTML = html`
     </g>
   </svg>
 `;
-const blackPawnTemplate = document.createElement("template");
-blackPawnTemplate.innerHTML = html`
-  <span class="piece black pawn" unicode ascii="p">♟</span>
-`;
 
 const blackPawnSvgTemplate = document.createElement("template");
 blackPawnSvgTemplate.innerHTML = html`
@@ -258,10 +229,6 @@ blackPawnSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const blackKnightTemplate = document.createElement("template");
-blackKnightTemplate.innerHTML = html`
-  <span class="piece black knight" unicode ascii="n">♞</span>
-`;
 const blackKnightSvgTemplate = document.createElement("template");
 blackKnightSvgTemplate.innerHTML = html`
   <svg
@@ -299,10 +266,6 @@ blackKnightSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const blackBishopTemplate = document.createElement("template");
-blackBishopTemplate.innerHTML = html`
-  <span class="piece black bishop" unicode ascii="b">♝</span>
-`;
 const blackBishopSvgTemplate = document.createElement("template");
 blackBishopSvgTemplate.innerHTML = html`
   <svg
@@ -332,10 +295,6 @@ blackBishopSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const blackRookTemplate = document.createElement("template");
-blackRookTemplate.innerHTML = html`
-  <span class="piece black rook" unicode ascii="r">♜</span>
-`;
 const blackRookSvgTemplate = document.createElement("template");
 blackRookSvgTemplate.innerHTML = html`
   <svg
@@ -396,10 +355,6 @@ blackRookSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const blackQueenTemplate = document.createElement("template");
-blackQueenTemplate.innerHTML = html`
-  <span class="piece black queen" unicode ascii="q">♛</span>
-`;
 const blackQueenSvgTemplate = document.createElement("template");
 blackQueenSvgTemplate.innerHTML = html`
   <svg
@@ -448,11 +403,6 @@ blackQueenSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-const blackKingTemplate = document.createElement("template");
-blackKingTemplate.innerHTML = html`
-  <span class="piece black king" unicode ascii="k">♚</span>
-`;
-
 const blackKingSvgTemplate = document.createElement("template");
 blackKingSvgTemplate.innerHTML = html`
   <svg
@@ -494,21 +444,6 @@ blackKingSvgTemplate.innerHTML = html`
   </svg>
 `;
 
-export const pieces: { [key in Piece]: HTMLTemplateElement } = {
-  P: whitePawnTemplate,
-  N: whiteKnightTemplate,
-  B: whiteBishopTemplate,
-  R: whiteRookTemplate,
-  Q: whiteQueenTemplate,
-  K: whiteKingTemplate,
-  p: blackPawnTemplate,
-  n: blackKnightTemplate,
-  r: blackRookTemplate,
-  b: blackBishopTemplate,
-  q: blackQueenTemplate,
-  k: blackKingTemplate
-};
-
 export const svgPieces: { [key in Piece]: HTMLTemplateElement } = {
   P: whitePawnSvgTemplate,
   N: whiteKnightSvgTemplate,
@@ -524,12 +459,9 @@ export const svgPieces: { [key in Piece]: HTMLTemplateElement } = {
   k: blackKingSvgTemplate
 };
 
-
-export function getPieceClone(piece: string, unicode = false) {
+export function getPieceClone(piece: string) {
   if (!isPiece(piece)) {
     return emptySquare.content.cloneNode(true);
-  } else if (unicode) {
-    return pieces[piece].content.cloneNode(true);
   } else {
     return svgPieces[piece].content.cloneNode(true);
   }

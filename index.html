@@ -24,48 +24,67 @@
   <chess-board fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1">
   </chess-board>
 
+  <h2>Starting Position (black on bottom)</h2>
+  <chess-board
+    reverse
+    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  >
+  </chess-board>
+
   <h2>Scholars Mate</h2>
   <chess-board fen="r1bqk1nr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR">
   </chess-board>
 
-  <h2>Show frame</h2>
-  <chess-board
-    frame
-    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-  >
-  </chess-board>
+  <div>
+    <h2>BoardFrame</h2>
 
-  <h2>Starting Position (black on bottom)</h2>
-  <chess-board
-    reverse
-    frame
-    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-  >
-  </chess-board>
+    <h3>Show frame (all sides)</h3>
+    <chess-board
+      frame="all"
+      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    >
+    </chess-board>
 
-  <h2>Unicode Pieces</h2>
-  <chess-board
-    unicode
-    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-  >
-  </chess-board>
+    <h3>Show frame (left)</h3>
+    <chess-board
+      frame="left"
+      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    >
+    </chess-board>
+    <h3>Show frame (bottom)</h3>
+    <chess-board
+      frame="bottom"
+      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    >
+    </chess-board>
+    <h3>Show frame (top)</h3>
+    <chess-board
+      frame="top"
+      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    >
+    </chess-board>
+    <h3>Show frame (right)</h3>
+    <chess-board
+      frame="right"
+      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    >
+    </chess-board>
 
-  <h2>Unicode Pieces (reverse)</h2>
-  <chess-board
-    unicode
-    reverse
-    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-  >
-  </chess-board>
+    <h3>Show frame (left bottom)</h3>
+    <chess-board
+      frame="left bottom"
+      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    >
+    </chess-board>
 
-  <h2>Unicode Pieces (reverse and framed)</h2>
-  <chess-board
-    unicode
-    reverse
-    frame
-    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-  >
-  </chess-board>
+    <h3>Show frame (top right)</h3>
+    <chess-board
+      frame="top right"
+      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    >
+    </chess-board>
+  </div>
+
   <script>
     window.chessBoard = document.querySelector("#empty-board");
     console.log(
@@ -78,7 +97,6 @@
 chessBoard.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 chessBoard.move("e2", "e4")
 
-chessBoard.unicode = true
 chessBoard.reverse = true
 chessBoard.frame = true
 

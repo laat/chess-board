@@ -3,7 +3,7 @@ import { getPieceClone } from "./templates";
 
 const html = String.raw;
 class ChessBoard extends HTMLElement {
-  static observedAttributes = ["fen", "unicode"];
+  static observedAttributes = ["fen"];
   private board: HTMLTableElement;
   private asciiBoard: FENBoard;
   constructor() {
@@ -15,7 +15,6 @@ class ChessBoard extends HTMLElement {
   }
   connectedCallback() {
     this.upgradeProperty("fen");
-    this.upgradeProperty("unicode");
     this.renderBoard();
   }
 
@@ -73,26 +72,25 @@ class ChessBoard extends HTMLElement {
       "[ascii]"
     ) as unknown) as HTMLElement | null;
     const currentAscii = currentPiece?.getAttribute("ascii");
-    const currentUnicode = currentPiece?.hasAttribute("unicode");
 
     // simple diff
-    if (asciiChar !== currentAscii || currentUnicode !== this.unicode) {
+    if (asciiChar !== currentAscii) {
       while (cell.firstChild) {
         cell.removeChild(cell.firstChild);
       }
-      cell.appendChild(getPieceClone(asciiChar, this.unicode));
+      cell.appendChild(getPieceClone(asciiChar));
     }
   }
 
-  set frame(value: boolean) {
-    if (value) {
-      this.setAttribute("frame", "");
+  set frame(value: string | null) {
+    if (value != null) {
+      this.setAttribute("frame", value);
     } else {
       this.removeAttribute("frame");
     }
   }
   get frame() {
-    return this.hasAttribute("frame");
+    return this.getAttribute("frame");
   }
 
   set reverse(value: boolean) {
@@ -104,17 +102,6 @@ class ChessBoard extends HTMLElement {
   }
   get reverse() {
     return this.hasAttribute("reverse");
-  }
-
-  set unicode(value: boolean) {
-    if (value) {
-      this.setAttribute("unicode", "");
-    } else {
-      this.removeAttribute("unicode");
-    }
-  }
-  get unicode() {
-    return this.hasAttribute("unicode");
   }
 
   set fen(fen: string | null) {
@@ -146,11 +133,24 @@ template.innerHTML = html`
     .frame {
       display: none;
     }
-
+    :host([frame="all"]) .frame {
+      display: table-cell;
+    }
+    :host([frame*="right"]) .frame.right {
+      display: table-cell;
+    }
+    :host([frame*="left"]) .frame.left {
+      display: table-cell;
+    }
+    :host([frame*="top"]) .frame.top {
+      display: table-cell;
+    }
+    :host([frame*="bottom"]) .frame.bottom {
+      display: table-cell;
+    }
     :host([frame]) .frame {
       width: 1em;
       height: 1em;
-      display: table-cell;
       font-size: 40%;
     }
     :host([frame]) .frame.left,
@@ -199,11 +199,6 @@ template.innerHTML = html`
       display: block;
     }
 
-    :host([unicode]) .piece {
-      line-height: 1em;
-      font-family: "Arial Unicode MS", sans-serif;
-    }
-
     :host([reverse]) .piece {
       transform: rotate(180deg);
       -ms-transform: rotate(180deg);
@@ -212,7 +207,7 @@ template.innerHTML = html`
   </style>
   <table class="boardFrame" cellpadding="0" cellspacing="0">
     <tr>
-      <td class="frame top left"></td>
+      <td class="frame left"></td>
       <td class="frame top">a</td>
       <td class="frame top">b</td>
       <td class="frame top">c</td>
@@ -221,7 +216,7 @@ template.innerHTML = html`
       <td class="frame top">f</td>
       <td class="frame top">g</td>
       <td class="frame top">h</td>
-      <td class="frame top right"></td>
+      <td class="frame right"></td>
     </tr>
     <tr>
       <td class="frame left">8</td>
@@ -340,7 +335,7 @@ template.innerHTML = html`
       <td class="frame right">1</td>
     </tr>
     <tr>
-      <td class="frame bottom left"></td>
+      <td class="frame left"></td>
       <td class="frame bottom">a</td>
       <td class="frame bottom">b</td>
       <td class="frame bottom">c</td>
@@ -349,7 +344,7 @@ template.innerHTML = html`
       <td class="frame bottom">f</td>
       <td class="frame bottom">g</td>
       <td class="frame bottom">h</td>
-      <td class="frame bottom right"></td>
+      <td class="frame right"></td>
     </tr>
   </table>
 `;

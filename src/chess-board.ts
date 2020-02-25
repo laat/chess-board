@@ -1,15 +1,6 @@
 import FENBoard, { BoardPiece, Piece } from "./fen-chess-board";
 import { template, getPieceClone } from "./templates";
 
-const removeChildren = (el: Element) => {
-  while (el.firstChild) {
-    el.removeChild(el.firstChild);
-  }
-};
-
-const isHTMLOrSvgElement = (el: any): el is HTMLOrSVGElement =>
-  el instanceof HTMLElement || el instanceof SVGElement;
-
 class ChessBoard extends HTMLElement {
   static observedAttributes = ["fen", "unicode"];
   private board: HTMLTableElement;
@@ -85,7 +76,9 @@ class ChessBoard extends HTMLElement {
 
     // simple diff
     if (asciiChar !== currentAscii || currentUnicode !== this.unicode) {
-      removeChildren(cell);
+      while (cell.firstChild) {
+        cell.removeChild(cell.firstChild);
+      }
       cell.appendChild(getPieceClone(asciiChar, this.unicode));
     }
   }

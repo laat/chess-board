@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <style>
-    chess-board {
-      font-size: 250%;
+    :root {
+      --chess-board-cell-size: 40px;
     }
-
     body {
       max-width: 700px;
       margin: auto;
@@ -33,6 +32,14 @@
 
   <h2>Scholars Mate</h2>
   <chess-board fen="r1bqk1nr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR">
+  </chess-board>
+
+  <h2>Custom Sizing</h2>
+  <pre><code>--chess-board-cell-size: 30px</code></pre>
+  <chess-board
+    style="--chess-board-cell-size: 30px"
+    fen="r1bqk1nr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR"
+  >
   </chess-board>
 
   <div>

@@ -132,43 +132,20 @@ template.innerHTML = html`
     /* the frame */
     .frame {
       display: none;
+      vertical-align: middle;
+      text-align: center;
     }
-    :host([frame="all"]) .frame {
-      display: table-cell;
-    }
-    :host([frame*="right"]) .frame.right {
-      display: table-cell;
-    }
-    :host([frame*="left"]) .frame.left {
-      display: table-cell;
-    }
-    :host([frame*="top"]) .frame.top {
-      display: table-cell;
-    }
+    :host([frame="all"]) .frame,
+    :host([frame*="right"]) .frame.right,
+    :host([frame*="left"]) .frame.left,
+    :host([frame*="top"]) .frame.top,
     :host([frame*="bottom"]) .frame.bottom {
       display: table-cell;
     }
-    :host([frame]) .frame {
-      width: 1em;
-      height: 1em;
-      font-size: 40%;
-    }
-    :host([frame]) .frame.left,
-    :host([frame]) .frame.right {
-      vertical-align: middle;
-      padding: 0.2em;
-    }
-    :host([frame]) .frame.top,
-    :host([frame]) .frame.bottom {
-      text-align: center;
-    }
 
-    :host([reverse]) .boardFrame {
-      transform: rotate(180deg);
-      -ms-transform: rotate(180deg);
-      -webkit-transform: rotate(180deg);
-    }
-    :host([reverse]) .frame {
+    :host([reverse]) .boardFrame,
+    :host([reverse]) .frame,
+    :host([reverse]) .piece {
       transform: rotate(180deg);
       -ms-transform: rotate(180deg);
       -webkit-transform: rotate(180deg);
@@ -187,27 +164,38 @@ template.innerHTML = html`
     .dark {
       background: #d18b47;
     }
-    td {
-      width: 1em;
-      height: 1em;
-      text-align: center;
-    }
     .piece,
     .empty {
-      width: 1em;
-      height: 1em;
       display: block;
     }
 
-    :host([reverse]) .piece {
-      transform: rotate(180deg);
-      -ms-transform: rotate(180deg);
-      -webkit-transform: rotate(180deg);
+    /* dynamic sizing */
+    .frame {
+      height: 1em;
+      width: 1em;
+    }
+    .piece,
+    .empty,
+    .chessBoard td {
+      width: var(--chess-board-cell-size, 50px);
+      height: var(--chess-board-cell-size, 50px);
+    }
+    .frame.bottom,
+    .frame.top {
+      width: var(--chess-board-cell-size, 50px);
+    }
+    .frame.left,
+    .frame.right {
+      height: var(--chess-board-cell-size, 50px);
+    }
+    .frame.corner {
+      height: 1em;
+      width: 1em;
     }
   </style>
   <table class="boardFrame" cellpadding="0" cellspacing="0">
     <tr>
-      <td class="frame left"></td>
+      <td class="frame left corner"></td>
       <td class="frame top">a</td>
       <td class="frame top">b</td>
       <td class="frame top">c</td>
@@ -216,7 +204,7 @@ template.innerHTML = html`
       <td class="frame top">f</td>
       <td class="frame top">g</td>
       <td class="frame top">h</td>
-      <td class="frame right"></td>
+      <td class="frame right corner"></td>
     </tr>
     <tr>
       <td class="frame left">8</td>
@@ -335,7 +323,7 @@ template.innerHTML = html`
       <td class="frame right">1</td>
     </tr>
     <tr>
-      <td class="frame left"></td>
+      <td class="frame left corner"></td>
       <td class="frame bottom">a</td>
       <td class="frame bottom">b</td>
       <td class="frame bottom">c</td>
@@ -344,7 +332,7 @@ template.innerHTML = html`
       <td class="frame bottom">f</td>
       <td class="frame bottom">g</td>
       <td class="frame bottom">h</td>
-      <td class="frame right"></td>
+      <td class="frame right corner"></td>
     </tr>
   </table>
 `;

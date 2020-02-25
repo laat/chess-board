@@ -1,30 +1,18 @@
-class ChessCircle extends HTMLElement {
+class ChessArrow extends HTMLElement {
   connectedCallback() {
-    this._upgradeProperty("from");
-    this._upgradeProperty("to");
+    this._upgradeProperty("square");
     this._upgradeProperty("color");
   }
 
-  set from(from: string | null) {
-    if (from != null) {
-      this.setAttribute("from", from);
+  set square(square: string | null) {
+    if (square != null) {
+      this.setAttribute("square", square);
     } else {
-      this.removeAttribute("from");
+      this.removeAttribute("square");
     }
   }
-  get from() {
-    return this.getAttribute("from");
-  }
-
-  set to(to: string | null) {
-    if (to != null) {
-      this.setAttribute("to", to);
-    } else {
-      this.removeAttribute("to");
-    }
-  }
-  get to() {
-    return this.getAttribute("to");
+  get square() {
+    return this.getAttribute("square");
   }
 
   set color(color: string | null) {

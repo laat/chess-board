@@ -13,8 +13,8 @@ class ChessBoard extends HTMLElement {
     this.asciiBoard = new FENBoard();
   }
   connectedCallback() {
-    this._upgradeProperty("fen");
-    this._upgradeProperty("unicode");
+    this.upgradeProperty("fen");
+    this.upgradeProperty("unicode");
     this.renderBoard();
   }
 
@@ -127,7 +127,7 @@ class ChessBoard extends HTMLElement {
     return this.getAttribute("fen");
   }
 
-  _upgradeProperty(prop: any) {
+  private upgradeProperty(prop: any) {
     if (this.hasOwnProperty(prop)) {
       // @ts-ignore
       let value = this[prop];

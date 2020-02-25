@@ -17,6 +17,8 @@
 
 <body>
   <h1>&lt;chess-board&gt;</h1>
+  <h2>Empty Board</h2>
+  <chess-board id="empty-board"></chess-board>
 
   <h2>Starting Position</h2>
   <chess-board fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1">
@@ -64,4 +66,27 @@
     fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
   >
   </chess-board>
+  <script>
+    window.chessBoard = document.querySelector("#empty-board");
+    console.log(
+      "%cwindow.chessBoard is the empty board on top",
+      "color: green; font-weight: bold;"
+    );
+    console.log(
+      `You can try to modify it:
+
+      chessBoard.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+      chessBoard.move("e2", "e4")
+
+      chessBoard.unicode = true
+      chessBoard.reverse = true
+
+      chessBoard.put("e4", "K")
+      chessBoard.put("d5", "k")
+      chessBoard.piece("d5")
+
+      chessBoard.clear()
+`
+    );
+  </script>
 </body>

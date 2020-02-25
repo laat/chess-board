@@ -50,4 +50,6 @@ class ChessCircle extends HTMLElement {
   }
 }
 
+window.customElements.define("chess-circle", ChessCircle);
+
 export {};

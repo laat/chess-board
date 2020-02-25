@@ -38,4 +38,5 @@ class ChessArrow extends HTMLElement {
   }
 }
 
+window.customElements.define("chess-arrow", ChessArrow);
 export {};

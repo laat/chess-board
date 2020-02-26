@@ -47,6 +47,20 @@ export function getFileRank(square: string) {
   return [files[file], ranks[rank]];
 }
 
+export function getSquare(file: number, rank: number) {
+  const fileFromIndex = Object.fromEntries(
+    Object.entries(files).map(([a, b]) => [b, a])
+  );
+  const rankFromIndex = Object.fromEntries(
+    Object.entries(ranks).map(([a, b]) => [b, a])
+  );
+  if (file in fileFromIndex && rank in rankFromIndex) {
+    return `${fileFromIndex[file]}${rankFromIndex[rank]}`;
+  } else {
+    throw new Error(`index out of bounds`);
+  }
+}
+
 export function emptyBoard<T>() {
   const board: T[][] = [];
   for (let i = 0; i < 8; i++) {

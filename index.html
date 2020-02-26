@@ -10,6 +10,7 @@
       max-width: 700px;
       margin: auto;
       text-align: center;
+      padding-bottom: 10px;
     }
   </style>
 </head>
@@ -91,224 +92,205 @@
     >
     </chess-board>
   </div>
-  <div class="chess-board">
-    <style>
-      .chess-board {
-        height: 400px;
-        width: 400px;
-      }
-      .frame-file,
-      .file {
-        display: flex;
-      }
-      .light {
-        background: #ffce9e;
-      }
-      .dark {
-        background: #d18b47;
-      }
-      .light,
-      .dark {
-        width: var(--chess-board-cell-size, 50px);
-        height: var(--chess-board-cell-size, 50px);
-      }
-      .frame {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .frame.bottom,
-      .frame.top {
-        height: 1.2em;
-        width: var(--chess-board-cell-size, 50px);
-      }
-      .frame.left,
-      .frame.right {
-        width: 1.2em;
-        height: var(--chess-board-cell-size, 50px);
-      }
-      .frame.corner {
-        height: 1.2em;
-        width: 1.2em;
-      }
-    </style>
-    <div class="frame-file">
-      <div class="frame left corner"></div>
-      <div class="frame top">a</div>
-      <div class="frame top">b</div>
-      <div class="frame top">c</div>
-      <div class="frame top">d</div>
-      <div class="frame top">e</div>
-      <div class="frame top">f</div>
-      <div class="frame top">g</div>
-      <div class="frame top">h</div>
-      <div class="frame right corner"></div>
-    </div>
-    <div class="file">
-      <div class="frame left">8</div>
-      <div class="rank a8 light">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          version="1.1"
-          viewBox="0 0 45 45"
-          class="piece black rook"
-          ascii="r"
-        >
-          <g
-            style="opacity:1; fill:000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
-          >
-            <path
-              d="M 9,39 L 36,39 L 36,36 L 9,36 L 9,39 z "
-              style="stroke-linecap:butt;"
-            ></path>
-            <path
-              d="M 12.5,32 L 14,29.5 L 31,29.5 L 32.5,32 L 12.5,32 z "
-              style="stroke-linecap:butt;"
-            ></path>
-            <path
-              d="M 12,36 L 12,32 L 33,32 L 33,36 L 12,36 z "
-              style="stroke-linecap:butt;"
-            ></path>
-            <path
-              d="M 14,29.5 L 14,16.5 L 31,16.5 L 31,29.5 L 14,29.5 z "
-              style="stroke-linecap:butt;stroke-linejoin:miter;"
-            ></path>
-            <path
-              d="M 14,16.5 L 11,14 L 34,14 L 31,16.5 L 14,16.5 z "
-              style="stroke-linecap:butt;"
-            ></path>
-            <path
-              d="M 11,14 L 11,9 L 15,9 L 15,11 L 20,11 L 20,9 L 25,9 L 25,11 L 30,11 L 30,9 L 34,9 L 34,14 L 11,14 z "
-              style="stroke-linecap:butt;"
-            ></path>
-            <path
-              d="M 12,35.5 L 33,35.5 L 33,35.5"
-              style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;"
-            ></path>
-            <path
-              d="M 13,31.5 L 32,31.5"
-              style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;"
-            ></path>
-            <path
-              d="M 14,29.5 L 31,29.5"
-              style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;"
-            ></path>
-            <path
-              d="M 14,16.5 L 31,16.5"
-              style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;"
-            ></path>
-            <path
-              d="M 11,14 L 34,14"
-              style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;"
-            ></path>
-          </g>
-        </svg>
-      </div>
-      <div class="rank b8 dark"><span class="empty"></span></div>
-      <div class="rank c8 light"><span class="empty"></span></div>
-      <div class="rank d8 dark"><span class="empty"></span></div>
-      <div class="rank e8 light"><span class="empty"></span></div>
-      <div class="rank f8 dark"><span class="empty"></span></div>
-      <div class="rank g8 light"><span class="empty"></span></div>
-      <div class="rank h8 dark"><span class="empty"></span></div>
-      <div class="frame right">8</div>
-    </div>
-    <div class="file">
-      <div class="frame left">7</div>
-      <div class="rank a7 dark"><span class="empty"></span></div>
-      <div class="rank b7 light"><span class="empty"></span></div>
-      <div class="rank c7 dark"><span class="empty"></span></div>
-      <div class="rank d7 light"><span class="empty"></span></div>
-      <div class="rank e7 dark"><span class="empty"></span></div>
-      <div class="rank f7 light"><span class="empty"></span></div>
-      <div class="rank g7 dark"><span class="empty"></span></div>
-      <div class="rank h7 light"><span class="empty"></span></div>
-      <div class="frame right">7</div>
-    </div>
-    <div class="file">
-      <div class="frame left">6</div>
-      <div class="rank a6 light"><span class="empty"></span></div>
-      <div class="rank b6 dark"><span class="empty"></span></div>
-      <div class="rank c6 light"><span class="empty"></span></div>
-      <div class="rank d6 dark"><span class="empty"></span></div>
-      <div class="rank e6 light"><span class="empty"></span></div>
-      <div class="rank f6 dark"><span class="empty"></span></div>
-      <div class="rank g6 light"><span class="empty"></span></div>
-      <div class="rank h6 dark"><span class="empty"></span></div>
-      <div class="frame right">6</div>
-    </div>
-    <div class="file">
-      <div class="frame left">5</div>
-      <div class="rank a5 dark"><span class="empty"></span></div>
-      <div class="rank b5 light"><span class="empty"></span></div>
-      <div class="rank c5 dark"><span class="empty"></span></div>
-      <div class="rank d5 light"><span class="empty"></span></div>
-      <div class="rank e5 dark"><span class="empty"></span></div>
-      <div class="rank f5 light"><span class="empty"></span></div>
-      <div class="rank g5 dark"><span class="empty"></span></div>
-      <div class="rank h5 light"><span class="empty"></span></div>
-      <div class="frame right">5</div>
-    </div>
-    <div class="file">
-      <div class="frame left">4</div>
-      <div class="rank a4 light"><span class="empty"></span></div>
-      <div class="rank b4 dark"><span class="empty"></span></div>
-      <div class="rank c4 light"><span class="empty"></span></div>
-      <div class="rank d4 dark"><span class="empty"></span></div>
-      <div class="rank e4 light"><span class="empty"></span></div>
-      <div class="rank f4 dark"><span class="empty"></span></div>
-      <div class="rank g4 light"><span class="empty"></span></div>
-      <div class="rank h4 dark"><span class="empty"></span></div>
-      <div class="frame right">4</div>
-    </div>
-    <div class="file">
-      <div class="frame left">3</div>
-      <div class="rank a3 dark"><span class="empty"></span></div>
-      <div class="rank b3 light"><span class="empty"></span></div>
-      <div class="rank c3 dark"><span class="empty"></span></div>
-      <div class="rank d3 light"><span class="empty"></span></div>
-      <div class="rank e3 dark"><span class="empty"></span></div>
-      <div class="rank f3 light"><span class="empty"></span></div>
-      <div class="rank g3 dark"><span class="empty"></span></div>
-      <div class="rank h3 light"><span class="empty"></span></div>
-      <div class="frame right">3</div>
-    </div>
-    <div class="file">
-      <div class="frame left">2</div>
-      <div class="rank a2 light"><span class="empty"></span></div>
-      <div class="rank b2 dark"><span class="empty"></span></div>
-      <div class="rank c2 light"><span class="empty"></span></div>
-      <div class="rank d2 dark"><span class="empty"></span></div>
-      <div class="rank e2 light"><span class="empty"></span></div>
-      <div class="rank f2 dark"><span class="empty"></span></div>
-      <div class="rank g2 light"><span class="empty"></span></div>
-      <div class="rank h2 dark"><span class="empty"></span></div>
-      <div class="frame right">2</div>
-    </div>
-    <div class="file">
-      <div class="frame left">1</div>
-      <div class="rank a1 dark"><span class="empty"></span></div>
-      <div class="rank b1 light"><span class="empty"></span></div>
-      <div class="rank c1 dark"><span class="empty"></span></div>
-      <div class="rank d1 light"><span class="empty"></span></div>
-      <div class="rank e1 dark"><span class="empty"></span></div>
-      <div class="rank f1 light"><span class="empty"></span></div>
-      <div class="rank g1 dark"><span class="empty"></span></div>
-      <div class="rank h1 light"><span class="empty"></span></div>
-      <div class="frame right">1</div>
-    </div>
-    <div class="frame-file">
-      <div class="frame left corner"></div>
-      <div class="frame bottom">a</div>
-      <div class="frame bottom">b</div>
-      <div class="frame bottom">c</div>
-      <div class="frame bottom">d</div>
-      <div class="frame bottom">e</div>
-      <div class="frame bottom">f</div>
-      <div class="frame bottom">g</div>
-      <div class="frame bottom">h</div>
-      <div class="frame right corner"></div>
-    </div>
+
+  <style>
+    .chess-board {
+      display: inline-grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      height: 400px;
+      width: 400px;
+    }
+    .light {
+      background: #ffce9e;
+    }
+    .dark {
+      background: #d18b47;
+    }
+    .piece {
+      height: 100%;
+      width: 100%;
+    }
+    .rank {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chess-board[frame="all"] {
+      grid-template-columns: 1.5em repeat(8, 1fr) 1.5em;
+      grid-template-rows: 1.5em repeat(8, 1fr) 1.5em;
+    }
+    .chess-board[frame*="left"]:not([reverse]),
+    .chess-board[frame*="right"][reverse] {
+      grid-template-columns: 1.5em repeat(8, 1fr);
+    }
+    .chess-board[frame*="right"]:not([reverse]),
+    .chess-board[frame*="left"][reverse] {
+      grid-template-columns: repeat(8, 1fr) 1.5em;
+    }
+    .chess-board[frame*="right"][frame*="left"] {
+      grid-template-columns: 1.5em repeat(8, 1fr) 1.5em;
+    }
+    .chess-board[frame*="bottom"]:not([reverse]),
+    .chess-board[frame*="top"][reverse] {
+      grid-template-rows: repeat(8, 1fr) 1.5em;
+    }
+    .chess-board[frame*="top"]:not([reverse]),
+    .chess-board[frame*="bottom"][reverse] {
+      grid-template-rows: 1.5em repeat(8, 1fr);
+    }
+    .chess-board[frame*="bottom"][frame*="top"] {
+      grid-template-rows: 1.5em repeat(8, 1fr) 1.5em;
+    }
+
+    .frame {
+      display: none;
+    }
+    .chess-board[frame="all"] .frame,
+    .chess-board[frame*="left"]:not([reverse]) .frame.left,
+    .chess-board[frame*="right"]:not([reverse]) .frame.right,
+    .chess-board[frame*="top"]:not([reverse]) .frame.top,
+    .chess-board[frame*="bottom"]:not([reverse]) .frame.bottom,
+    .chess-board[frame*=""]:not([reverse]) .frame.left,
+    .chess-board[frame*="left"][reverse] .frame.right,
+    .chess-board[frame*="right"][reverse] .frame.left,
+    .chess-board[frame*="top"][reverse] .frame.bottom,
+    .chess-board[frame*="bottom"][reverse] .frame.top,
+    .chess-board[frame*="top"][frame*="right"][reverse] .frame.bl-corner,
+    .chess-board[frame*="top"][frame*="right"]:not([reverse]) .frame.tr-corner,
+    .chess-board[frame*="top"][frame*="left"]:not([reverse]) .frame.tl-corner,
+    .chess-board[frame*="top"][frame*="left"][reverse] .frame.bb-corner,
+    .chess-board[frame*="bottom"][frame*="right"]:not([reverse])
+      .frame.br-corner,
+    .chess-board[frame*="bottom"][frame*="right"][reverse] .frame.tl-corner,
+    .chess-board[frame*="bottom"][frame*="left"]:not([reverse])
+      .frame.bl-corner,
+    .chess-board[frame*="bottom"][frame*="left"][reverse] .frame.tr-corner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .rank:nth-of-type(10n - 1) {
+      border-right: 1px solid black;
+    }
+    .rank:nth-of-type(10n + 2) {
+      border-left: 1px solid black;
+    }
+    .rank:nth-of-type(n + 2):nth-last-of-type(n + 80) {
+      border-top: 1px solid black;
+    }
+    .rank:nth-of-type(n + 80):nth-last-of-type(n + 10) {
+      border-bottom: 1px solid black;
+    }
+    .chess-board[reverse],
+    .chess-board[reverse] .frame,
+    .chess-board[reverse] .piece {
+      transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      -webkit-transform: rotate(180deg);
+    }
+  </style>
+  <div class="chess-board" frame="bottom right" reverse>
+    <div class="frame tl-corner"></div>
+    <div class="frame top">a</div>
+    <div class="frame top">b</div>
+    <div class="frame top">c</div>
+    <div class="frame top">d</div>
+    <div class="frame top">e</div>
+    <div class="frame top">f</div>
+    <div class="frame top">g</div>
+    <div class="frame top">h</div>
+    <div class="frame tr-corner"></div>
+    <div class="frame left">8</div>
+    <div class="rank a8 light"></div>
+    <div class="rank b8 dark"></div>
+    <div class="rank c8 light"></div>
+    <div class="rank d8 dark"></div>
+    <div class="rank e8 light"></div>
+    <div class="rank f8 dark"></div>
+    <div class="rank g8 light"></div>
+    <div class="rank h8 dark"></div>
+    <div class="frame right">8</div>
+    <div class="frame left">7</div>
+    <div class="rank a7 dark"></div>
+    <div class="rank b7 light"></div>
+    <div class="rank c7 dark"></div>
+    <div class="rank d7 light"></div>
+    <div class="rank e7 dark"></div>
+    <div class="rank f7 light"></div>
+    <div class="rank g7 dark"></div>
+    <div class="rank h7 light"></div>
+    <div class="frame right">7</div>
+    <div class="frame left">6</div>
+    <div class="rank a6 light"></div>
+    <div class="rank b6 dark"></div>
+    <div class="rank c6 light"></div>
+    <div class="rank d6 dark"></div>
+    <div class="rank e6 light"></div>
+    <div class="rank f6 dark"></div>
+    <div class="rank g6 light"></div>
+    <div class="rank h6 dark"></div>
+    <div class="frame right">6</div>
+    <div class="frame left">5</div>
+    <div class="rank a5 dark"></div>
+    <div class="rank b5 light"></div>
+    <div class="rank c5 dark"></div>
+    <div class="rank d5 light"></div>
+    <div class="rank e5 dark"></div>
+    <div class="rank f5 light"></div>
+    <div class="rank g5 dark"></div>
+    <div class="rank h5 light"></div>
+    <div class="frame right">5</div>
+    <div class="frame left">4</div>
+    <div class="rank a4 light"></div>
+    <div class="rank b4 dark"></div>
+    <div class="rank c4 light"></div>
+    <div class="rank d4 dark"></div>
+    <div class="rank e4 light"></div>
+    <div class="rank f4 dark"></div>
+    <div class="rank g4 light"></div>
+    <div class="rank h4 dark"></div>
+    <div class="frame right">4</div>
+    <div class="frame left">3</div>
+    <div class="rank a3 dark"></div>
+    <div class="rank b3 light"></div>
+    <div class="rank c3 dark"></div>
+    <div class="rank d3 light"></div>
+    <div class="rank e3 dark"></div>
+    <div class="rank f3 light"></div>
+    <div class="rank g3 dark"></div>
+    <div class="rank h3 light"></div>
+    <div class="frame right">3</div>
+    <div class="frame left">2</div>
+    <div class="rank a2 light"></div>
+    <div class="rank b2 dark"></div>
+    <div class="rank c2 light"></div>
+    <div class="rank d2 dark"></div>
+    <div class="rank e2 light"></div>
+    <div class="rank f2 dark"></div>
+    <div class="rank g2 light"></div>
+    <div class="rank h2 dark"></div>
+    <div class="frame right">2</div>
+    <div class="frame left">1</div>
+    <div class="rank a1 dark"></div>
+    <div class="rank b1 light"></div>
+    <div class="rank c1 dark"></div>
+    <div class="rank d1 light"></div>
+    <div class="rank e1 dark"></div>
+    <div class="rank f1 light"></div>
+    <div class="rank g1 dark"></div>
+    <div class="rank h1 light"></div>
+    <div class="frame right">1</div>
+    <div class="frame bl-corner"></div>
+    <div class="frame bottom">a</div>
+    <div class="frame bottom">b</div>
+    <div class="frame bottom">c</div>
+    <div class="frame bottom">d</div>
+    <div class="frame bottom">e</div>
+    <div class="frame bottom">f</div>
+    <div class="frame bottom">g</div>
+    <div class="frame bottom">h</div>
+    <div class="frame br-corner"></div>
   </div>
 
   <script>

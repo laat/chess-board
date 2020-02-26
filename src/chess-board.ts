@@ -126,6 +126,203 @@ class ChessBoard extends HTMLElement {
     }
   }
 }
+const foo = html`
+  <style>
+    :host {
+      display: inline-grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      height: 400px;
+      width: 400px;
+    }
+    .light {
+      background: #ffce9e;
+    }
+    .dark {
+      background: #d18b47;
+    }
+    .piece {
+      height: 100%;
+      width: 100%;
+    }
+    .rank {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    :host([frame="all"]) {
+      grid-template-columns: 1.5em repeat(8, 1fr) 1.5em;
+      grid-template-rows: 1.5em repeat(8, 1fr) 1.5em;
+    }
+    :host([frame*="left"]:not([reverse])),
+    :host([frame*="right"][reverse]) {
+      grid-template-columns: 1.5em repeat(8, 1fr);
+    }
+    :host([frame*="right"]:not([reverse])),
+    :host([frame*="left"][reverse]) {
+      grid-template-columns: repeat(8, 1fr) 1.5em;
+    }
+    :host([frame*="right"][frame*="left"]) {
+      grid-template-columns: 1.5em repeat(8, 1fr) 1.5em;
+    }
+    :host([frame*="bottom"]:not([reverse])),
+    :host([frame*="top"][reverse]) {
+      grid-template-rows: repeat(8, 1fr) 1.5em;
+    }
+    :host([frame*="top"]:not([reverse])),
+    :host([frame*="bottom"][reverse]) {
+      grid-template-rows: 1.5em repeat(8, 1fr);
+    }
+    :host([frame*="bottom"][frame*="top"]) {
+      grid-template-rows: 1.5em repeat(8, 1fr) 1.5em;
+    }
+
+    .frame {
+      display: none;
+    }
+    :host([frame="all"]) .frame,
+    :host([frame*="left"]:not([reverse])) .frame.left,
+    :host([frame*="right"]:not([reverse])) .frame.right,
+    :host([frame*="top"]:not([reverse])) .frame.top,
+    :host([frame*="bottom"]:not([reverse])) .frame.bottom,
+    :host([frame*=""]:not([reverse])) .frame.left,
+    :host([frame*="left"][reverse]) .frame.right,
+    :host([frame*="right"][reverse]) .frame.left,
+    :host([frame*="top"][reverse]) .frame.bottom,
+    :host([frame*="bottom"][reverse]) .frame.top,
+    :host([frame*="top"][frame*="right"][reverse]) .frame.bl-corner,
+    :host([frame*="top"][frame*="right"]:not([reverse])) .frame.tr-corner,
+    :host([frame*="top"][frame*="left"]:not([reverse])) .frame.tl-corner,
+    :host([frame*="top"][frame*="left"][reverse]) .frame.bb-corner,
+    :host([frame*="bottom"][frame*="right"]:not([reverse])) .frame.br-corner,
+    :host([frame*="bottom"][frame*="right"][reverse]) .frame.tl-corner,
+    :host([frame*="bottom"][frame*="left"]:not([reverse])) .frame.bl-corner,
+    :host([frame*="bottom"][frame*="left"][reverse]) .frame.tr-corner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .rank:nth-of-type(10n - 1) {
+      border-right: 1px solid black;
+    }
+    .rank:nth-of-type(10n + 2) {
+      border-left: 1px solid black;
+    }
+    .rank:nth-of-type(n + 2):nth-last-of-type(n + 80) {
+      border-top: 1px solid black;
+    }
+    .rank:nth-of-type(n + 80):nth-last-of-type(n + 10) {
+      border-bottom: 1px solid black;
+    }
+    :host([reverse]),
+    :host([reverse]) .frame,
+    :host([reverse]) .piece {
+      transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      -webkit-transform: rotate(180deg);
+    }
+  </style>
+  <div class="frame tl-corner"></div>
+  <div class="frame top">a</div>
+  <div class="frame top">b</div>
+  <div class="frame top">c</div>
+  <div class="frame top">d</div>
+  <div class="frame top">e</div>
+  <div class="frame top">f</div>
+  <div class="frame top">g</div>
+  <div class="frame top">h</div>
+  <div class="frame tr-corner"></div>
+  <div class="frame left">8</div>
+  <div class="cell a8 light"></div>
+  <div class="cell b8 dark"></div>
+  <div class="cell c8 light"></div>
+  <div class="cell d8 dark"></div>
+  <div class="cell e8 light"></div>
+  <div class="cell f8 dark"></div>
+  <div class="cell g8 light"></div>
+  <div class="cell h8 dark"></div>
+  <div class="frame right">8</div>
+  <div class="frame left">7</div>
+  <div class="cell a7 dark"></div>
+  <div class="cell b7 light"></div>
+  <div class="cell c7 dark"></div>
+  <div class="cell d7 light"></div>
+  <div class="cell e7 dark"></div>
+  <div class="cell f7 light"></div>
+  <div class="cell g7 dark"></div>
+  <div class="cell h7 light"></div>
+  <div class="frame right">7</div>
+  <div class="frame left">6</div>
+  <div class="cell a6 light"></div>
+  <div class="cell b6 dark"></div>
+  <div class="cell c6 light"></div>
+  <div class="cell d6 dark"></div>
+  <div class="cell e6 light"></div>
+  <div class="cell f6 dark"></div>
+  <div class="cell g6 light"></div>
+  <div class="cell h6 dark"></div>
+  <div class="frame right">6</div>
+  <div class="frame left">5</div>
+  <div class="cell a5 dark"></div>
+  <div class="cell b5 light"></div>
+  <div class="cell c5 dark"></div>
+  <div class="cell d5 light"></div>
+  <div class="cell e5 dark"></div>
+  <div class="cell f5 light"></div>
+  <div class="cell g5 dark"></div>
+  <div class="cell h5 light"></div>
+  <div class="frame right">5</div>
+  <div class="frame left">4</div>
+  <div class="cell a4 light"></div>
+  <div class="cell b4 dark"></div>
+  <div class="cell c4 light"></div>
+  <div class="cell d4 dark"></div>
+  <div class="cell e4 light"></div>
+  <div class="cell f4 dark"></div>
+  <div class="cell g4 light"></div>
+  <div class="cell h4 dark"></div>
+  <div class="frame right">4</div>
+  <div class="frame left">3</div>
+  <div class="cell a3 dark"></div>
+  <div class="cell b3 light"></div>
+  <div class="cell c3 dark"></div>
+  <div class="cell d3 light"></div>
+  <div class="cell e3 dark"></div>
+  <div class="cell f3 light"></div>
+  <div class="cell g3 dark"></div>
+  <div class="cell h3 light"></div>
+  <div class="frame right">3</div>
+  <div class="frame left">2</div>
+  <div class="cell a2 light"></div>
+  <div class="cell b2 dark"></div>
+  <div class="cell c2 light"></div>
+  <div class="cell d2 dark"></div>
+  <div class="cell e2 light"></div>
+  <div class="cell f2 dark"></div>
+  <div class="cell g2 light"></div>
+  <div class="cell h2 dark"></div>
+  <div class="frame right">2</div>
+  <div class="frame left">1</div>
+  <div class="cell a1 dark"></div>
+  <div class="cell b1 light"></div>
+  <div class="cell c1 dark"></div>
+  <div class="cell d1 light"></div>
+  <div class="cell e1 dark"></div>
+  <div class="cell f1 light"></div>
+  <div class="cell g1 dark"></div>
+  <div class="cell h1 light"></div>
+  <div class="frame right">1</div>
+  <div class="frame bl-corner"></div>
+  <div class="frame bottom">a</div>
+  <div class="frame bottom">b</div>
+  <div class="frame bottom">c</div>
+  <div class="frame bottom">d</div>
+  <div class="frame bottom">e</div>
+  <div class="frame bottom">f</div>
+  <div class="frame bottom">g</div>
+  <div class="frame bottom">h</div>
+  <div class="frame br-corner"></div>
+`;
 export const template = document.createElement("template");
 template.innerHTML = html`
   <style>

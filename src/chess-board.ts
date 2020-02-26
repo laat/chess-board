@@ -145,7 +145,7 @@ const foo = html`
       height: 100%;
       width: 100%;
     }
-    .rank {
+    .cell {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -202,16 +202,16 @@ const foo = html`
       align-items: center;
       justify-content: center;
     }
-    .rank:nth-of-type(10n - 1) {
+    .cell:nth-of-type(10n - 1) {
       border-right: 1px solid black;
     }
-    .rank:nth-of-type(10n + 2) {
+    .cell:nth-of-type(10n + 2) {
       border-left: 1px solid black;
     }
-    .rank:nth-of-type(n + 2):nth-last-of-type(n + 80) {
+    .cell:nth-of-type(n + 2):nth-last-of-type(n + 80) {
       border-top: 1px solid black;
     }
-    .rank:nth-of-type(n + 80):nth-last-of-type(n + 10) {
+    .cell:nth-of-type(n + 80):nth-last-of-type(n + 10) {
       border-bottom: 1px solid black;
     }
     :host([reverse]),

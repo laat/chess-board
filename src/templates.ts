@@ -4,8 +4,8 @@ const html = String.raw;
 
 export const emptySquare = document.createElement("template");
 emptySquare.innerHTML = html`
-  <span class="empty" ascii=""></span>
-`;
+  <svg class="empty" viewbox="0 0 1 1" ascii=""></svg>
+`.trim();
 
 const whitePawnSvgTemplate = document.createElement("template");
 whitePawnSvgTemplate.innerHTML = html`
@@ -21,7 +21,7 @@ whitePawnSvgTemplate.innerHTML = html`
       style="opacity:1; fill:#ffffff; fill-opacity:1; fill-rule:nonzero; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:miter; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
     />
   </svg>
-`;
+`.trim();
 
 const whiteKnightSvgTemplate = document.createElement("template");
 whiteKnightSvgTemplate.innerHTML = html`
@@ -54,7 +54,7 @@ whiteKnightSvgTemplate.innerHTML = html`
       />
     </g>
   </svg>
-`;
+`.trim();
 
 const whiteBishopSvgTemplate = document.createElement("template");
 whiteBishopSvgTemplate.innerHTML = html`
@@ -83,7 +83,7 @@ whiteBishopSvgTemplate.innerHTML = html`
       />
     </g>
   </svg>
-`;
+`.trim();
 
 const whiteRookSvgTemplate = document.createElement("template");
 whiteRookSvgTemplate.innerHTML = html`
@@ -121,7 +121,7 @@ whiteRookSvgTemplate.innerHTML = html`
       />
     </g>
   </svg>
-`;
+`.trim();
 
 const whiteQueenSvgTemplate = document.createElement("template");
 whiteQueenSvgTemplate.innerHTML = html`
@@ -167,7 +167,7 @@ whiteQueenSvgTemplate.innerHTML = html`
       <path d="M 12,33.5 C 18,32.5 27,32.5 33,33.5" style="fill:none;" />
     </g>
   </svg>
-`;
+`.trim();
 
 const whiteKingSvgTemplate = document.createElement("template");
 whiteKingSvgTemplate.innerHTML = html`
@@ -211,7 +211,7 @@ whiteKingSvgTemplate.innerHTML = html`
       />
     </g>
   </svg>
-`;
+`.trim();
 
 const blackPawnSvgTemplate = document.createElement("template");
 blackPawnSvgTemplate.innerHTML = html`
@@ -227,7 +227,7 @@ blackPawnSvgTemplate.innerHTML = html`
       style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:nonzero; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:miter; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
     />
   </svg>
-`;
+`.trim();
 
 const blackKnightSvgTemplate = document.createElement("template");
 blackKnightSvgTemplate.innerHTML = html`
@@ -264,7 +264,7 @@ blackKnightSvgTemplate.innerHTML = html`
       />
     </g>
   </svg>
-`;
+`.trim();
 
 const blackBishopSvgTemplate = document.createElement("template");
 blackBishopSvgTemplate.innerHTML = html`
@@ -293,7 +293,7 @@ blackBishopSvgTemplate.innerHTML = html`
       />
     </g>
   </svg>
-`;
+`.trim();
 
 const blackRookSvgTemplate = document.createElement("template");
 blackRookSvgTemplate.innerHTML = html`
@@ -353,7 +353,7 @@ blackRookSvgTemplate.innerHTML = html`
       />
     </g>
   </svg>
-`;
+`.trim();
 
 const blackQueenSvgTemplate = document.createElement("template");
 blackQueenSvgTemplate.innerHTML = html`
@@ -401,7 +401,7 @@ blackQueenSvgTemplate.innerHTML = html`
       />
     </g>
   </svg>
-`;
+`.trim();
 
 const blackKingSvgTemplate = document.createElement("template");
 blackKingSvgTemplate.innerHTML = html`
@@ -442,7 +442,7 @@ blackKingSvgTemplate.innerHTML = html`
       />
     </g>
   </svg>
-`;
+`.trim();
 
 export const svgPieces: { [key in Piece]: HTMLTemplateElement } = {
   P: whitePawnSvgTemplate,

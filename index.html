@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <style>
-    :root {
-      --chess-board-cell-size: 40px;
-    }
     body {
       max-width: 700px;
       margin: auto;
       text-align: center;
       padding-bottom: 10px;
+    }
+    chess-board {
+      height: 300px;
+      width: 300px;
     }
   </style>
 </head>
@@ -31,17 +32,30 @@
   >
   </chess-board>
 
-  <h2>Scholars Mate</h2>
-  <chess-board fen="r1bqk1nr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR">
-  </chess-board>
-
   <h2>Custom Sizing</h2>
-  <pre><code>height: 300px; width: 300px;</code></pre>
+  <pre><code>height: 200px; width: 200px;</code></pre>
   <chess-board
-    style="height: 300px; width: 300px;"
+    style="height: 200px; width: 200px;"
     fen="r1bqk1nr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR"
   >
   </chess-board>
+
+  <div>
+    <h2>Scholars Mate</h2>
+    <h3>Scholars Mate Nf6??</h3>
+    <chess-board
+      style="height: 250px; width: 250px;"
+      fen="r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR"
+    >
+    </chess-board>
+
+    <h3>Scholars Mate 4 Qxf7#</h3>
+    <chess-board
+      style="height: 250px; width: 250px;"
+      fen="r1bqk1nr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR"
+    >
+    </chess-board>
+  </div>
 
   <div>
     <h2>BoardFrame</h2>
@@ -73,6 +87,13 @@
       fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     >
     </chess-board>
+    <h3>Show frame (bottom left reverse)</h3>
+    <chess-board
+      frame="bottom left"
+      reverse
+      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    >
+    </chess-board>
   </div>
 
   <script>
@@ -88,13 +109,14 @@ chessBoard.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 chessBoard.move("e2", "e4")
 
 chessBoard.reverse = true
-chessBoard.frame = true
+chessBoard.frame = "top left"
 
 chessBoard.put("e4", "K")
 chessBoard.put("d5", "k")
 chessBoard.piece("d5")
+chessBoard.clear("d5")
 
-chessBoard.clear()
+chessBoard.fen = null
 `
     );
   </script>

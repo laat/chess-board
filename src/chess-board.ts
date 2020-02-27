@@ -13,13 +13,13 @@ class ChessBoard extends HTMLElement {
     shadowRoot.appendChild(template.content.cloneNode(true));
     this.asciiBoard = new FENBoard();
 
-    // find square elements once
+    // find square elements only once
     for (let i = 0; i < 8; i++) {
       this.cellBoard[i] = [];
       for (let j = 0; j < 8; j++) {
-        this.cellBoard[i][j] = shadowRoot.querySelector(
-          `.${getSquare(j, i)}`
-        )! as HTMLElement;
+        const className = `.${getSquare(j, i)}`;
+        const el = shadowRoot.querySelector(className) as HTMLElement;
+        this.cellBoard[i][j] = el;
       }
     }
   }
@@ -72,10 +72,8 @@ class ChessBoard extends HTMLElement {
     }
   }
   private updateCell(cell: HTMLElement, asciiChar: BoardPiece) {
-    const currentPiece = (cell.querySelector(
-      "[ascii]"
-    ) as unknown) as HTMLElement | null;
-    const currentAscii = currentPiece?.getAttribute("ascii");
+    const piece = cell.firstChild as HTMLElement;
+    const currentAscii = piece?.getAttribute("ascii");
 
     // simple diff
     if (asciiChar !== currentAscii) {
@@ -137,8 +135,6 @@ template.innerHTML = html`
       display: inline-grid;
       grid-template-columns: repeat(8, 1fr);
       grid-template-rows: repeat(8, 1fr);
-      height: 400px;
-      width: 400px;
     }
     .light {
       background: #ffce9e;
@@ -146,70 +142,79 @@ template.innerHTML = html`
     .dark {
       background: #d18b47;
     }
-    .empty {
-      padding-top: 100%;
-    }
     .piece {
       display: block;
       height: 100%;
       width: 100%;
     }
     .cell {
-      box-sizing: border-box;
-      align-items: center;
-      justify-content: center;
-    }
-    :host([frame="all"]) {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-      grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
-    :host([frame*="left"]:not([reverse])),
-    :host([frame*="right"][reverse]) {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
-    :host([frame*="right"]:not([reverse])),
-    :host([frame*="left"][reverse]) {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
-    :host([frame*="right"][frame*="left"]) {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
-    :host([frame*="bottom"]:not([reverse])),
-    :host([frame*="top"][reverse]) {
-      grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
-    :host([frame*="top"]:not([reverse])),
-    :host([frame*="bottom"][reverse]) {
-      grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
-    :host([frame*="bottom"][frame*="top"]) {
-      grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
-
-    .frame {
-      display: none;
-    }
-    :host([frame="all"]) .frame,
-    :host([frame*="left"]:not([reverse])) .frame.left,
-    :host([frame*="right"]:not([reverse])) .frame.right,
-    :host([frame*="top"]:not([reverse])) .frame.top,
-    :host([frame*="bottom"]:not([reverse])) .frame.bottom,
-    :host([frame*=""]:not([reverse])) .frame.left,
-    :host([frame*="left"][reverse]) .frame.right,
-    :host([frame*="right"][reverse]) .frame.left,
-    :host([frame*="top"][reverse]) .frame.bottom,
-    :host([frame*="bottom"][reverse]) .frame.top,
-    :host([frame*="top"][frame*="right"][reverse]) .frame.bl-corner,
-    :host([frame*="top"][frame*="right"]:not([reverse])) .frame.tr-corner,
-    :host([frame*="top"][frame*="left"]:not([reverse])) .frame.tl-corner,
-    :host([frame*="top"][frame*="left"][reverse]) .frame.bb-corner,
-    :host([frame*="bottom"][frame*="right"]:not([reverse])) .frame.br-corner,
-    :host([frame*="bottom"][frame*="right"][reverse]) .frame.tl-corner,
-    :host([frame*="bottom"][frame*="left"]:not([reverse])) .frame.bl-corner,
-    :host([frame*="bottom"][frame*="left"][reverse]) .frame.tr-corner {
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    :host([frame*="left"]),
+    :host([frame*="right"]) {
+      grid-template-columns: repeat(9, 1fr);
+    }
+    :host([frame*="bottom"]),
+    :host([frame*="top"]) {
+      grid-template-rows: repeat(9, 1fr);
+    }
+
+    :host([frame="all"]),
+    :host([frame*="right"][frame*="left"]) {
+      grid-template-columns: repeat(10, 1fr);
+    }
+    :host([frame="all"]),
+    :host([frame*="bottom"][frame*="top"]) {
+      grid-template-rows: repeat(10, 1fr);
+    }
+    .frame {
+      display: none;
+    }
+    .frame.right,
+    .frame.left {
+      padding: 10%;
+    }
+    :host([frame="all"]) .frame.right,
+    :host([frame*="right"]:not([reverse])) .frame.right,
+    :host([frame*="right"][reverse]) .frame.left {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    :host([frame*="left"][reverse]) .frame.right,
+    :host([frame="all"]) .frame.left,
+    :host([frame*="left"]:not([reverse])) .frame.left {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    :host([frame="all"]) .frame.bottom,
+    :host([frame*="bottom"][reverse]) .frame.top,
+    :host([frame*="bottom"]:not([reverse])) .frame.bottom {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    :host([frame="all"]) .frame.top,
+    :host([frame*="top"][reverse]) .frame.bottom,
+    :host([frame*="top"]:not([reverse])) .frame.top {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    :host([frame="all"]) .frame.corner,
+    :host([frame*="top"][frame*="right"][reverse]) .frame.bl.corner,
+    :host([frame*="top"][frame*="right"]:not([reverse])) .frame.tr.corner,
+    :host([frame*="top"][frame*="left"]:not([reverse])) .frame.tl.corner,
+    :host([frame*="top"][frame*="left"][reverse]) .frame.bb.corner,
+    :host([frame*="bottom"][frame*="right"]:not([reverse])) .frame.br.corner,
+    :host([frame*="bottom"][frame*="right"][reverse]) .frame.tl.corner,
+    :host([frame*="bottom"][frame*="left"]:not([reverse])) .frame.bl.corner,
+    :host([frame*="bottom"][frame*="left"][reverse]) .frame.tr.corner {
+      display: block;
     }
     .cell:nth-of-type(10n - 1) {
       border-right: 1px solid black;
@@ -231,7 +236,7 @@ template.innerHTML = html`
       -webkit-transform: rotate(180deg);
     }
   </style>
-  <div class="frame tl-corner"></div>
+  <div class="frame tl corner"></div>
   <div class="frame top">a</div>
   <div class="frame top">b</div>
   <div class="frame top">c</div>
@@ -240,7 +245,7 @@ template.innerHTML = html`
   <div class="frame top">f</div>
   <div class="frame top">g</div>
   <div class="frame top">h</div>
-  <div class="frame tr-corner"></div>
+  <div class="frame tr corner"></div>
   <div class="frame left">8</div>
   <div class="cell a8 light"><span class="empty"></span></div>
   <div class="cell b8 dark"><span class="empty"></span></div>
@@ -321,7 +326,7 @@ template.innerHTML = html`
   <div class="cell g1 dark"><span class="empty"></span></div>
   <div class="cell h1 light"><span class="empty"></span></div>
   <div class="frame right">1</div>
-  <div class="frame bl-corner"></div>
+  <div class="frame bl corner"></div>
   <div class="frame bottom">a</div>
   <div class="frame bottom">b</div>
   <div class="frame bottom">c</div>
@@ -330,6 +335,6 @@ template.innerHTML = html`
   <div class="frame bottom">f</div>
   <div class="frame bottom">g</div>
   <div class="frame bottom">h</div>
-  <div class="frame br-corner"></div>
+  <div class="frame br corner"></div>
 `;
 window.customElements.define("chess-board", ChessBoard);

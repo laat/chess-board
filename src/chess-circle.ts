@@ -1,30 +1,38 @@
+const html = String.raw;
+
 class ChessCircle extends HTMLElement {
+  private circle: HTMLElement;
+  constructor() {
+    super();
+    const root = this.attachShadow({ mode: "open" });
+    root.appendChild(template.content.cloneNode(true));
+    this.circle = root.querySelector("div")!;
+  }
   connectedCallback() {
-    this._upgradeProperty("from");
-    this._upgradeProperty("to");
     this._upgradeProperty("color");
+    this._upgradeProperty("width");
+    this.render();
   }
 
-  set from(from: string | null) {
-    if (from != null) {
-      this.setAttribute("from", from);
-    } else {
-      this.removeAttribute("from");
-    }
-  }
-  get from() {
-    return this.getAttribute("from");
+  attributeChangedCallback() {
+    this.render();
   }
 
-  set to(to: string | null) {
-    if (to != null) {
-      this.setAttribute("to", to);
+  render() {
+    this.circle.style.borderStyle = "solid";
+    this.circle.style.borderColor = this.color || "green";
+    this.circle.style.borderWidth = this.width || "2px";
+  }
+
+  set width(width: string | null) {
+    if (width != null) {
+      this.setAttribute("width", width);
     } else {
-      this.removeAttribute("to");
+      this.removeAttribute("width");
     }
   }
-  get to() {
-    return this.getAttribute("to");
+  get width() {
+    return this.getAttribute("width");
   }
 
   set color(color: string | null) {
@@ -50,6 +58,23 @@ class ChessCircle extends HTMLElement {
   }
 }
 
-window.customElements.define("chess-circle", ChessCircle);
+const template = document.createElement("template");
+template.innerHTML = html`
+  <style>
+    :host {
+      position: relative;
+    }
+    div {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+    }
+  </style>
+  <div></div>
+`;
 
+window.customElements.define("chess-circle", ChessCircle);
 export {};

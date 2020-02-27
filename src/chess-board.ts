@@ -1,3 +1,5 @@
+import "core-js/modules/es.object.from-entries";
+
 import FENBoard, { BoardPiece, Piece } from "./fen-chess-board";
 import { getPieceClone } from "./templates";
 import { getSquare } from "./chess-utils";
@@ -11,6 +13,8 @@ class ChessBoard extends HTMLElement {
     super();
     let shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.appendChild(template.content.cloneNode(true));
+    // @ts-ignore
+    window.shadowRoot = shadowRoot;
     this.asciiBoard = new FENBoard();
 
     // find square elements only once
@@ -72,15 +76,18 @@ class ChessBoard extends HTMLElement {
     }
   }
   private updateCell(cell: HTMLElement, asciiChar: BoardPiece) {
-    const piece = cell.firstChild as HTMLElement;
-    const currentAscii = piece?.getAttribute("ascii");
+    const currentPiece = cell.querySelector("[ascii]");
+    const currentAscii = currentPiece?.getAttribute("ascii");
 
     // simple diff
     if (asciiChar !== currentAscii) {
-      while (cell.firstChild) {
-        cell.removeChild(cell.firstChild);
+      if (currentPiece) {
+        cell.removeChild(currentPiece);
       }
-      cell.appendChild(getPieceClone(asciiChar));
+      const piece = getPieceClone(asciiChar);
+      if (piece) {
+        cell.insertAdjacentElement("beforeend", piece);
+      }
     }
   }
 
@@ -135,6 +142,8 @@ template.innerHTML = html`
       display: inline-grid;
       grid-template-columns: repeat(8, 1fr);
       grid-template-rows: repeat(8, 1fr);
+      height: 25rem;
+      width: 25rem;
     }
     .light {
       background: #ffce9e;
@@ -142,67 +151,68 @@ template.innerHTML = html`
     .dark {
       background: #d18b47;
     }
-    .piece {
-      display: block;
-      height: 100%;
-      width: 100%;
-    }
     .cell {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: relative;
     }
 
-    :host([frame*="left"]),
-    :host([frame*="right"]) {
-      grid-template-columns: repeat(9, 1fr);
+    .piece {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
     }
-    :host([frame*="bottom"]),
+
+    ::slotted(*) {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    :host([frame*="right"]:not([reverse])),
+    :host([frame*="left"]) {
+      grid-template-columns: repeat(8, 1fr) 1fr;
+    }
+    :host([frame*="left"]:not([reverse])),
+    :host([frame*="right"]) {
+      grid-template-columns: 1fr repeat(8, 1fr);
+    }
+    :host([frame*="top"]:not([reverse])),
+    :host([frame*="bottom"]) {
+      grid-template-rows: 1fr repeat(8, 1fr);
+    }
+    :host([frame*="bottom"]:not([reverse])),
     :host([frame*="top"]) {
-      grid-template-rows: repeat(9, 1fr);
+      grid-template-rows: repeat(8, 1fr) 1fr;
     }
 
     :host([frame="all"]),
     :host([frame*="right"][frame*="left"]) {
-      grid-template-columns: repeat(10, 1fr);
+      grid-template-columns: 1fr repeat(8, 1fr) 1fr;
     }
     :host([frame="all"]),
     :host([frame*="bottom"][frame*="top"]) {
-      grid-template-rows: repeat(10, 1fr);
+      grid-template-rows: 1fr repeat(8, 1fr) 1fr;
     }
     .frame {
       display: none;
     }
-    .frame.right,
-    .frame.left {
-      padding: 10%;
-    }
     :host([frame="all"]) .frame.right,
     :host([frame*="right"]:not([reverse])) .frame.right,
-    :host([frame*="right"][reverse]) .frame.left {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-    }
+    :host([frame*="right"][reverse]) .frame.left,
     :host([frame*="left"][reverse]) .frame.right,
     :host([frame="all"]) .frame.left,
-    :host([frame*="left"]:not([reverse])) .frame.left {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-    }
+    :host([frame*="left"]:not([reverse])) .frame.left,
     :host([frame="all"]) .frame.bottom,
     :host([frame*="bottom"][reverse]) .frame.top,
-    :host([frame*="bottom"]:not([reverse])) .frame.bottom {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-    }
+    :host([frame*="bottom"]:not([reverse])) .frame.bottom,
     :host([frame="all"]) .frame.top,
     :host([frame*="top"][reverse]) .frame.bottom,
     :host([frame*="top"]:not([reverse])) .frame.top {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
     }
     :host([frame="all"]) .frame.corner,
@@ -215,18 +225,6 @@ template.innerHTML = html`
     :host([frame*="bottom"][frame*="left"]:not([reverse])) .frame.bl.corner,
     :host([frame*="bottom"][frame*="left"][reverse]) .frame.tr.corner {
       display: block;
-    }
-    .cell:nth-of-type(10n - 1) {
-      border-right: 1px solid black;
-    }
-    .cell:nth-of-type(10n + 2) {
-      border-left: 1px solid black;
-    }
-    .cell:nth-of-type(n + 2):nth-last-of-type(n + 80) {
-      border-top: 1px solid black;
-    }
-    .cell:nth-of-type(n + 80):nth-last-of-type(n + 10) {
-      border-bottom: 1px solid black;
     }
     :host([reverse]),
     :host([reverse]) .frame,
@@ -247,84 +245,84 @@ template.innerHTML = html`
   <div class="frame top">h</div>
   <div class="frame tr corner"></div>
   <div class="frame left">8</div>
-  <div class="cell a8 light"><span class="empty"></span></div>
-  <div class="cell b8 dark"><span class="empty"></span></div>
-  <div class="cell c8 light"><span class="empty"></span></div>
-  <div class="cell d8 dark"><span class="empty"></span></div>
-  <div class="cell e8 light"><span class="empty"></span></div>
-  <div class="cell f8 dark"><span class="empty"></span></div>
-  <div class="cell g8 light"><span class="empty"></span></div>
-  <div class="cell h8 dark"><span class="empty"></span></div>
+  <div class="cell a8 light"><slot name="a8"></slot></div>
+  <div class="cell b8 dark"><slot name="b8"></slot></div>
+  <div class="cell c8 light"><slot name="c8"></slot></div>
+  <div class="cell d8 dark"><slot name="d8"></slot></div>
+  <div class="cell e8 light"><slot name="e8"></slot></div>
+  <div class="cell f8 dark"><slot name="f8"></slot></div>
+  <div class="cell g8 light"><slot name="g8"></slot></div>
+  <div class="cell h8 dark"><slot name="h8"></slot></div>
   <div class="frame right">8</div>
   <div class="frame left">7</div>
-  <div class="cell a7 dark"><span class="empty"></span></div>
-  <div class="cell b7 light"><span class="empty"></span></div>
-  <div class="cell c7 dark"><span class="empty"></span></div>
-  <div class="cell d7 light"><span class="empty"></span></div>
-  <div class="cell e7 dark"><span class="empty"></span></div>
-  <div class="cell f7 light"><span class="empty"></span></div>
-  <div class="cell g7 dark"><span class="empty"></span></div>
-  <div class="cell h7 light"><span class="empty"></span></div>
+  <div class="cell a7 dark"><slot name="a7"></slot></div>
+  <div class="cell b7 light"><slot name="b7"></slot></div>
+  <div class="cell c7 dark"><slot name="c7"></slot></div>
+  <div class="cell d7 light"><slot name="d7"></slot></div>
+  <div class="cell e7 dark"><slot name="e7"></slot></div>
+  <div class="cell f7 light"><slot name="f7"></slot></div>
+  <div class="cell g7 dark"><slot name="g7"></slot></div>
+  <div class="cell h7 light"><slot name="h7"></slot></div>
   <div class="frame right">7</div>
   <div class="frame left">6</div>
-  <div class="cell a6 light"><span class="empty"></span></div>
-  <div class="cell b6 dark"><span class="empty"></span></div>
-  <div class="cell c6 light"><span class="empty"></span></div>
-  <div class="cell d6 dark"><span class="empty"></span></div>
-  <div class="cell e6 light"><span class="empty"></span></div>
-  <div class="cell f6 dark"><span class="empty"></span></div>
-  <div class="cell g6 light"><span class="empty"></span></div>
-  <div class="cell h6 dark"><span class="empty"></span></div>
+  <div class="cell a6 light"><slot name="a6"></slot></div>
+  <div class="cell b6 dark"><slot name="b6"></slot></div>
+  <div class="cell c6 light"><slot name="c6"></slot></div>
+  <div class="cell d6 dark"><slot name="d6"></slot></div>
+  <div class="cell e6 light"><slot name="e6"></slot></div>
+  <div class="cell f6 dark"><slot name="f6"></slot></div>
+  <div class="cell g6 light"><slot name="g6"></slot></div>
+  <div class="cell h6 dark"><slot name="h6"></slot></div>
   <div class="frame right">6</div>
   <div class="frame left">5</div>
-  <div class="cell a5 dark"><span class="empty"></span></div>
-  <div class="cell b5 light"><span class="empty"></span></div>
-  <div class="cell c5 dark"><span class="empty"></span></div>
-  <div class="cell d5 light"><span class="empty"></span></div>
-  <div class="cell e5 dark"><span class="empty"></span></div>
-  <div class="cell f5 light"><span class="empty"></span></div>
-  <div class="cell g5 dark"><span class="empty"></span></div>
-  <div class="cell h5 light"><span class="empty"></span></div>
+  <div class="cell a5 dark"><slot name="a5"></slot></div>
+  <div class="cell b5 light"><slot name="b5"></slot></div>
+  <div class="cell c5 dark"><slot name="c5"></slot></div>
+  <div class="cell d5 light"><slot name="d5"></slot></div>
+  <div class="cell e5 dark"><slot name="e5"></slot></div>
+  <div class="cell f5 light"><slot name="f5"></slot></div>
+  <div class="cell g5 dark"><slot name="g5"></slot></div>
+  <div class="cell h5 light"><slot name="h5"></slot></div>
   <div class="frame right">5</div>
   <div class="frame left">4</div>
-  <div class="cell a4 light"><span class="empty"></span></div>
-  <div class="cell b4 dark"><span class="empty"></span></div>
-  <div class="cell c4 light"><span class="empty"></span></div>
-  <div class="cell d4 dark"><span class="empty"></span></div>
-  <div class="cell e4 light"><span class="empty"></span></div>
-  <div class="cell f4 dark"><span class="empty"></span></div>
-  <div class="cell g4 light"><span class="empty"></span></div>
-  <div class="cell h4 dark"><span class="empty"></span></div>
+  <div class="cell a4 light"><slot name="a4"></slot></div>
+  <div class="cell b4 dark"><slot name="b4"></slot></div>
+  <div class="cell c4 light"><slot name="c4"></slot></div>
+  <div class="cell d4 dark"><slot name="d4"></slot></div>
+  <div class="cell e4 light"><slot name="e4"></slot></div>
+  <div class="cell f4 dark"><slot name="f4"></slot></div>
+  <div class="cell g4 light"><slot name="g4"></slot></div>
+  <div class="cell h4 dark"><slot name="h4"></slot></div>
   <div class="frame right">4</div>
   <div class="frame left">3</div>
-  <div class="cell a3 dark"><span class="empty"></span></div>
-  <div class="cell b3 light"><span class="empty"></span></div>
-  <div class="cell c3 dark"><span class="empty"></span></div>
-  <div class="cell d3 light"><span class="empty"></span></div>
-  <div class="cell e3 dark"><span class="empty"></span></div>
-  <div class="cell f3 light"><span class="empty"></span></div>
-  <div class="cell g3 dark"><span class="empty"></span></div>
-  <div class="cell h3 light"><span class="empty"></span></div>
+  <div class="cell a3 dark"><slot name="a3"></slot></div>
+  <div class="cell b3 light"><slot name="b3"></slot></div>
+  <div class="cell c3 dark"><slot name="c3"></slot></div>
+  <div class="cell d3 light"><slot name="d3"></slot></div>
+  <div class="cell e3 dark"><slot name="e3"></slot></div>
+  <div class="cell f3 light"><slot name="f3"></slot></div>
+  <div class="cell g3 dark"><slot name="g3"></slot></div>
+  <div class="cell h3 light"><slot name="h3"></slot></div>
   <div class="frame right">3</div>
   <div class="frame left">2</div>
-  <div class="cell a2 light"><span class="empty"></span></div>
-  <div class="cell b2 dark"><span class="empty"></span></div>
-  <div class="cell c2 light"><span class="empty"></span></div>
-  <div class="cell d2 dark"><span class="empty"></span></div>
-  <div class="cell e2 light"><span class="empty"></span></div>
-  <div class="cell f2 dark"><span class="empty"></span></div>
-  <div class="cell g2 light"><span class="empty"></span></div>
-  <div class="cell h2 dark"><span class="empty"></span></div>
+  <div class="cell a2 light"><slot name="a2"></slot></div>
+  <div class="cell b2 dark"><slot name="b2"></slot></div>
+  <div class="cell c2 light"><slot name="c2"></slot></div>
+  <div class="cell d2 dark"><slot name="d2"></slot></div>
+  <div class="cell e2 light"><slot name="e2"></slot></div>
+  <div class="cell f2 dark"><slot name="f2"></slot></div>
+  <div class="cell g2 light"><slot name="g2"></slot></div>
+  <div class="cell h2 dark"><slot name="h2"></slot></div>
   <div class="frame right">2</div>
   <div class="frame left">1</div>
-  <div class="cell a1 dark"><span class="empty"></span></div>
-  <div class="cell b1 light"><span class="empty"></span></div>
-  <div class="cell c1 dark"></div>
-  <div class="cell d1 light"><span class="empty"></span></div>
-  <div class="cell e1 dark"><span class="empty"></span></div>
-  <div class="cell f1 light"><span class="empty"></span></div>
-  <div class="cell g1 dark"><span class="empty"></span></div>
-  <div class="cell h1 light"><span class="empty"></span></div>
+  <div class="cell a1 dark"><slot name="a1"></slot></div>
+  <div class="cell b1 light"><slot name="b1"></slot></div>
+  <div class="cell c1 dark"><slot name="c1"></slot></div>
+  <div class="cell d1 light"><slot name="d1"></slot></div>
+  <div class="cell e1 dark"><slot name="e1"></slot></div>
+  <div class="cell f1 light"><slot name="f1"></slot></div>
+  <div class="cell g1 dark"><slot name="g1"></slot></div>
+  <div class="cell h1 light"><slot name="h1"></slot></div>
   <div class="frame right">1</div>
   <div class="frame bl corner"></div>
   <div class="frame bottom">a</div>

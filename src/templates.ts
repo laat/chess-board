@@ -2,11 +2,6 @@ import { Piece, isPiece } from "./fen-chess-board";
 
 const html = String.raw;
 
-export const emptySquare = document.createElement("template");
-emptySquare.innerHTML = html`
-  <svg class="empty" viewbox="0 0 1 1" ascii=""></svg>
-`.trim();
-
 const whitePawnSvgTemplate = document.createElement("template");
 whitePawnSvgTemplate.innerHTML = html`
   <svg
@@ -461,8 +456,10 @@ export const svgPieces: { [key in Piece]: HTMLTemplateElement } = {
 
 export function getPieceClone(piece: string) {
   if (!isPiece(piece)) {
-    return emptySquare.content.cloneNode(true);
+    return null;
   } else {
-    return svgPieces[piece].content.cloneNode(true);
+    const div = document.createElement("div");
+    div.appendChild(svgPieces[piece].content.cloneNode(true));
+    return div;
   }
 }

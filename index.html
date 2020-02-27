@@ -9,6 +9,14 @@
       text-align: center;
       padding-bottom: 10px;
     }
+    .emoji {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      align-content: center;
+      text-align: center;
+      line-height: 0;
+    }
   </style>
 </head>
 
@@ -101,6 +109,24 @@
     <br />
     <br />
     <chess-board frame="all" style="border: thin solid black;"></chess-board>
+  </div>
+
+  <div>
+    <h2>slots can have anything</h2>
+    <chess-board>
+      <span
+        slot="e4"
+        style="display: flex; justify-content: center; align-items: center; font-size: 10px;"
+      >
+        Slotted
+        <br />e4
+      </span>
+      <span
+        slot="f4"
+        style="display: flex; justify-content: center; align-items: center; font-size: 30px;"
+        >♘</span
+      >
+    </chess-board>
   </div>
 
   <script>

@@ -227,6 +227,7 @@ template.innerHTML = html`
       display: block;
     }
     :host([reverse]),
+    :host([reverse]) ::slotted(*),
     :host([reverse]) .frame,
     :host([reverse]) .piece {
       transform: rotate(180deg);

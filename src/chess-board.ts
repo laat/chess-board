@@ -37,6 +37,8 @@ class ChessBoard extends HTMLElement {
   private svg: SVGSVGElement;
   private svgDefs: SVGDefsElement;
   private arrowSlots: HTMLSlotElement;
+  private observer: any;
+
   constructor() {
     super();
     let shadowRoot = this.attachShadow({ mode: "open" });
@@ -62,6 +64,12 @@ class ChessBoard extends HTMLElement {
 
     this.arrowSlots = this.shadowRoot?.querySelector("slot")!;
     this.arrowSlots.addEventListener("slotchange", this.updateArrows);
+
+    // @ts-ignore
+    if (window.ResizeObserver) {
+      // @ts-ignore
+      this.observer = new ResizeObserver(this.updateArrows);
+    }
   }
   connectedCallback() {
     this.upgradeProperty("fen");
@@ -72,8 +80,68 @@ class ChessBoard extends HTMLElement {
     Promise.all([customElements.whenDefined("chess-arrow")]).then(
       this.updateArrows
     );
+    this.observer.observe(this);
   }
-  updateArrows = throttle(() => {
+  disconnectedCallback() {
+    this.observer.disconnect();
+  }
+
+  attributeChangedCallback(
+    name: string,
+    _oldValue: string | null,
+    newValue: string | null
+  ) {
+    if (name === "fen") {
+      this.asciiBoard.fen = newValue;
+      this.renderBoard();
+    }
+  }
+
+  piece(square: string) {
+    return this.asciiBoard.piece(square);
+  }
+
+  put(square: string, piece: Piece) {
+    this.asciiBoard.put(square, piece);
+    this.fen = this.asciiBoard.fen;
+  }
+
+  clear(square: string) {
+    this.asciiBoard.clear(square);
+    this.fen = this.asciiBoard.fen;
+  }
+
+  move(from: string, to: string) {
+    this.asciiBoard.move(from, to);
+    this.fen = this.asciiBoard.fen;
+  }
+
+  private renderBoard() {
+    const ascii = this.asciiBoard.board;
+    for (let i = 0; i < ascii.length; i++) {
+      for (let j = 0; j < ascii.length; j++) {
+        const asciiChar = ascii[i][j];
+        this.updateCell(this.cellBoard[i][j], asciiChar);
+      }
+    }
+  }
+  private updateCell(cell: HTMLElement, asciiChar: BoardPiece) {
+    const currentPiece = cell.querySelector("[ascii]");
+    const currentAscii = currentPiece?.getAttribute("ascii");
+
+    // simple diff
+    if (asciiChar !== currentAscii) {
+      if (currentPiece) {
+        cell.removeChild(currentPiece);
+      }
+      const piece = getPieceClone(asciiChar);
+      if (piece) {
+        cell.insertAdjacentElement("beforeend", piece);
+      }
+    }
+  }
+
+  private updateArrows = throttle(() => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         while (this.svg.firstChild) {
@@ -92,7 +160,7 @@ class ChessBoard extends HTMLElement {
     });
   }, 300);
 
-  drawArrow = (arrow: ChessArrow) => {
+  private drawArrow = (arrow: ChessArrow) => {
     const from = arrow.from!;
     const to = arrow.to!;
     const color = arrow.color || "green";
@@ -146,64 +214,6 @@ class ChessBoard extends HTMLElement {
 
     this.svg.appendChild(line);
   };
-
-  attributeChangedCallback(
-    name: string,
-    _oldValue: string | null,
-    newValue: string | null
-  ) {
-    if (name === "fen") {
-      this.asciiBoard.fen = newValue;
-      this.renderBoard();
-    }
-    if (name === "unicode") {
-      this.renderBoard();
-    }
-  }
-
-  piece(square: string) {
-    return this.asciiBoard.piece(square);
-  }
-
-  put(square: string, piece: Piece) {
-    this.asciiBoard.put(square, piece);
-    this.fen = this.asciiBoard.fen;
-  }
-
-  clear(square: string) {
-    this.asciiBoard.clear(square);
-    this.fen = this.asciiBoard.fen;
-  }
-
-  move(from: string, to: string) {
-    this.asciiBoard.move(from, to);
-    this.fen = this.asciiBoard.fen;
-  }
-
-  private renderBoard() {
-    const ascii = this.asciiBoard.board;
-    for (let i = 0; i < ascii.length; i++) {
-      for (let j = 0; j < ascii.length; j++) {
-        const asciiChar = ascii[i][j];
-        this.updateCell(this.cellBoard[i][j], asciiChar);
-      }
-    }
-  }
-  private updateCell(cell: HTMLElement, asciiChar: BoardPiece) {
-    const currentPiece = cell.querySelector("[ascii]");
-    const currentAscii = currentPiece?.getAttribute("ascii");
-
-    // simple diff
-    if (asciiChar !== currentAscii) {
-      if (currentPiece) {
-        cell.removeChild(currentPiece);
-      }
-      const piece = getPieceClone(asciiChar);
-      if (piece) {
-        cell.insertAdjacentElement("beforeend", piece);
-      }
-    }
-  }
 
   set frame(value: string | null) {
     if (value != null) {

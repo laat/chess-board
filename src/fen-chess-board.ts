@@ -1,24 +1,9 @@
 import { emptyBoard, getFileRank } from "./chess-utils";
 
+/* prettier-ignore */
 export type Piece =
-  | "p"
-  | "r"
-  | "n"
-  | "b"
-  | "q"
-  | "k"
-  | "b"
-  | "n"
-  | "r"
-  | "P"
-  | "R"
-  | "N"
-  | "B"
-  | "Q"
-  | "K"
-  | "B"
-  | "N"
-  | "R";
+  | "p" | "r" | "n" | "b" | "q" | "k" | "b" | "n" | "r"
+  | "P" | "R" | "N" | "B" | "Q" | "K" | "B" | "N" | "R";
 
 export const isPiece = (piece: any): piece is Piece =>
   typeof piece === "string" &&

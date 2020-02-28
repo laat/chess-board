@@ -9,6 +9,7 @@
       text-align: center;
       padding-bottom: 10px;
     }
+
     .emoji {
       display: flex;
       flex-direction: column;
@@ -36,44 +37,81 @@
   >
   </chess-board>
 
-  <div>
-    <h2>BoardFrame</h2>
+  <h2>Scholars Mate</h2>
+  <h3>3. ...Nf6??</h3>
+  <chess-board
+    frame="all"
+    style="border: 1px solid black;"
+    fen="r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR"
+  >
+    <chess-circle slot="f7" opacity="0.7" color="red"></chess-circle>
+    <chess-arrow
+      width="8"
+      from="g8"
+      to="f6"
+      opacity="0.5"
+      color="green"
+    ></chess-arrow>
+  </chess-board>
 
-    <h3>Show frame (all sides)</h3>
-    <chess-board
-      frame="all"
-      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    >
-    </chess-board>
+  <h3>4. Qxf7#</h3>
+  <chess-board
+    frame="all"
+    style="border: 1px solid black;"
+    fen="r1bqk1nr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR"
+  >
+    <chess-arrow
+      width="8"
+      from="h5"
+      to="f7"
+      opacity="0.7"
+      color="red"
+    ></chess-arrow>
+    <chess-arrow
+      from="c4"
+      to="f7"
+      opacity="0.7"
+      color="red"
+      width="5"
+    ></chess-arrow>
+  </chess-board>
 
-    <h3>Show frame (left bottom)</h3>
-    <chess-board
-      frame="left bottom"
-      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    >
-    </chess-board>
+  <h2>BoardFrame</h2>
 
-    <h3>Show frame (top right)</h3>
-    <chess-board
-      frame="top right"
-      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    >
-    </chess-board>
-    <h3>Show frame (top right reverse)</h3>
-    <chess-board
-      frame="top right"
-      reverse
-      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    >
-    </chess-board>
-    <h3>Show frame (bottom left reverse)</h3>
-    <chess-board
-      frame="bottom left"
-      reverse
-      fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    >
-    </chess-board>
-  </div>
+  <h3>Show frame (all sides)</h3>
+  <chess-board
+    frame="all"
+    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  >
+  </chess-board>
+
+  <h3>Show frame (left bottom)</h3>
+  <chess-board
+    frame="left bottom"
+    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  >
+  </chess-board>
+
+  <h3>Show frame (top right)</h3>
+  <chess-board
+    frame="top right"
+    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  >
+  </chess-board>
+  <h3>Show frame (top right reverse)</h3>
+  <chess-board
+    frame="top right"
+    reverse
+    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  >
+  </chess-board>
+  <h3>Show frame (bottom left reverse)</h3>
+  <chess-board
+    frame="bottom left"
+    reverse
+    fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  >
+  </chess-board>
 
   <div>
     <h2>Custom style</h2>
@@ -92,63 +130,36 @@
     <chess-board frame="all" style="border: thin solid black;"></chess-board>
   </div>
 
-  <div>
-    <h2>slots can have anything</h2>
-    <chess-board>
-      <span
-        slot="e4"
-        style="display: flex; justify-content: center; align-items: center; font-size: 10px;"
-      >
-        Slotted
-        <br />e4
-      </span>
-      <span
-        slot="f4"
-        style="display: flex; justify-content: center; align-items: center; font-size: 30px;"
-        >♘</span
-      >
-    </chess-board>
-  </div>
-  <div>
-    <h2>Scholars Mate</h2>
-    <h3>3. ...Nf6??</h3>
-    <chess-board
-      frame="all"
-      style="border: 1px solid black;"
-      fen="r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR"
+  <h2>slots can have anything</h2>
+  <chess-board frame="all">
+    <span
+      slot="e4"
+      style="display: flex; justify-content: center; align-items: center; font-size: 10px;"
     >
-      <chess-circle slot="f7" opacity="0.7" color="red"></chess-circle>
-      <chess-arrow
-        width="8"
-        from="g8"
-        to="f6"
-        opacity="0.5"
-        color="green"
-      ></chess-arrow>
-    </chess-board>
-
-    <h3>4. Qxf7#</h3>
-    <chess-board
-      frame="all"
-      style="border: 1px solid black;"
-      fen="r1bqk1nr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR"
+      Slotted
+      <br />e4
+    </span>
+    <span
+      slot="f4"
+      style="display: flex; justify-content: center; align-items: center; font-size: 30px;"
+      >♘</span
     >
-      <chess-arrow
-        width="8"
-        from="h5"
-        to="f7"
-        opacity="0.7"
-        color="red"
-      ></chess-arrow>
-      <chess-arrow
-        from="c4"
-        to="f7"
-        opacity="0.7"
-        color="red"
-        width="5"
-      ></chess-arrow>
-    </chess-board>
-  </div>
+  </chess-board>
+  <br /><br />
+  <chess-board frame="all" reverse>
+    <span
+      slot="e4"
+      style="display: flex; justify-content: center; align-items: center; font-size: 10px;"
+    >
+      Slotted
+      <br />e4
+    </span>
+    <span
+      slot="f4"
+      style="display: flex; justify-content: center; align-items: center; font-size: 30px;"
+      >♘</span
+    >
+  </chess-board>
 
   <script>
     window.chessBoard = document.querySelector("#empty-board");

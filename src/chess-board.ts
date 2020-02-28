@@ -73,7 +73,6 @@ class ChessBoard extends HTMLElement {
       this.updateArrows
     );
   }
-  queuedUpdateArrows = false;
   updateArrows = throttle(() => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {

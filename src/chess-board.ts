@@ -195,12 +195,12 @@ class ChessBoard extends HTMLElement {
     this.svgDefs.appendChild(marker);
 
     const thisRect = this.getBoundingClientRect();
-    const foo = (r: DOMRect) => [
+    const pos = (r: DOMRect) => [
       r.x - thisRect.x + r.width / 2,
       r.y - thisRect.y + r.height / 2
     ];
-    const [fromX, fromY] = foo(fromEl.getBoundingClientRect());
-    const [toX, toY] = foo(toEl.getBoundingClientRect());
+    const [fromX, fromY] = pos(fromEl.getBoundingClientRect());
+    const [toX, toY] = pos(toEl.getBoundingClientRect());
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("stroke-width", width);
     line.setAttribute("stroke-linecap", "round");

@@ -1,6 +1,7 @@
 const html = String.raw;
 
 class ChessCircle extends HTMLElement {
+  static observedAttributes = ["color", "width"];
   private circle: HTMLElement;
   constructor() {
     super();

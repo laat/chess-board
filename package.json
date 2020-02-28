@@ -29,6 +29,7 @@
   ],
   "devDependencies": {
     "@types/tape": "^4.2.34",
+    "@webcomponents/webcomponentsjs": "^2.4.2",
     "core-js": "^3.6.4",
     "html-webpack-plugin": "^3.2.0",
     "tape": "^4.13.0",

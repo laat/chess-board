@@ -1,4 +1,5 @@
 export class ChessArrow extends HTMLElement {
+  static observedAttributes = ["from", "to", "color", "width"];
   connectedCallback() {
     this._upgradeProperty("from");
     this._upgradeProperty("to");
@@ -6,7 +7,9 @@ export class ChessArrow extends HTMLElement {
     this._upgradeProperty("width");
   }
 
-  attributeChangedCallback() {}
+  attributeChangedCallback() {
+    this.dispatchEvent(new Event("chess-arrow-updated", { bubbles: true }));
+  }
 
   set from(from: string | null) {
     if (from != null) {

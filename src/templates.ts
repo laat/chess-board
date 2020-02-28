@@ -459,7 +459,9 @@ export function getPieceClone(piece: string) {
     return null;
   } else {
     const div = document.createElement("div");
-    div.appendChild(svgPieces[piece].content.cloneNode(true));
+    const svg = svgPieces[piece].content.cloneNode(true);
+    div.setAttribute("ascii", piece);
+    div.appendChild(svg);
     return div;
   }
 }

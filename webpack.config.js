@@ -3,9 +3,10 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   entry: [
+    "core-js/modules/es.object.from-entries",
     "./src/chess-board.ts",
-    "./src/chess-circle.ts",
-    "./src/chess-arrow.ts"
+    "./src/chess-arrow.ts",
+    "./src/chess-circle.ts"
   ],
   devtool: "inline-source-map",
   module: {

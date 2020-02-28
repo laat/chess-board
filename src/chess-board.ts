@@ -1,5 +1,3 @@
-import "core-js/modules/es.object.from-entries";
-
 import FENBoard, { BoardPiece, Piece } from "./fen-chess-board";
 import { getPieceClone } from "./templates";
 import { getSquare } from "./chess-utils";
@@ -80,10 +78,12 @@ class ChessBoard extends HTMLElement {
     Promise.all([customElements.whenDefined("chess-arrow")]).then(
       this.updateArrows
     );
-    this.observer.observe(this);
+    this.addEventListener("chess-arrow-updated", this.updateArrows);
+    this.observer?.observe(this);
   }
   disconnectedCallback() {
-    this.observer.disconnect();
+    this.removeEventListener("chess-arrow-updated", this.updateArrows);
+    this.observer?.disconnect();
   }
 
   attributeChangedCallback(

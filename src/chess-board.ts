@@ -3,18 +3,45 @@ import "core-js/modules/es.object.from-entries";
 import FENBoard, { BoardPiece, Piece } from "./fen-chess-board";
 import { getPieceClone } from "./templates";
 import { getSquare } from "./chess-utils";
+import { ChessArrow } from "./chess-arrow";
+
+const nextId = (() => {
+  let id = 0;
+  return () => ++id;
+})();
+const throttle = (func: Function, limit: number) => {
+  let lastFunc: any;
+  let lastRan: any;
+  return function() {
+    const args = arguments;
+    if (!lastRan) {
+      func.apply(null, args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(function() {
+        if (Date.now() - lastRan >= limit) {
+          func.apply(null, args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - lastRan));
+    }
+  };
+};
 
 const html = String.raw;
 class ChessBoard extends HTMLElement {
   static observedAttributes = ["fen"];
   private asciiBoard: FENBoard;
   private cellBoard: HTMLElement[][] = [];
+  private svg: SVGSVGElement;
+  private svgDefs: SVGDefsElement;
+  private arrowSlots: HTMLSlotElement;
   constructor() {
     super();
     let shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.appendChild(template.content.cloneNode(true));
-    // @ts-ignore
-    window.shadowRoot = shadowRoot;
+
     this.asciiBoard = new FENBoard();
 
     // find square elements only once
@@ -26,12 +53,100 @@ class ChessBoard extends HTMLElement {
         this.cellBoard[i][j] = el;
       }
     }
+    this.svg = shadowRoot.querySelector("svg")! as SVGSVGElement;
+    this.svgDefs = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "defs"
+    );
+    this.svg.appendChild(this.svgDefs);
+
+    this.arrowSlots = this.shadowRoot?.querySelector("slot")!;
+    this.arrowSlots.addEventListener("slotchange", this.updateArrows);
   }
   connectedCallback() {
     this.upgradeProperty("fen");
-
     this.renderBoard();
+    this.updateArrows();
+
+    // backcompat: not needed when slotchange works.
+    Promise.all([customElements.whenDefined("chess-arrow")]).then(
+      this.updateArrows
+    );
   }
+  queuedUpdateArrows = false;
+  updateArrows = throttle(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        while (this.svg.firstChild) {
+          this.svg.removeChild(this.svg.firstChild);
+        }
+        this.svgDefs = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "defs"
+        );
+        this.svg.appendChild(this.svgDefs);
+        const arrows = Array.from<ChessArrow>(
+          this.querySelectorAll("chess-arrow")
+        );
+        arrows.forEach(this.drawArrow);
+      });
+    });
+  }, 300);
+
+  drawArrow = (arrow: ChessArrow) => {
+    const from = arrow.from!;
+    const to = arrow.to!;
+    const color = arrow.color || "green";
+    const opacity = arrow.opacity || "1";
+    const width = arrow.width || "10";
+    const fromEl = this.shadowRoot?.querySelector(`.${from}`);
+    const toEl = this.shadowRoot?.querySelector(`.${to}`);
+    if (!fromEl) {
+      throw new Error(`from is not a valid square: ${from}`);
+    }
+    if (!toEl) {
+      throw new Error(`to is not a valid square: ${to}`);
+    }
+    const marker = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "marker"
+    );
+    marker.id = `chess-board-marker-${nextId()}`;
+    marker.setAttribute("orient", "auto");
+    marker.setAttribute("markerHeight", "8");
+    marker.setAttribute("markerWidth", "4");
+    marker.setAttribute("refX", "2.05");
+    marker.setAttribute("refY", "2.01");
+
+    const markerPath = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path"
+    );
+    markerPath.setAttribute("d", "M0,0 V4 L3,2 Z");
+    markerPath.setAttribute("fill", color);
+    marker.appendChild(markerPath);
+    this.svgDefs.appendChild(marker);
+
+    const thisRect = this.getBoundingClientRect();
+    const foo = (r: DOMRect) => [
+      r.x - thisRect.x + r.width / 2,
+      r.y - thisRect.y + r.height / 2
+    ];
+    const [fromX, fromY] = foo(fromEl.getBoundingClientRect());
+    const [toX, toY] = foo(toEl.getBoundingClientRect());
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("stroke-width", width);
+    line.setAttribute("stroke-linecap", "round");
+    line.setAttribute("stroke", color);
+    line.setAttribute("opacity", opacity);
+    line.setAttribute("x1", String(fromX));
+    line.setAttribute("y1", String(fromY));
+    line.setAttribute("x2", String(toX));
+    line.setAttribute("y2", String(toY));
+    line.setAttribute("marker-end", `url(#${marker.id})`);
+
+    this.svg.appendChild(line);
+  };
 
   attributeChangedCallback(
     name: string,
@@ -139,6 +254,7 @@ const template = document.createElement("template");
 template.innerHTML = html`
   <style>
     :host {
+      position: relative;
       display: inline-grid;
       grid-template-columns: repeat(8, 1fr);
       grid-template-rows: repeat(8, 1fr);
@@ -155,20 +271,18 @@ template.innerHTML = html`
       position: relative;
     }
 
-    .piece {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-    }
-
+    .lines,
+    .lines > *,
+    .piece,
     ::slotted(*) {
       position: absolute;
+      display: block;
       top: 0;
       right: 0;
       bottom: 0;
       left: 0;
+      height: 100%;
+      width: 100%;
     }
 
     :host([frame*="right"]:not([reverse])),
@@ -235,6 +349,7 @@ template.innerHTML = html`
       -webkit-transform: rotate(180deg);
     }
   </style>
+  <slot></slot>
   <div class="frame tl corner"></div>
   <div class="frame top">a</div>
   <div class="frame top">b</div>
@@ -335,5 +450,6 @@ template.innerHTML = html`
   <div class="frame bottom">g</div>
   <div class="frame bottom">h</div>
   <div class="frame br corner"></div>
+  <svg class="lines"></svg>
 `;
 window.customElements.define("chess-board", ChessBoard);

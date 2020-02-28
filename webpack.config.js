@@ -2,7 +2,11 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: ["./src/chess-board.ts", "./src/chess-circle.ts"],
+  entry: [
+    "./src/chess-board.ts",
+    "./src/chess-circle.ts",
+    "./src/chess-arrow.ts"
+  ],
   devtool: "inline-source-map",
   module: {
     rules: [

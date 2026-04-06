@@ -168,7 +168,10 @@ export class ChessBoardElement extends HTMLElement {
   private _board!: FENBoard;
   private _table!: HTMLTableElement;
   private _observer: MutationObserver | null = null;
+  private _lastUnicode: boolean = false;
 
+  // "reverse" and "frame" are handled purely by CSS :host() selectors
+  // and do not require JS re-rendering.
   static get observedAttributes(): string[] {
     return ["unicode"];
   }
@@ -198,12 +201,17 @@ export class ChessBoardElement extends HTMLElement {
         this._renderBoard();
       }
     });
-    this._observer.observe(this, { subtree: true, characterData: true });
+    this._observer.observe(this, {
+      subtree: true,
+      characterData: true,
+      childList: true,
+    });
   }
 
   disconnectedCallback(): void {
     this._observer?.disconnect();
     this._observer = null;
+    this._table = null!;
   }
 
   attributeChangedCallback(
@@ -245,11 +253,9 @@ export class ChessBoardElement extends HTMLElement {
   }
 
   clearBoard(): void {
-    this._board = new FENBoard();
+    this._board.fen = "8/8/8/8/8/8/8/8";
     this._renderBoard();
   }
-
-  private _lastUnicode: boolean = false;
 
   private _renderBoard(): void {
     if (!this._table) return;

@@ -35,7 +35,10 @@ function getPieceAt(
 
 describe("chess-board", () => {
   beforeEach(() => {
-    document.body.innerHTML = "";
+    // Remove elements explicitly to trigger disconnectedCallback
+    while (document.body.firstChild) {
+      document.body.removeChild(document.body.firstChild);
+    }
   });
 
   describe("initialization", () => {

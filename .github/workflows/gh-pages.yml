@@ -25,12 +25,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install
-      - run: pnpm build
-      - name: Prepare pages
-        run: |
-          mkdir _site
-          sed 's|src/chess-board.ts|dist/chess-board.js|' index.html > _site/index.html
-          cp -r dist _site/dist
+      - run: pnpm build:pages
       - uses: actions/upload-pages-artifact@v3
 
   deploy:

@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && tsc --emitDeclarationOnly",
     "dev": "vite",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -23,9 +23,11 @@
     "type": "git",
     "url": "https://github.com/laat/chess-board"
   },
+  "homepage": "https://laat.github.io/chess-board",
   "bugs": {
     "url": "https://github.com/laat/chess-board/issues"
   },
+  "sideEffects": true,
   "keywords": [
     "web-components",
     "custom-elements",
@@ -40,7 +42,8 @@
     "vitest": "^3.0.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.test.*"
   ],
   "packageManager": "pnpm@10.9.0",
   "pnpm": {

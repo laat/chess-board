@@ -1,70 +1,145 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.21/webcomponents.min.js"></script>
-  <link rel="import" href="lib/chess-board.html">
-  <link rel="import" href="node_modules/sg-example/lib/sg-example.html">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>chess-board web component</title>
+  <script type="module" src="src/chess-board.ts"></script>
   <style>
-    chess-board {
-      font-size: 250%;
-    }
     body {
+      font-family: system-ui, sans-serif;
       max-width: 700px;
       margin: auto;
+      padding: 0 1rem 4rem;
+      color: #222;
     }
-  </style>
+    h1 { margin-top: 2rem; }
+    h2 { margin-top: 2.5rem; }
+    chess-board { font-size: 250%; }
 
+    /* Example block: rendered output + source code */
+    .example {
+      margin: 1rem 0;
+    }
+    .example-source {
+      position: relative;
+      margin-top: 0.75rem;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      white-space: pre;
+      overflow-x: auto;
+      color: #333;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.4rem;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: #555;
+    }
+    .copy-btn:hover { background: #eee; }
+    .copy-btn.copied { color: #16a34a; border-color: #16a34a; }
+  </style>
 </head>
 <body>
   <h1>&lt;chess-board&gt;</h1>
+  <p>A web component for displaying chess positions.</p>
 
   <h2>Starting Position</h2>
-  <sg-example>
-    <chess-board>
-      rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-    </chess-board>
-  </sg-example>
+  <div class="example">
+    <chess-board>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+  </div>
 
-  <h2>Scholars Mate</h2>
-  <sg-example>
-    <chess-board>
-      r1bqk1nr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR
-    </chess-board>
-  </sg-example>
+  <h2>Scholar's Mate</h2>
+  <div class="example">
+    <chess-board>r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR</chess-board>
+  </div>
 
-  <h2>Show frame</h2>
-  <sg-example>
-    <chess-board frame>
-      rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-    </chess-board>
-  </sg-example>
+  <h2>Show Frame</h2>
+  <div class="example">
+    <chess-board frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+  </div>
 
   <h2>Starting Position (black on bottom)</h2>
-  <sg-example>
-    <chess-board reverse frame>
-      rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-    </chess-board>
-  </sg-example>
+  <div class="example">
+    <chess-board reverse frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+  </div>
 
   <h2>Unicode Pieces</h2>
-  <sg-example>
-    <chess-board unicode>
-      rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-    </chess-board>
-  </sg-example>
+  <div class="example">
+    <chess-board unicode>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+  </div>
 
   <h2>Unicode Pieces (reverse)</h2>
-  <sg-example>
-    <chess-board unicode reverse>
-      rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-    </chess-board>
-  </sg-example>
+  <div class="example">
+    <chess-board unicode reverse>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+  </div>
 
   <h2>Unicode Pieces (reverse and framed)</h2>
-  <sg-example>
-    <chess-board unicode reverse frame>
-      rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-    </chess-board>
-  </sg-example>
+  <div class="example">
+    <chess-board unicode reverse frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+  </div>
+
+  <h2>JavaScript API</h2>
+  <div class="example">
+    <chess-board id="api-demo" frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+    <p>
+      <button onclick="document.getElementById('api-demo').move('e2','e4')">1. e4</button>
+      <button onclick="document.getElementById('api-demo').move('e7','e5')">1... e5</button>
+      <button onclick="document.getElementById('api-demo').fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'">Reset</button>
+      <button onclick="document.getElementById('api-demo').clearBoard()">Clear</button>
+    </p>
+  </div>
+
+  <script>
+    // Generate source code blocks with copy buttons from each example
+    document.querySelectorAll('.example').forEach(example => {
+      const board = example.querySelector('chess-board');
+      if (!board) return;
+
+      // Reconstruct the HTML source from the live element
+      const attrs = [];
+      for (const attr of board.attributes) {
+        if (attr.name === 'id') continue;
+        if (attr.value) {
+          attrs.push(` ${attr.name}="${attr.value}"`);
+        } else {
+          attrs.push(` ${attr.name}`);
+        }
+      }
+      const fen = board.textContent.trim();
+      const source = `<chess-board${attrs.join('')}>\n  ${fen}\n</chess-board>`;
+
+      const sourceBlock = document.createElement('div');
+      sourceBlock.className = 'example-source';
+      sourceBlock.textContent = source;
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.textContent = 'Copy';
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(source).then(() => {
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.textContent = 'Copy';
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        });
+      });
+      sourceBlock.appendChild(copyBtn);
+      example.appendChild(sourceBlock);
+    });
+  </script>
 </body>
+</html>

@@ -42,6 +42,7 @@
   "files": [
     "dist"
   ],
+  "packageManager": "pnpm@10.9.0",
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"

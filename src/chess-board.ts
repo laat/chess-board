@@ -3,6 +3,14 @@ import FENBoard from "fen-chess-board";
 const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
 const RANKS = ["8", "7", "6", "5", "4", "3", "2", "1"] as const;
 
+export type File = (typeof FILES)[number];
+export type Rank = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
+export type Square = `${File}${Rank}`;
+export type WhitePiece = "K" | "Q" | "R" | "B" | "N" | "P";
+export type BlackPiece = "k" | "q" | "r" | "b" | "n" | "p";
+export type Piece = WhitePiece | BlackPiece;
+export type PieceOrEmpty = Piece | "";
+
 const UNICODE_PIECES: Record<string, string> = {
   K: "\u2654",
   Q: "\u2655",
@@ -233,21 +241,21 @@ export class ChessBoardElement extends HTMLElement {
     this._renderBoard();
   }
 
-  piece(square: string): string {
-    return this._board.piece(square);
+  piece(square: Square): PieceOrEmpty {
+    return this._board.piece(square) as PieceOrEmpty;
   }
 
-  put(square: string, piece: string): void {
+  put(square: Square, piece: Piece): void {
     this._board.put(square, piece);
     this._renderBoard();
   }
 
-  clear(square: string): void {
+  clear(square: Square): void {
     this._board.clear(square);
     this._renderBoard();
   }
 
-  move(from: string, to: string): void {
+  move(from: Square, to: Square): void {
     this._board.move(from, to);
     this._renderBoard();
   }

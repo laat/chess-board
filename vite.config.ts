@@ -7,7 +7,6 @@ export default defineConfig({
       formats: ["es"],
       fileName: "chess-board",
     },
-    rollupOptions: {},
   },
   test: {
     environment: "happy-dom",

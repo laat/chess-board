@@ -1,17 +1,22 @@
 {
   "name": "chess-board",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "A web component for displaying chess positions.",
-  "main": "lib/chess-board.html",
+  "type": "module",
+  "main": "dist/chess-board.js",
+  "types": "dist/chess-board.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/chess-board.d.ts",
+      "default": "./dist/chess-board.js"
+    }
+  },
   "scripts": {
-    "start": "http-server",
-    "build:html": "cp src/*.html lib/.",
-    "build:js": "browserify -d src/chess-board.js -o lib/chess-board.js",
-    "watch:js": "watchify -d src/chess-board.js -o lib/chess-board.js",
-    "build": "mkdir -p lib && npm run build:js && npm run build:html",
-    "lint": "eslint src/.",
-    "test": "npm run lint",
-    "prepublish": "npm run build"
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "dev": "vite",
+    "build:pages": "vite build --config vite.pages.config.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "author": "Sigurd Fosseng <sigurd@fosseng.net>",
   "license": "MIT",
@@ -19,33 +24,32 @@
     "type": "git",
     "url": "https://github.com/laat/chess-board"
   },
+  "homepage": "https://laat.github.io/chess-board",
   "bugs": {
     "url": "https://github.com/laat/chess-board/issues"
   },
+  "sideEffects": true,
   "keywords": [
     "web-components",
-    "es6",
+    "custom-elements",
+    "typescript",
     "chess"
   ],
   "devDependencies": {
-    "babel-preset-es2015": "^6.6.0",
-    "babelify": "^7.2.0",
-    "browserify": "^13.0.0",
-    "eslint": "^3.4.0",
-    "eslint-config-airbnb-base": "^7.0.0",
-    "eslint-plugin-import": "^1.14.0",
-    "fen-chess-board": "^2.0.2",
-    "http-server": "^0.9.0",
-    "remove-children": "^1.0.2",
-    "sg-example": "^1.0.3",
-    "watchify": "^3.7.0"
-  },
-  "browserify": {
-    "transform": [
-      "babelify"
-    ]
+    "fen-chess-board": "^3.0.0",
+    "happy-dom": "^17.0.0",
+    "typescript": "^5.4.0",
+    "vite": "^6.0.0",
+    "vitest": "^3.0.0"
   },
   "files": [
-    "lib"
-  ]
+    "dist",
+    "!dist/**/*.test.*"
+  ],
+  "packageManager": "pnpm@10.9.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
 }

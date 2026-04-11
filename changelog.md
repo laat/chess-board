@@ -1,4 +1,26 @@
 
+2.0.0 / 2026-04-06
+==================
+
+* Full rewrite as TypeScript Custom Elements v1
+* Switch build tooling to Vite, ship ESM build and `.d.ts` type declarations
+* Bundle `fen-chess-board@3` — zero runtime dependencies in `dist`
+* Drop `webcomponents.js` polyfill, HTML Imports and Bower — modern browsers only
+* Add vitest + happy-dom test suite and GitHub Actions Pages deploy
+
+1.1.0 / 2016-09-23
+==================
+
+* Add MutationObserver to track FEN changes via `innerHTML`
+
+1.0.13 / 2016-09-15
+===================
+
+* Fix second shadowRoot being created on re-render (#7)
+* `clearBoard` now actually clears the board
+* Move `fen-chess-board` to a separate package
+* Dependency bumps and switch to airbnb lint preset
+
 1.0.3 / 2016-03-13
 ==================
 

@@ -290,3 +290,9 @@ export class ChessBoardElement extends HTMLElement {
 }
 
 customElements.define("chess-board", ChessBoardElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "chess-board": ChessBoardElement;
+  }
+}

@@ -259,4 +259,21 @@ describe("chess-board", () => {
       expect(table.rows[0].cells[0].firstElementChild).toBe(a8piece);
     });
   });
+
+  describe("reconnection", () => {
+    it("can be detached and re-inserted without error", () => {
+      const el = createElement(START_FEN);
+      expect(getPieceAt(el, 0, 0)).toBe("r");
+
+      expect(() => {
+        document.body.removeChild(el);
+        document.body.appendChild(el);
+      }).not.toThrow();
+
+      // Board still renders the correct position after reconnect
+      expect(getPieceAt(el, 0, 0)).toBe("r");
+      expect(getPieceAt(el, 0, 4)).toBe("k");
+      expect(getPieceAt(el, 7, 4)).toBe("K");
+    });
+  });
 });

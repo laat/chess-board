@@ -187,21 +187,25 @@ export class ChessBoardElement extends HTMLElement {
   constructor() {
     super();
     this._board = new FENBoard();
-  }
-
-  connectedCallback(): void {
     const shadow = this.attachShadow({ mode: "open" });
     shadow.innerHTML = buildBoardHTML();
     this._table = shadow.querySelector(".chess-board") as HTMLTableElement;
+  }
 
-    // Initialize from innerHTML if present
+  connectedCallback(): void {
+    // Initialize from innerHTML if present. Parser-parsed elements get
+    // children after connectedCallback fires, so textContent may still be
+    // empty at construction time — this is why we read it here and also
+    // why the MutationObserver exists.
     const initialFen = this.textContent?.trim();
     if (initialFen) {
       this._board.fen = initialFen;
     }
     this._renderBoard();
 
-    // Watch for innerHTML FEN changes
+    // connectedCallback may fire multiple times if the element is moved.
+    // Tear down any previous observer before creating a new one.
+    this._observer?.disconnect();
     this._observer = new MutationObserver(() => {
       const newFen = this.textContent?.trim();
       if (newFen) {
@@ -219,7 +223,6 @@ export class ChessBoardElement extends HTMLElement {
   disconnectedCallback(): void {
     this._observer?.disconnect();
     this._observer = null;
-    this._table = null!;
   }
 
   attributeChangedCallback(
@@ -227,7 +230,7 @@ export class ChessBoardElement extends HTMLElement {
     _oldValue: string | null,
     _newValue: string | null,
   ): void {
-    if (name === "unicode" && this._table) {
+    if (name === "unicode") {
       this._renderBoard();
     }
   }

@@ -46,6 +46,11 @@ describe("chess-board", () => {
       const el = createElement();
       expect(el).toBeInstanceOf(HTMLElement);
       expect(el.shadowRoot).not.toBeNull();
+      // Type-level assertion: HTMLElementTagNameMap augmentation should make
+      // document.querySelector("chess-board") infer as ChessBoardElement | null.
+      const typed: ChessBoardElement | null =
+        document.querySelector("chess-board");
+      expect(typed).not.toBeNull();
     });
 
     it("initializes with FEN from textContent", () => {

@@ -1,4 +1,11 @@
 
+2.0.1 / 2026-04-11
+==================
+
+* Fix shadow root creation crash when the element is moved in the DOM (#13)
+* Register `<chess-board>` on `HTMLElementTagNameMap` for type inference (#14)
+* Documentation: rewrite README for the v2 API, backfill changelog, remove stale Travis badge
+
 2.0.0 / 2026-04-06
 ==================
 

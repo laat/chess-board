@@ -1,68 +1,132 @@
-# &lt;chess-board&gt; [![travis][travis-image]][travis-url] [![npm][npm-image]][npm-url]
+# &lt;chess-board&gt; [![npm][npm-image]][npm-url]
 [npm-image]: https://img.shields.io/npm/v/chess-board.svg?style=flat
 [npm-url]: https://npmjs.org/package/chess-board
-[travis-image]: https://img.shields.io/travis/laat/chess-board.svg?style=flat
-[travis-url]: https://travis-ci.org/laat/chess-board
 
 > A web component for displaying chess positions.
 
 ## Demo
 
-> [Check it live](http://laat.github.io/chess-board).
+[Check it live](https://laat.github.io/chess-board).
+
+## Install
+
+```sh
+npm install chess-board
+```
 
 ## Usage
 
-1. Import Web Components' polyfill:
+Import the module once to register the `<chess-board>` custom element:
 
-    ```html
-    <script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.21/webcomponents.min.js"></script>
-    ```
+```ts
+import "chess-board";
+```
 
-2. Import Custom Element:
+Then use it in your markup. The element reads its initial position from its
+text content as a [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation)
+string (the piece-placement field is enough):
 
-    ```html
-    <link rel="import" href="/bower_components/chess-board/dist/chess-board.html">
-    ```
+```html
+<chess-board>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+```
 
-3. Start using it!
+Changing the text content later updates the board — it's observed via a
+`MutationObserver`.
 
-    ```html
-    <chess-board>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</chess-board>
-    ```
+### TypeScript
 
-## Options
+Types for the element, squares and pieces are exported from the package:
 
-Attribute  | Description
----        | ---
-`unicode`  | Display chess pices with unicode characters.
-`frame`   | Display file and rank arround the chessboard
-`reverse`  | Display the chessboard with black pieces at the bottom.
+```ts
+import type { ChessBoardElement, Square, Piece } from "chess-board";
+```
+
+## Attributes
+
+| Attribute | Description                                                    |
+| --------- | -------------------------------------------------------------- |
+| `unicode` | Render pieces as Unicode glyphs instead of the default SVGs.   |
+| `frame`   | Show file (a–h) and rank (1–8) labels around the board.        |
+| `reverse` | Flip the board so the black pieces are on the bottom.          |
+
+```html
+<chess-board unicode frame reverse>
+  rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+</chess-board>
+```
+
+## Properties
+
+### `fen` (get / set)
+
+Read or write the current position as a FEN string.
+
+```js
+const board = document.querySelector("chess-board");
+
+board.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+board.move("e2", "e4");
+
+const currentFen = board.fen;
+```
 
 ## Methods
 
-### put()
-Put the white queen on the a4 square
+All methods operate on an already-mounted element. Grab it with
+`document.querySelector` — do not use `new`:
+
 ```js
-var board = new ChessBoard();
-board.put("a4", "Q");
+const board = document.querySelector("chess-board");
 ```
 
-set a4 square empty
+### `piece(square)`
+
+Return the piece on the given square, or an empty string if the square is
+empty.
+
 ```js
-var board = new ChessBoard();
-board.put("a4", "");
+board.piece("e1"); // "K"
+board.piece("e4"); // ""
 ```
 
-### move()
-move a piece from a4 to a1
+### `put(square, piece)`
+
+Place a piece on a square.
+
 ```js
-var board = new ChessBoard();
-board.move("a4", "a1");
+board.put("a4", "Q"); // white queen on a4
 ```
 
-The pieces are defined as in [Forsyth–Edwards Notation](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation)
+### `clear(square)`
+
+Remove the piece from a square.
 
 ```js
+board.clear("a4");
+```
+
+### `move(from, to)`
+
+Move a piece between squares.
+
+```js
+board.move("e2", "e4");
+```
+
+### `clearBoard()`
+
+Remove all pieces from the board.
+
+```js
+board.clearBoard();
+```
+
+## Pieces
+
+Pieces use [Forsyth–Edwards Notation](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation):
+uppercase letters are white, lowercase are black.
+
+```
 P // ♙ white pawn
 N // ♘ white knight
 B // ♗ white bishop
@@ -76,28 +140,6 @@ b // ♝ black bishop
 r // ♜ black rook
 q // ♛ black queen
 k // ♚ black king
-```
-
-### clearBoard()
-
-```js
-var board = new ChessBoard();
-board.clearBoard();
-```
-
-### setting board position
-```js
-var board = new ChessBoard();
-board.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-```
-
-### getting board position
-```js
-var board = new ChessBoard();
-board.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-board.move("a2", "a3");
-
-var currentFen = board.fen;
 ```
 
 ## License

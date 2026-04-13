@@ -22,7 +22,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/laat/chess-board"
+    "url": "https://chess-board.laat.dev/"
   },
   "homepage": "https://laat.github.io/chess-board",
   "bugs": {

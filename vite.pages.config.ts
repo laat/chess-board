@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/chess-board/",
+  base: "/",
   build: {
     outDir: "_site",
   },

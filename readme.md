@@ -6,7 +6,7 @@
 
 ## Demo
 
-[Check it live](https://laat.github.io/chess-board).
+[Check it live](chess-board.laat.dev/).
 
 ## Install
 

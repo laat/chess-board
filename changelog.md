@@ -8,11 +8,11 @@ Unreleased
   `dist/chess-board.js` is the readable ES2022 output of `src/chess-board.ts`
   (which ships in the package, so source maps and declaration maps resolve),
   and `fen-chess-board` is a regular runtime dependency rather than being
-  inlined. Anything that goes through a bundler or an ESM CDN such as esm.sh
-  keeps working unchanged. Loading `dist/chess-board.js` straight from a
-  `<script type="module">` tag with no bundler breaks, because the file now
-  imports the bare specifier `fen-chess-board`; add an import map for it or
-  load the package through an ESM CDN. See "Without a bundler" in the readme.
+  inlined. Anything that goes through a bundler keeps working unchanged.
+  Loading `dist/chess-board.js` straight from a `<script type="module">` tag
+  with no bundler breaks, because the file now imports the bare specifier
+  `fen-chess-board`; add an import map that points it at a copy of that
+  package. See "Without a bundler" in the readme.
 
 **Behaviour changes for users of the element**
 

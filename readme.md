@@ -38,16 +38,19 @@ Changing the text content later updates the board — it's observed via a
 
 The package is plain ES2022 JavaScript that imports its one dependency,
 [`fen-chess-board`](https://www.npmjs.com/package/fen-chess-board), by bare
-specifier. Without a bundler, load it through an ESM CDN that resolves
-dependencies:
+specifier. To use it without a bundler, copy both packages into your static
+files and tell the browser where the dependency lives with an import map:
 
 ```html
-<script type="module">
-  import "https://esm.sh/chess-board";
+<script type="importmap">
+  {
+    "imports": {
+      "fen-chess-board": "/vendor/fen-chess-board/src/fen-chess-board.js"
+    }
+  }
 </script>
+<script type="module" src="/vendor/chess-board/dist/chess-board.js"></script>
 ```
-
-or provide an import map for the dependency and load the file directly.
 
 ### TypeScript
 

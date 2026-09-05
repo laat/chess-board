@@ -1,23 +1,54 @@
+# Stages a release on npm when a `vX.Y.Z` tag is pushed.
+#
+# Authentication uses npm trusted publishing (OIDC) — there is no token in the
+# repository, and the trusted-publisher config on npmjs.com is bound to this
+# workflow file name. The package is *staged*, not published: verify it with
+# `pnpm stage list` / `pnpm stage view <id>`, then promote it with
+# `pnpm stage approve <id>`, which is where 2FA happens.
 name: Publish
+
 on:
   push:
-    tags:
-      - 'v*'
+    tags: ["v*"]
+
+# Jobs declare the permissions they need; nothing is granted by default.
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  publish:
+  stage:
+    name: Stage release on npm
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
-      contents: read
-      id-token: write
+      contents: read # actions/checkout
+      id-token: write # npm trusted publishing (OIDC) and provenance attestation
     steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: 24
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
-      - run: npm install -g npm@latest
-      - run: pnpm install
-      - run: pnpm run build
-      - run: npm publish --provenance --access public
+          persist-credentials: false
+      # No dependency cache here: a poisoned cache must not be able to reach a
+      # release build.
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24
+          install: false
+      - run: pnpm install --frozen-lockfile
+      - name: Check that the tag matches package.json
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$version" ]; then
+            echo "::error::tag $TAG does not match package.json version $version"
+            exit 1
+          fi
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - name: Stage package for publishing
+        # --no-git-checks: a tag checkout is a detached HEAD, not the publish branch.
+        run: pnpm stage publish --provenance --access public --no-git-checks

@@ -9,14 +9,16 @@
     ".": {
       "types": "./dist/chess-board.d.ts",
       "default": "./dist/chess-board.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly",
-    "dev": "vite",
+    "build": "vite build && tsc -p tsconfig.build.json",
     "build:pages": "vite build --config vite.pages.config.ts",
+    "dev": "vite",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "author": "Sigurd Fosseng <sigurd@fosseng.net>",
   "license": "MIT",
@@ -36,20 +38,14 @@
     "chess"
   ],
   "devDependencies": {
-    "fen-chess-board": "^3.0.0",
-    "happy-dom": "^17.0.0",
-    "typescript": "^5.4.0",
-    "vite": "^6.0.0",
-    "vitest": "^3.0.0"
+    "fen-chess-board": "^4.0.0",
+    "happy-dom": "^20.14.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
   },
   "files": [
-    "dist",
-    "!dist/**/*.test.*"
+    "dist"
   ],
-  "packageManager": "pnpm@10.9.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  }
+  "packageManager": "pnpm@12.3.4"
 }

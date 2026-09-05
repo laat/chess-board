@@ -1,0 +1,18 @@
+# Dependabot keeps the SHA-pinned actions in .github/workflows current.
+#
+# npm dependencies are deliberately not listed: Dependabot only supports pnpm
+# up to v10 and this repository uses pnpm 12, so it could not regenerate the
+# lockfile. Bump them with `pnpm update --latest` instead.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # Give upstream time to pull a compromised release before it lands here
+    # (same idea as minimumReleaseAge in pnpm-workspace.yaml).
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]

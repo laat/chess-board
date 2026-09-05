@@ -1,4 +1,42 @@
 
+Unreleased
+==========
+
+* Malformed FEN in the element's text content is now reported with
+  `console.warn` and ignored, keeping the current position. Previously
+  `fen-chess-board` accepted anything; version 4 validates and throws, which
+  would have thrown out of `connectedCallback` and left the element blank.
+  The `fen` setter and `move()` still throw on bad input.
+* Skip `customElements.define` when `<chess-board>` is already registered, so
+  loading the module twice (two bundles, HMR) no longer throws
+* Parse each SVG piece once and clone it, instead of re-parsing the markup on
+  every render
+* Replace the deprecated `cellpadding` / `cellspacing` table attributes with CSS
+* Ship only the library declarations: `dist/chess-board.test.d.ts` is no
+  longer generated or published
+* Bundle `fen-chess-board@4`
+* Toolchain: TypeScript 7, Vite 8, Vitest 5, happy-dom 20, pnpm 12 with
+  supply-chain policies (`minimumReleaseAge`, `trustPolicy`,
+  `blockExoticSubdeps`, `strictDepBuilds`)
+* CI: pin every action to a commit SHA, least-privilege permissions,
+  `persist-credentials: false`, concurrency limits, Node 22/24 matrix,
+  dependency review, zizmor audit workflow, Dependabot for actions
+* Release: stage the package with `pnpm stage publish` over npm trusted
+  publishing (OIDC) with provenance; a maintainer promotes it with
+  `pnpm stage approve`
+
+2.0.3 / 2026-04-14
+==================
+
+* Publish to npm from GitHub Actions with provenance
+* Fix the repository URL so the provenance attestation resolves
+
+2.0.2 / 2026-04-14
+==================
+
+* Move the demo to https://chess-board.laat.dev/ (Vite base path `/`)
+* Fix the repository URL in package.json
+
 2.0.1 / 2026-04-11
 ==================
 

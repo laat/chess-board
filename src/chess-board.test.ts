@@ -1,14 +1,17 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "./chess-board";
 import type { ChessBoardElement } from "./chess-board";
 
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+const EMPTY_FEN = "8/8/8/8/8/8/8/8";
+const SCHOLARS_MATE = "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR";
+const INVALID_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR/extra";
 
 function createElement(
   fen?: string,
   attrs?: Record<string, string>,
 ): ChessBoardElement {
-  const el = document.createElement("chess-board") as ChessBoardElement;
+  const el = document.createElement("chess-board");
   if (attrs) {
     for (const [k, v] of Object.entries(attrs)) {
       el.setAttribute(k, v);
@@ -21,16 +24,36 @@ function createElement(
   return el;
 }
 
+function getTable(el: ChessBoardElement): HTMLTableElement {
+  const table = el.shadowRoot?.querySelector(".chess-board");
+  if (!(table instanceof HTMLTableElement)) {
+    throw new Error("board table not found in shadow root");
+  }
+  return table;
+}
+
+function getCell(
+  el: ChessBoardElement,
+  row: number,
+  col: number,
+): HTMLTableCellElement {
+  const cell = getTable(el).rows[row]?.cells[col];
+  if (!cell) throw new Error(`no cell at ${row},${col}`);
+  return cell;
+}
+
 function getPieceAt(
   el: ChessBoardElement,
   row: number,
   col: number,
 ): string | null {
-  const table = el.shadowRoot!.querySelector(
-    ".chess-board",
-  ) as HTMLTableElement;
-  const cell = table.rows[row].cells[col];
-  return cell.firstElementChild?.getAttribute("data-piece") ?? null;
+  return getCell(el, row, col).firstElementChild?.getAttribute("data-piece") ??
+    null;
+}
+
+/** Let pending MutationObserver callbacks run. */
+function flushObservers(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 describe("chess-board", () => {
@@ -46,11 +69,12 @@ describe("chess-board", () => {
       const el = createElement();
       expect(el).toBeInstanceOf(HTMLElement);
       expect(el.shadowRoot).not.toBeNull();
+      expect(customElements.get("chess-board")).toBe(el.constructor);
       // Type-level assertion: HTMLElementTagNameMap augmentation should make
       // document.querySelector("chess-board") infer as ChessBoardElement | null.
       const typed: ChessBoardElement | null =
         document.querySelector("chess-board");
-      expect(typed).not.toBeNull();
+      expect(typed).toBe(el);
     });
 
     it("initializes with FEN from textContent", () => {
@@ -60,18 +84,14 @@ describe("chess-board", () => {
 
     it("initializes empty when no FEN provided", () => {
       const el = createElement();
-      expect(el.fen).toBe("8/8/8/8/8/8/8/8");
+      expect(el.fen).toBe(EMPTY_FEN);
     });
 
     it("creates an 8x8 board table in shadow DOM", () => {
-      const el = createElement(START_FEN);
-      const table = el.shadowRoot!.querySelector(
-        ".chess-board",
-      ) as HTMLTableElement;
-      expect(table).not.toBeNull();
+      const table = getTable(createElement(START_FEN));
       expect(table.rows.length).toBe(8);
-      for (let r = 0; r < 8; r++) {
-        expect(table.rows[r].cells.length).toBe(8);
+      for (const row of table.rows) {
+        expect(row.cells.length).toBe(8);
       }
     });
   });
@@ -108,22 +128,23 @@ describe("chess-board", () => {
 
     it("renders SVG pieces by default", () => {
       const el = createElement(START_FEN);
-      const table = el.shadowRoot!.querySelector(
-        ".chess-board",
-      ) as HTMLTableElement;
-      const cell = table.rows[0].cells[0];
-      expect(cell.querySelector("svg")).not.toBeNull();
+      expect(getCell(el, 0, 0).querySelector("svg")).not.toBeNull();
+    });
+
+    it("gives every square its own SVG node", () => {
+      const el = createElement(START_FEN);
+      const a8 = getCell(el, 0, 0).firstElementChild;
+      const h8 = getCell(el, 0, 7).firstElementChild;
+      expect(a8?.getAttribute("data-piece")).toBe("r");
+      expect(h8?.getAttribute("data-piece")).toBe("r");
+      expect(a8).not.toBe(h8);
     });
 
     it("renders unicode pieces when unicode attribute is set", () => {
       const el = createElement(START_FEN, { unicode: "" });
-      const table = el.shadowRoot!.querySelector(
-        ".chess-board",
-      ) as HTMLTableElement;
-      const cell = table.rows[0].cells[0];
-      const span = cell.querySelector("span.piece");
+      const span = getCell(el, 0, 0).querySelector("span.piece");
       expect(span).not.toBeNull();
-      expect(span!.textContent).toBe("\u265C"); // ♜ black rook
+      expect(span?.textContent).toBe("♜"); // ♜ black rook
     });
   });
 
@@ -135,12 +156,63 @@ describe("chess-board", () => {
 
     it("sets a new position and re-renders", () => {
       const el = createElement(START_FEN);
-      const scholarsMate =
-        "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR";
-      el.fen = scholarsMate;
-      expect(el.fen).toBe(scholarsMate);
+      el.fen = SCHOLARS_MATE;
+      expect(el.fen).toBe(SCHOLARS_MATE);
       // White queen on f7 (row 1, col 5)
       expect(getPieceAt(el, 1, 5)).toBe("Q");
+    });
+
+    it("throws on malformed FEN and leaves the board unchanged", () => {
+      const el = createElement(START_FEN);
+      expect(() => {
+        el.fen = INVALID_FEN;
+      }).toThrow();
+      expect(el.fen).toBe(START_FEN);
+      expect(getPieceAt(el, 0, 0)).toBe("r");
+    });
+  });
+
+  describe("text content", () => {
+    let warn: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
+    it("follows changes to the text content", async () => {
+      const el = createElement(START_FEN);
+      el.textContent = SCHOLARS_MATE;
+      await flushObservers();
+      expect(el.fen).toBe(SCHOLARS_MATE);
+      expect(getPieceAt(el, 1, 5)).toBe("Q");
+    });
+
+    it("ignores invalid initial FEN instead of throwing", () => {
+      const el = createElement(INVALID_FEN);
+      expect(el.fen).toBe(EMPTY_FEN);
+      expect(getPieceAt(el, 0, 0)).toBe("");
+      expect(warn).toHaveBeenCalledOnce();
+    });
+
+    it("keeps the current position when the text becomes invalid", async () => {
+      const el = createElement(START_FEN);
+      el.textContent = INVALID_FEN;
+      await flushObservers();
+      expect(el.fen).toBe(START_FEN);
+      expect(getPieceAt(el, 0, 0)).toBe("r");
+      expect(warn).toHaveBeenCalledOnce();
+    });
+
+    it("stops observing after being removed from the document", async () => {
+      const el = createElement(START_FEN);
+      document.body.removeChild(el);
+      el.textContent = SCHOLARS_MATE;
+      await flushObservers();
+      expect(el.fen).toBe(START_FEN);
     });
   });
 
@@ -194,7 +266,7 @@ describe("chess-board", () => {
     it("removes all pieces", () => {
       const el = createElement(START_FEN);
       el.clearBoard();
-      expect(el.fen).toBe("8/8/8/8/8/8/8/8");
+      expect(el.fen).toBe(EMPTY_FEN);
       for (let r = 0; r < 8; r++) {
         for (let f = 0; f < 8; f++) {
           expect(getPieceAt(el, r, f)).toBe("");
@@ -206,27 +278,23 @@ describe("chess-board", () => {
   describe("attributes", () => {
     it("re-renders when unicode attribute is toggled", () => {
       const el = createElement(START_FEN);
-      const table = el.shadowRoot!.querySelector(
-        ".chess-board",
-      ) as HTMLTableElement;
       // Default: SVG
-      expect(table.rows[0].cells[0].querySelector("svg")).not.toBeNull();
+      expect(getCell(el, 0, 0).querySelector("svg")).not.toBeNull();
 
       el.setAttribute("unicode", "");
-      // Trigger re-render (attributeChangedCallback handles this in browsers;
-      // force it here since happy-dom may not fire it reliably)
-      el.fen = el.fen;
-      const cell = table.rows[0].cells[0];
-      const piece = cell.querySelector("[data-piece]");
-      expect(piece).not.toBeNull();
-      expect(piece!.getAttribute("data-piece")).toBe("r");
-      // Should no longer be SVG
+      const cell = getCell(el, 0, 0);
       expect(cell.querySelector("svg")).toBeNull();
+      expect(cell.querySelector("span.piece")?.getAttribute("data-piece")).toBe(
+        "r",
+      );
+
+      el.removeAttribute("unicode");
+      expect(getCell(el, 0, 0).querySelector("svg")).not.toBeNull();
     });
 
     it("has frame labels in shadow DOM", () => {
       const el = createElement(START_FEN, { frame: "" });
-      const frames = el.shadowRoot!.querySelectorAll(".frame");
+      const frames = el.shadowRoot?.querySelectorAll(".frame") ?? [];
       expect(frames.length).toBeGreaterThan(0);
     });
   });
@@ -234,29 +302,23 @@ describe("chess-board", () => {
   describe("square colors", () => {
     it("assigns correct light/dark classes", () => {
       const el = createElement(START_FEN);
-      const table = el.shadowRoot!.querySelector(
-        ".chess-board",
-      ) as HTMLTableElement;
       // a8 (0,0) should be light
-      expect(table.rows[0].cells[0].classList.contains("light")).toBe(true);
+      expect(getCell(el, 0, 0).classList.contains("light")).toBe(true);
       // b8 (0,1) should be dark
-      expect(table.rows[0].cells[1].classList.contains("dark")).toBe(true);
+      expect(getCell(el, 0, 1).classList.contains("dark")).toBe(true);
       // a7 (1,0) should be dark
-      expect(table.rows[1].cells[0].classList.contains("dark")).toBe(true);
+      expect(getCell(el, 1, 0).classList.contains("dark")).toBe(true);
     });
   });
 
   describe("diffing", () => {
     it("only updates changed cells", () => {
       const el = createElement(START_FEN);
-      const table = el.shadowRoot!.querySelector(
-        ".chess-board",
-      ) as HTMLTableElement;
       // Grab a reference to an element that shouldn't change
-      const a8piece = table.rows[0].cells[0].firstElementChild;
+      const a8piece = getCell(el, 0, 0).firstElementChild;
       el.move("e2", "e4");
       // a8 rook should be the same DOM node (not replaced)
-      expect(table.rows[0].cells[0].firstElementChild).toBe(a8piece);
+      expect(getCell(el, 0, 0).firstElementChild).toBe(a8piece);
     });
   });
 

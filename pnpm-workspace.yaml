@@ -1,0 +1,17 @@
+# pnpm settings (pnpm >= 10 reads these from here, not from package.json).
+# Supply-chain hardening: see https://pnpm.io/supply-chain-security
+
+# Refuse to install any dependency version published less than a day ago,
+# so a compromised release gets pulled before it can land here.
+minimumReleaseAge: 1440
+# fen-chess-board is maintained by the same author as this package and is
+# bumped here right after it is released.
+minimumReleaseAgeExclude:
+  - fen-chess-board
+# Refuse a version whose publish attestation is weaker than the previous one
+# (e.g. trusted publisher -> plain token), a common compromise signature.
+trustPolicy: no-downgrade
+# Transitive dependencies must come from the registry, not git/tarball URLs.
+blockExoticSubdeps: true
+# Fail the install instead of silently skipping unapproved build scripts.
+strictDepBuilds: true

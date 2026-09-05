@@ -1,7 +1,8 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   build: {
+    sourcemap: true,
     lib: {
       entry: "src/chess-board.ts",
       formats: ["es"],

@@ -4,14 +4,14 @@ const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
 const RANKS = ["8", "7", "6", "5", "4", "3", "2", "1"] as const;
 
 export type File = (typeof FILES)[number];
-export type Rank = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
+export type Rank = (typeof RANKS)[number];
 export type Square = `${File}${Rank}`;
 export type WhitePiece = "K" | "Q" | "R" | "B" | "N" | "P";
 export type BlackPiece = "k" | "q" | "r" | "b" | "n" | "p";
 export type Piece = WhitePiece | BlackPiece;
 export type PieceOrEmpty = Piece | "";
 
-const UNICODE_PIECES: Record<string, string> = {
+const UNICODE_PIECES: Record<Piece, string> = {
   K: "\u2654",
   Q: "\u2655",
   R: "\u2656",
@@ -27,7 +27,7 @@ const UNICODE_PIECES: Record<string, string> = {
 };
 
 // SVG piece definitions — viewBox 0 0 45 45, standard chess piece vectors
-const SVG_PIECES: Record<string, string> = {
+const SVG_PIECES: Record<Piece, string> = {
   P: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" class="piece"><path d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 10.5,31.58 10.5,39.5 L 33.5,39.5 C 33.5,31.58 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 z" style="fill:#fff;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter"/></svg>`,
 
   N: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" class="piece"><g style="fill:none;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" style="fill:#fff"/><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" style="fill:#fff"/><circle cx="9" cy="25.5" r="0.5" style="fill:#000"/><ellipse cx="14.5" cy="15.5" rx="0.5" ry="1.5" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" style="fill:#000"/></g></svg>`,
@@ -57,6 +57,7 @@ const STYLES = `
 :host {
   display: inline-block;
 }
+table { border-spacing: 0; }
 .frame { display: none; }
 :host([frame]) .frame {
   width: 1em; height: 1em;
@@ -103,32 +104,28 @@ td {
 `;
 
 function buildBoardHTML(): string {
-  const files = FILES;
-  const ranks = RANKS;
   let html = `<style>${STYLES}</style>`;
-  html += `<table class="board-frame" cellpadding="0" cellspacing="0">`;
+  html += `<table class="board-frame">`;
 
   // Top frame row
   html += `<tr><td class="frame top left"></td>`;
-  for (const f of files) html += `<td class="frame top">${f}</td>`;
+  for (const file of FILES) html += `<td class="frame top">${file}</td>`;
   html += `<td class="frame top right"></td></tr>`;
 
   // Board rows with side frames
-  for (let r = 0; r < 8; r++) {
-    const rank = ranks[r];
+  for (const [ri, rank] of RANKS.entries()) {
     html += `<tr>`;
     html += `<td class="frame left">${rank}</td>`;
 
-    if (r === 0) {
+    if (ri === 0) {
       // First rank row contains the nested chess board table
       html += `<td colspan="8" rowspan="8" class="board-wrap">`;
-      html += `<table class="chess-board" cellpadding="0" cellspacing="0">`;
-      for (let ri = 0; ri < 8; ri++) {
+      html += `<table class="chess-board">`;
+      for (const [r, boardRank] of RANKS.entries()) {
         html += `<tr>`;
-        for (let fi = 0; fi < 8; fi++) {
-          const isLight = (ri + fi) % 2 === 0;
-          const sq = files[fi] + ranks[ri];
-          html += `<td class="${sq} ${isLight ? "light" : "dark"}"><span class="empty" data-piece=""></span></td>`;
+        for (const [f, file] of FILES.entries()) {
+          const shade = (r + f) % 2 === 0 ? "light" : "dark";
+          html += `<td class="${file}${boardRank} ${shade}"><span class="empty" data-piece=""></span></td>`;
         }
         html += `</tr>`;
       }
@@ -141,42 +138,57 @@ function buildBoardHTML(): string {
 
   // Bottom frame row
   html += `<tr><td class="frame bottom left"></td>`;
-  for (const f of files) html += `<td class="frame bottom">${f}</td>`;
+  for (const file of FILES) html += `<td class="frame bottom">${file}</td>`;
   html += `<td class="frame bottom right"></td></tr>`;
 
   html += `</table>`;
   return html;
 }
 
-function createPieceElement(
-  pieceChar: string,
-  unicode: boolean,
-): HTMLElement | SVGElement {
-  if (unicode && pieceChar in UNICODE_PIECES) {
+function isPiece(value: string): value is Piece {
+  return Object.hasOwn(SVG_PIECES, value);
+}
+
+// Parsed once per piece, then cloned: parsing the SVG markup on every
+// render was the most expensive part of updating the board.
+const svgTemplates = new Map<Piece, SVGElement>();
+
+function svgPiece(piece: Piece): SVGElement {
+  let template = svgTemplates.get(piece);
+  if (!template) {
+    const wrapper = document.createElement("template");
+    wrapper.innerHTML = SVG_PIECES[piece];
+    template = wrapper.content.firstElementChild as SVGElement;
+    svgTemplates.set(piece, template);
+  }
+  return template.cloneNode(true) as SVGElement;
+}
+
+function createPieceElement(pieceChar: string, unicode: boolean): Element {
+  if (!isPiece(pieceChar)) {
+    const span = document.createElement("span");
+    span.className = "empty";
+    span.setAttribute("data-piece", "");
+    return span;
+  }
+  if (unicode) {
     const span = document.createElement("span");
     span.className = "piece";
     span.setAttribute("data-piece", pieceChar);
     span.textContent = UNICODE_PIECES[pieceChar];
     return span;
   }
-  if (pieceChar in SVG_PIECES) {
-    const wrapper = document.createElement("span");
-    wrapper.innerHTML = SVG_PIECES[pieceChar];
-    const svg = wrapper.firstElementChild as SVGElement;
-    svg.setAttribute("data-piece", pieceChar);
-    return svg;
-  }
-  const span = document.createElement("span");
-  span.className = "empty";
-  span.setAttribute("data-piece", "");
-  return span;
+  const svg = svgPiece(pieceChar);
+  svg.setAttribute("data-piece", pieceChar);
+  return svg;
 }
 
 export class ChessBoardElement extends HTMLElement {
-  private _board!: FENBoard;
-  private _table!: HTMLTableElement;
+  private readonly _board = new FENBoard();
+  /** The 64 board cells in row-major order: index 0 is a8, index 63 is h1. */
+  private readonly _cells: HTMLTableCellElement[];
   private _observer: MutationObserver | null = null;
-  private _lastUnicode: boolean = false;
+  private _lastUnicode = false;
 
   // "reverse" and "frame" are handled purely by CSS :host() selectors
   // and do not require JS re-rendering.
@@ -186,10 +198,9 @@ export class ChessBoardElement extends HTMLElement {
 
   constructor() {
     super();
-    this._board = new FENBoard();
     const shadow = this.attachShadow({ mode: "open" });
     shadow.innerHTML = buildBoardHTML();
-    this._table = shadow.querySelector(".chess-board") as HTMLTableElement;
+    this._cells = Array.from(shadow.querySelectorAll(".chess-board td"));
   }
 
   connectedCallback(): void {
@@ -197,19 +208,14 @@ export class ChessBoardElement extends HTMLElement {
     // children after connectedCallback fires, so textContent may still be
     // empty at construction time — this is why we read it here and also
     // why the MutationObserver exists.
-    const initialFen = this.textContent?.trim();
-    if (initialFen) {
-      this._board.fen = initialFen;
-    }
+    this._applyTextContent();
     this._renderBoard();
 
     // connectedCallback may fire multiple times if the element is moved.
     // Tear down any previous observer before creating a new one.
     this._observer?.disconnect();
     this._observer = new MutationObserver(() => {
-      const newFen = this.textContent?.trim();
-      if (newFen) {
-        this._board.fen = newFen;
+      if (this._applyTextContent()) {
         this._renderBoard();
       }
     });
@@ -268,31 +274,50 @@ export class ChessBoardElement extends HTMLElement {
     this._renderBoard();
   }
 
+  /**
+   * Load the FEN from the element's text content, if any.
+   *
+   * Markup is not an exception-safe channel: a typo in the FEN would
+   * otherwise throw out of connectedCallback / the MutationObserver and
+   * leave the element blank, so malformed text is reported and ignored
+   * and the board keeps its current position.
+   *
+   * @returns whether a FEN was applied
+   */
+  private _applyTextContent(): boolean {
+    const fen = this.textContent?.trim();
+    if (!fen) return false;
+    try {
+      this._board.fen = fen;
+      return true;
+    } catch (error) {
+      console.warn(`<chess-board>: ignoring invalid FEN "${fen}"`, error);
+      return false;
+    }
+  }
+
   private _renderBoard(): void {
-    if (!this._table) return;
     const board = this._board.board;
     const useUnicode = this.hasAttribute("unicode");
     const modeChanged = useUnicode !== this._lastUnicode;
     this._lastUnicode = useUnicode;
 
-    for (let r = 0; r < 8; r++) {
-      const row = this._table.rows[r];
-      for (let f = 0; f < 8; f++) {
-        const cell = row.cells[f];
-        const piece = board[r][f];
-        const current = cell.firstElementChild;
-        const currentPiece = current?.getAttribute("data-piece") ?? null;
+    this._cells.forEach((cell, index) => {
+      const piece = board[index >> 3]?.[index & 7] ?? "";
+      const currentPiece = cell.firstElementChild?.getAttribute("data-piece");
 
-        if (piece !== currentPiece || modeChanged) {
-          cell.innerHTML = "";
-          cell.appendChild(createPieceElement(piece, useUnicode));
-        }
+      if (piece !== currentPiece || modeChanged) {
+        cell.replaceChildren(createPieceElement(piece, useUnicode));
       }
-    }
+    });
   }
 }
 
-customElements.define("chess-board", ChessBoardElement);
+// Guard the registration so importing this module from two bundles (or
+// twice under HMR) does not throw "this name has already been used".
+if (!customElements.get("chess-board")) {
+  customElements.define("chess-board", ChessBoardElement);
+}
 
 declare global {
   interface HTMLElementTagNameMap {

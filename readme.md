@@ -31,7 +31,8 @@ string (the piece-placement field is enough):
 ```
 
 Changing the text content later updates the board — it's observed via a
-`MutationObserver`.
+`MutationObserver`. Malformed FEN in the text content is reported with
+`console.warn` and ignored; the board keeps its current position.
 
 ### TypeScript
 
@@ -59,7 +60,8 @@ import type { ChessBoardElement, Square, Piece } from "chess-board";
 
 ### `fen` (get / set)
 
-Read or write the current position as a FEN string.
+Read or write the current position as a FEN string. Setting a malformed FEN
+throws and leaves the board unchanged.
 
 ```js
 const board = document.querySelector("chess-board");
@@ -141,6 +143,30 @@ r // ♜ black rook
 q // ♛ black queen
 k // ♚ black king
 ```
+
+## Development
+
+The repository uses [pnpm](https://pnpm.io) (the version is pinned in
+`package.json`, so `corepack` or `pnpm self-update` picks it up):
+
+```sh
+pnpm install
+pnpm test       # vitest, once
+pnpm typecheck  # tsc --noEmit
+pnpm build      # dist/ — the published package
+pnpm dev        # demo page with live reload
+```
+
+## Releasing
+
+1. `pnpm version <patch|minor|major>` and push the commit and the `vX.Y.Z` tag.
+2. The [Publish workflow](.github/workflows/publish.yml) builds and tests the
+   tag, then **stages** it on npm with provenance via
+   [trusted publishing](https://docs.npmjs.com/trusted-publishers). Nothing is
+   live yet.
+3. Inspect it with `pnpm stage list` / `pnpm stage view <id>`, then promote it
+   with `pnpm stage approve <id>` (this is the step that asks for 2FA), or
+   drop it with `pnpm stage reject <id>`.
 
 ## License
 

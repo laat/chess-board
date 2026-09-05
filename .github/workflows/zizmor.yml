@@ -1,0 +1,36 @@
+# Static analysis of the GitHub Actions workflows themselves.
+# https://docs.zizmor.sh
+name: Zizmor
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    # Weekly, so newly disclosed action vulnerabilities are caught even when
+    # nothing changes in the repository.
+    - cron: "17 6 * * 1"
+
+# Jobs declare the permissions they need; nothing is granted by default.
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  zizmor:
+    name: Audit workflows
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read # actions/checkout
+      security-events: write # upload the SARIF report to code scanning
+      actions: read # zizmor-action reads workflow run metadata for the upload
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: zizmorcore/zizmor-action@70fb788f84895a7701f5643d103d587e460b5c99 # v0.6.3
+        with:
+          persona: pedantic

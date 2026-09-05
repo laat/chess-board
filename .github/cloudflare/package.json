@@ -1,0 +1,5 @@
+{
+  "name": "chess-board-preview-deploy",
+  "private": true,
+  "description": "Install target for wrangler in the Preview workflow. Kept separate so wrangler and its native binaries stay out of the library's lockfile."
+}

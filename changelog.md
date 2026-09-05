@@ -24,6 +24,7 @@ Unreleased
 * Release: stage the package with `pnpm stage publish` over npm trusted
   publishing (OIDC) with provenance; a maintainer promotes it with
   `pnpm stage approve`
+* Preview deploys of the demo site to Cloudflare Pages for every pull request
 
 2.0.3 / 2026-04-14
 ==================

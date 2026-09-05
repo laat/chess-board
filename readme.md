@@ -157,6 +157,37 @@ pnpm build      # dist/ — the published package
 pnpm dev        # demo page with live reload
 ```
 
+## Preview deploys
+
+Every pull request from a branch in this repository gets a preview of the demo
+site on Cloudflare Pages, deployed by the
+[Preview workflow](.github/workflows/preview.yml). The URL is posted as a
+comment on the pull request and shown as the `preview` deployment. Production
+stays on GitHub Pages.
+
+One-time setup:
+
+1. Create the Pages project (Direct Upload, no Git integration):
+
+   ```sh
+   npx wrangler@4 login
+   npx wrangler@4 pages project create chess-board --production-branch master
+   ```
+
+2. Create an API token at
+   [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens):
+   **Create Token → Custom token**, permission **Account → Cloudflare Pages →
+   Edit**, and limit it to the account that owns `laat.dev`.
+3. Copy the account ID from the **API** box on the right of the `laat.dev` zone
+   overview in the Cloudflare dashboard.
+4. In the GitHub repository go to **Settings → Secrets and variables →
+   Actions** and add two repository secrets: `CLOUDFLARE_API_TOKEN` and
+   `CLOUDFLARE_ACCOUNT_ID`.
+
+Previews live at `https://<hash>.chess-board.pages.dev`, with a per-branch
+alias at `https://<branch>.chess-board.pages.dev`. Pull requests from forks are
+skipped because they cannot read the secrets.
+
 ## Releasing
 
 1. `pnpm version <patch|minor|major>` and push the commit and the `vX.Y.Z` tag.

@@ -34,6 +34,21 @@ Changing the text content later updates the board — it's observed via a
 `MutationObserver`. Malformed FEN in the text content is reported with
 `console.warn` and ignored; the board keeps its current position.
 
+### Without a bundler
+
+The package is plain ES2022 JavaScript that imports its one dependency,
+[`fen-chess-board`](https://www.npmjs.com/package/fen-chess-board), by bare
+specifier. Without a bundler, load it through an ESM CDN that resolves
+dependencies:
+
+```html
+<script type="module">
+  import "https://esm.sh/chess-board";
+</script>
+```
+
+or provide an import map for the dependency and load the file directly.
+
 ### TypeScript
 
 Types for the element, squares and pieces are exported from the package:

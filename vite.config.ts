@@ -1,14 +1,8 @@
+// Vite serves and builds the demo site (index.html) and runs the tests.
+// The published package is compiled by tsc alone; see tsconfig.build.json.
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  build: {
-    sourcemap: true,
-    lib: {
-      entry: "src/chess-board.ts",
-      formats: ["es"],
-      fileName: "chess-board",
-    },
-  },
   test: {
     environment: "happy-dom",
   },

@@ -13,7 +13,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json",
     "build:pages": "vite build --config vite.pages.config.ts",
     "dev": "vite",
     "test": "vitest run",
@@ -37,15 +37,19 @@
     "typescript",
     "chess"
   ],
+  "dependencies": {
+    "fen-chess-board": "^4.0.0"
+  },
   "devDependencies": {
-    "fen-chess-board": "^4.0.0",
     "happy-dom": "^20.14.0",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vitest": "^5.0.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
   ],
   "packageManager": "pnpm@12.3.4"
 }

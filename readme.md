@@ -157,6 +157,46 @@ pnpm build      # dist/ — the published package
 pnpm dev        # demo page with live reload
 ```
 
+## Preview deploys
+
+Every pull request from a branch in this repository gets a preview of the demo
+site on Cloudflare Pages, deployed by the
+[Preview workflow](.github/workflows/preview.yml). The URL is posted as a
+comment on the pull request and shown as the `preview` deployment. Production
+stays on GitHub Pages.
+
+One-time setup:
+
+1. Create the Pages project (Direct Upload, no Git integration):
+
+   ```sh
+   npx wrangler@4 login
+   npx wrangler@4 pages project create chess-board --production-branch master
+   ```
+
+2. Create an API token at
+   [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens):
+   **Create Token → Custom token**, permission **Account → Cloudflare Pages →
+   Edit**, limited to the one account. No domain on Cloudflare is needed.
+3. Copy the account ID: it is the 32-character hex segment in the dashboard
+   URL right after `dash.cloudflare.com/` once the account is selected, and
+   `curl -H "Authorization: Bearer $TOKEN" https://api.cloudflare.com/client/v4/accounts`
+   lists it too.
+4. In the GitHub repository go to **Settings → Environments → preview**
+   (the first workflow run creates it) and add two **environment secrets**:
+   `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Environment secrets
+   are only readable by the preview job, not by the CI, publish or Pages
+   jobs.
+
+The token can manage every Pages project in the account but nothing else
+(no DNS, Workers or billing), so give it an expiry and rotate it. wrangler
+and its dependencies are pinned by `.github/cloudflare/package-lock.json`,
+which Dependabot keeps current.
+
+Previews live at `https://<hash>.chess-board-4mh.pages.dev`, with a per-branch
+alias at `https://<branch>.chess-board-4mh.pages.dev`. Pull requests from forks
+are skipped because they cannot read the secrets.
+
 ## Releasing
 
 1. `pnpm version <patch|minor|major>` and push the commit and the `vX.Y.Z` tag.

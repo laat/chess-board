@@ -1,0 +1,93 @@
+# Deploys the demo site for every pull request as a Cloudflare Pages preview.
+#
+# One-time setup (see "Preview deploys" in readme.md): create the Pages project
+# `chess-board` and add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as
+# secrets of the `preview` environment, so only this job can read them.
+# Production stays on GitHub Pages (gh-pages.yml).
+name: Preview
+
+on:
+  pull_request:
+
+# Jobs declare the permissions they need; nothing is granted by default.
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Deploy preview to Cloudflare Pages
+    # Secrets are not exposed to pull requests from forks, so only branches in
+    # this repository get a preview.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read # actions/checkout
+      pull-requests: write # post and refresh the preview URL comment
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24
+          cache: true
+          install: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:pages
+      # wrangler and every transitive dependency come from the committed
+      # .github/cloudflare/package-lock.json (integrity-checked by npm ci), so
+      # nothing is resolved from the registry at run time. wrangler-action
+      # sees the installed copy and skips its own install.
+      - run: npm ci
+        working-directory: .github/cloudflare
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: .github/cloudflare
+          packageManager: npm
+          command: >-
+            pages deploy ../../_site
+            --project-name=chess-board
+            --branch=${{ github.head_ref }}
+            --commit-hash=${{ github.event.pull_request.head.sha }}
+      - name: Comment the preview URL on the pull request
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        with:
+          script: |
+            const marker = "<!-- cloudflare-pages-preview -->";
+            const { DEPLOYMENT_URL, ALIAS_URL, HEAD_SHA } = process.env;
+            const lines = [
+              marker,
+              `**Preview** for ${HEAD_SHA.slice(0, 7)}: ${DEPLOYMENT_URL}`,
+            ];
+            if (ALIAS_URL && ALIAS_URL !== DEPLOYMENT_URL) {
+              lines.push(`Branch alias (always the latest push): ${ALIAS_URL}`);
+            }
+            const body = lines.join("\n\n");
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find(
+              (c) => c.user?.type === "Bot" && c.body?.includes(marker),
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }

@@ -75,7 +75,8 @@ const currentFen = board.fen;
 ## Methods
 
 All methods operate on an already-mounted element. Grab it with
-`document.querySelector` — do not use `new`:
+`document.querySelector` — do not use `new`. Squares must be `a1`–`h8` and
+pieces a single character; anything else throws and leaves the board unchanged.
 
 ```js
 const board = document.querySelector("chess-board");

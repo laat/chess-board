@@ -108,10 +108,11 @@ settings:
 importers:
 
   .:
-    devDependencies:
+    dependencies:
       fen-chess-board:
         specifier: ^4.0.0
         version: 4.0.0
+    devDependencies:
       happy-dom:
         specifier: ^20.14.0
         version: 20.14.0

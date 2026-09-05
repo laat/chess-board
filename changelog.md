@@ -2,6 +2,18 @@
 Unreleased
 ==========
 
+**Breaking**
+
+* The package is now plain compiled TypeScript instead of a Vite bundle.
+  `dist/chess-board.js` is the readable ES2022 output of `src/chess-board.ts`
+  (which ships in the package, so source maps and declaration maps resolve),
+  and `fen-chess-board` is a regular runtime dependency rather than being
+  inlined. Anything that goes through a bundler keeps working unchanged.
+  Loading `dist/chess-board.js` straight from a `<script type="module">` tag
+  with no bundler breaks, because the file now imports the bare specifier
+  `fen-chess-board`; add an import map that points it at a copy of that
+  package. See "Without a bundler" in the readme.
+
 **Behaviour changes for users of the element**
 
 * Invalid input now throws instead of quietly producing a broken board. This
@@ -24,9 +36,10 @@ Unreleased
   the `MutationObserver` and left the element blank.
 * `move(square, square)` no longer clears the piece; moving onto the same
   square is a no-op.
-* The published bundle targets Vite's `baseline-widely-available` browsers
-  (roughly Chrome/Edge 107, Firefox 104, Safari 16 and newer) and uses
-  `Object.hasOwn`. Version 2.0 targeted Chrome 87, Firefox 78 and Safari 14.
+* The published JavaScript is ES2022 as written (class fields, `??`, `?.`,
+  `Object.hasOwn`), so it needs roughly Chrome/Edge 94, Firefox 93 or Safari
+  15.4 and newer. Version 2.0 was down-levelled to Chrome 87, Firefox 78 and
+  Safari 14.
 
 **Fixed**
 
@@ -42,7 +55,8 @@ Unreleased
   instead of re-parsing the markup for every changed square.
 * The deprecated `cellpadding` / `cellspacing` table attributes are replaced by
   `border-spacing: 0`; rendering is unchanged.
-* `dist/chess-board.js.map` is shipped alongside the bundle.
+* `dist/chess-board.js.map` and `dist/chess-board.d.ts.map` are shipped, and
+  point at the bundled `src/chess-board.ts`.
 * `package.json` is exported as `./package.json`.
 * The `Rank` type is derived from the rank tuple like `File` already was; the
   resulting union is identical.
@@ -51,6 +65,8 @@ Unreleased
 
 * Toolchain: TypeScript 7, Vite 8, Vitest 5, happy-dom 20, pnpm 12. Node 22.12
   or newer is required to work on the repository (consumers are unaffected).
+  Vite now only serves and builds the demo site and runs the tests; `pnpm
+  build` is a single `tsc` invocation.
 * `tsconfig.json` is stricter (`ES2022`, `noUncheckedIndexedAccess`,
   `verbatimModuleSyntax`, `isolatedModules`); `tsconfig.build.json` excludes
   tests from declaration emit; new `pnpm typecheck` script.

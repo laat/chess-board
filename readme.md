@@ -176,6 +176,9 @@ pnpm build      # dist/ — the published package
 pnpm dev        # demo page with live reload
 ```
 
+The demo site is `index.html` plus `demo/demo.css` and `demo/demo.js`; it
+imports the component straight from `src/`, so edits show up live.
+
 ## Preview deploys
 
 Every pull request from a branch in this repository gets a preview of the demo

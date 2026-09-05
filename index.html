@@ -3,145 +3,363 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>chess-board web component</title>
-  <script type="module" src="src/chess-board.ts"></script>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      max-width: 700px;
-      margin: auto;
-      padding: 0 1rem 4rem;
-      color: #222;
-    }
-    h1 { margin-top: 2rem; }
-    h2 { margin-top: 2.5rem; }
-    chess-board { font-size: 250%; }
-
-    /* Example block: rendered output + source code */
-    .example {
-      margin: 1rem 0;
-    }
-    .example-source {
-      position: relative;
-      margin-top: 0.75rem;
-      background: #f5f5f5;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 0.75rem 1rem;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      white-space: pre;
-      overflow-x: auto;
-      color: #333;
-    }
-    .copy-btn {
-      position: absolute;
-      top: 0.4rem;
-      right: 0.4rem;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      padding: 0.2rem 0.5rem;
-      font-size: 0.75rem;
-      cursor: pointer;
-      color: #555;
-    }
-    .copy-btn:hover { background: #eee; }
-    .copy-btn.copied { color: #16a34a; border-color: #16a34a; }
-  </style>
+  <title>&lt;chess-board&gt; — a web component for chess positions</title>
+  <meta name="description" content="Drop a FEN string between the tags and get a rendered chess board. A dependency-light custom element with a small JavaScript API.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#1e4a33">
+  <meta property="og:title" content="<chess-board>">
+  <meta property="og:description" content="A web component for displaying chess positions.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://chess-board.laat.dev/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="/demo/demo.css">
+  <script type="module" src="/demo/demo.js"></script>
 </head>
 <body>
-  <h1>&lt;chess-board&gt;</h1>
-  <p>A web component for displaying chess positions.</p>
+  <a class="skip-link" href="#quick-start">Skip to content</a>
 
-  <h2>Starting Position</h2>
-  <div class="example">
-    <chess-board>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
-  </div>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="#top" aria-label="chess-board, back to top">
+        <span class="brand-mark" aria-hidden="true">♞</span>
+        <span class="brand-name">&lt;chess-board&gt;</span>
+        <span class="brand-version" data-version></span>
+      </a>
+      <nav class="topnav" aria-label="Page sections">
+        <a href="#quick-start">Quick start</a>
+        <a href="#playground">Playground</a>
+        <a href="#api">API</a>
+        <a href="#sizing">Sizing</a>
+        <a href="https://github.com/laat/chess-board" rel="noopener">GitHub</a>
+        <a href="https://www.npmjs.com/package/chess-board" rel="noopener">npm</a>
+      </nav>
+    </div>
+  </header>
 
-  <!-- Scholar's Mate: 1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6 4.Qxf7# -->
-  <!-- https://en.wikipedia.org/wiki/Scholar%27s_mate -->
-  <h2>Scholar's Mate</h2>
-  <div class="example">
-    <chess-board>r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR</chess-board>
-  </div>
+  <main id="top">
+    <!-- ───────────────────────── Hero ───────────────────────── -->
+    <section class="hero">
+      <div class="container hero-inner">
+      <div class="hero-copy">
+        <h1 class="display">&lt;chess-board&gt;</h1>
+        <p class="lede">
+          A web component that renders a chess position. Put a
+          <abbr title="Forsyth–Edwards Notation">FEN</abbr> string between the tags and get a board.
+          No framework, no stylesheet to load, one small dependency.
+        </p>
+        <div class="install-row">
+          <pre class="codeblock codeblock-inline" data-copy-source><code><span class="tok-muted">$</span> npm install chess-board</code></pre>
+          <button class="btn btn-ghost copy-btn" type="button" data-copy="npm install chess-board" aria-label="Copy install command">Copy</button>
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#playground">Open the playground</a>
+          <a class="btn btn-ghost" href="https://github.com/laat/chess-board" rel="noopener">View on GitHub</a>
+        </div>
+        <ul class="facts" aria-label="Highlights">
+          <li><strong>Standards only.</strong> A plain custom element with shadow DOM.</li>
+          <li><strong>Typed.</strong> Ships TypeScript declarations for the element, squares and pieces.</li>
+          <li><strong>Scriptable.</strong> Move, place and clear pieces from JavaScript.</li>
+        </ul>
+      </div>
 
-  <h2>Show Frame</h2>
-  <div class="example">
-    <chess-board frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
-  </div>
+      <figure class="hero-figure game-viewer" id="game-viewer">
+        <div class="board-well">
+          <chess-board class="board-lg" frame data-game-board>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+        </div>
+        <figcaption class="game-meta">
+          <span class="game-title">The Opera Game</span>
+          <span class="game-sub">Morphy vs. Duke Karl &amp; Count Isouard, Paris 1858</span>
+        </figcaption>
+        <div class="game-controls" role="group" aria-label="Game playback">
+          <button class="icon-btn" type="button" data-game="start" aria-label="Go to start">⏮</button>
+          <button class="icon-btn" type="button" data-game="prev" aria-label="Previous move">◀</button>
+          <button class="icon-btn icon-btn-primary" type="button" data-game="toggle" aria-label="Play">▶</button>
+          <button class="icon-btn" type="button" data-game="next" aria-label="Next move">▶</button>
+          <button class="icon-btn" type="button" data-game="end" aria-label="Go to end">⏭</button>
+          <span class="game-status" data-game-status aria-live="polite"></span>
+        </div>
+        <ol class="movelist" data-movelist aria-label="Moves"></ol>
+        <p class="game-note">Every ply is one <code>board.move(from, to)</code> call on the same element. Castling is two calls.</p>
+      </figure>
+      </div>
+    </section>
 
-  <h2>Starting Position (black on bottom)</h2>
-  <div class="example">
-    <chess-board reverse frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
-  </div>
+    <!-- ─────────────────────── Quick start ─────────────────────── -->
+    <section class="section container" id="quick-start">
+      <header class="section-head">
+        <h2>Quick start</h2>
+        <p class="section-lede">Install, import, write markup. The element registers itself on import.</p>
+      </header>
+      <div class="section-body">
+      <ol class="steps">
+        <li class="step">
+          <div class="step-text">
+            <h3>Install</h3>
+            <p>The package is plain ES2022 with a single runtime dependency, <code>fen-chess-board</code>.</p>
+          </div>
+          <div class="codeblock-wrap">
+            <pre class="codeblock"><code><span class="tok-muted">$</span> npm install chess-board</code></pre>
+            <button class="copy-btn" type="button" data-copy="npm install chess-board" aria-label="Copy">Copy</button>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-text">
+            <h3>Import once</h3>
+            <p>Importing the module registers the <code>&lt;chess-board&gt;</code> element. Do it once, anywhere in your app.</p>
+          </div>
+          <div class="codeblock-wrap">
+            <pre class="codeblock"><code><span class="tok-kw">import</span> <span class="tok-str">"chess-board"</span>;</code></pre>
+            <button class="copy-btn" type="button" data-copy='import "chess-board";' aria-label="Copy">Copy</button>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-text">
+            <h3>Write markup</h3>
+            <p>The text content is the position. The piece-placement field of a FEN string is enough; the rest is ignored.</p>
+          </div>
+          <div class="codeblock-wrap">
+            <pre class="codeblock"><code><span class="tok-tag">&lt;chess-board&gt;</span>
+  rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+<span class="tok-tag">&lt;/chess-board&gt;</span></code></pre>
+            <button class="copy-btn" type="button" data-copy="<chess-board>
+  rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+</chess-board>" aria-label="Copy">Copy</button>
+          </div>
+        </li>
+      </ol>
+      <aside class="callout">
+        <strong>No bundler?</strong> Copy both packages into your static files and map the bare specifier with an import map.
+        The <a href="https://github.com/laat/chess-board#without-a-bundler" rel="noopener">readme</a> has the snippet.
+      </aside>
+      </div>
+    </section>
 
-  <h2>Unicode Pieces</h2>
-  <div class="example">
-    <chess-board unicode>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
-  </div>
+    <!-- ─────────────────────── Playground ─────────────────────── -->
+    <section class="section container" id="playground">
+      <header class="section-head">
+        <h2>Playground</h2>
+        <p class="section-lede">
+          Toggle the attributes, paste a position, drag the size. The markup updates as you go.
+        </p>
+      </header>
+      <div class="section-body">
 
-  <h2>Unicode Pieces (reverse)</h2>
-  <div class="example">
-    <chess-board unicode reverse>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
-  </div>
+      <div class="playground">
+        <div class="playground-stage">
+          <div class="board-well board-well-flex">
+            <chess-board class="board-pg" data-pg-board>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+          </div>
+          <div class="codeblock-wrap">
+            <pre class="codeblock" data-pg-code aria-live="polite"></pre>
+            <button class="copy-btn" type="button" data-copy-target="[data-pg-code]" aria-label="Copy markup">Copy</button>
+          </div>
+        </div>
 
-  <h2>Unicode Pieces (reverse and framed)</h2>
-  <div class="example">
-    <chess-board unicode reverse frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
-  </div>
+        <form class="playground-controls" data-pg-form onsubmit="return false">
+          <fieldset class="control-group">
+            <legend>Attributes</legend>
+            <label class="toggle">
+              <input type="checkbox" name="frame">
+              <span class="toggle-track" aria-hidden="true"></span>
+              <span class="toggle-text"><code>frame</code><small>File and rank labels around the board</small></span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" name="reverse">
+              <span class="toggle-track" aria-hidden="true"></span>
+              <span class="toggle-text"><code>reverse</code><small>Black on the bottom</small></span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" name="unicode">
+              <span class="toggle-track" aria-hidden="true"></span>
+              <span class="toggle-text"><code>unicode</code><small>Text glyphs instead of SVG pieces</small></span>
+            </label>
+          </fieldset>
 
-  <h2>JavaScript API</h2>
-  <div class="example">
-    <chess-board id="api-demo" frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
-    <p>
-      <button onclick="document.getElementById('api-demo').move('e2','e4')">1. e4</button>
-      <button onclick="document.getElementById('api-demo').move('e7','e5')">1... e5</button>
-      <button onclick="document.getElementById('api-demo').fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'">Reset</button>
-      <button onclick="document.getElementById('api-demo').clearBoard()">Clear</button>
-    </p>
-  </div>
+          <fieldset class="control-group">
+            <legend>Position</legend>
+            <div class="chips" data-pg-presets role="group" aria-label="Preset positions"></div>
+            <label class="field">
+              <span class="field-label">FEN</span>
+              <textarea name="fen" rows="2" spellcheck="false" autocapitalize="off" autocomplete="off">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea>
+            </label>
+            <p class="field-error" data-pg-error role="alert" hidden></p>
+          </fieldset>
 
-  <script>
-    // Generate source code blocks with copy buttons from each example
-    document.querySelectorAll('.example').forEach(example => {
-      const board = example.querySelector('chess-board');
-      if (!board) return;
+          <fieldset class="control-group">
+            <legend>Size</legend>
+            <label class="field field-range">
+              <span class="field-label">font-size <output data-pg-size-out>40px</output></span>
+              <input type="range" name="size" min="16" max="64" step="1" value="40">
+            </label>
+            <p class="field-hint">The board is sized in <code>em</code>, so the element's <code>font-size</code> is the only knob.</p>
+          </fieldset>
+        </form>
+      </div>
+      </div>
+    </section>
 
-      // Reconstruct the HTML source from the live element
-      const attrs = [];
-      for (const attr of board.attributes) {
-        if (attr.name === 'id') continue;
-        if (attr.value) {
-          attrs.push(` ${attr.name}="${attr.value}"`);
-        } else {
-          attrs.push(` ${attr.name}`);
-        }
-      }
-      const fen = board.textContent.trim();
-      const source = `<chess-board${attrs.join('')}>\n  ${fen}\n</chess-board>`;
+    <!-- ────────────────────────── API ────────────────────────── -->
+    <section class="section container" id="api">
+      <header class="section-head">
+        <h2>API</h2>
+        <p class="section-lede">
+          Grab a mounted element with <code>querySelector</code> and call methods on it.
+          Bad input throws and leaves the board untouched. Press a call to run it on this board.
+        </p>
+      </header>
+      <div class="section-body">
 
-      const sourceBlock = document.createElement('div');
-      sourceBlock.className = 'example-source';
-      sourceBlock.textContent = source;
+      <div class="api-demo">
+        <div class="api-stage">
+          <div class="board-well board-well-flex">
+            <chess-board class="board-api" frame data-api-board>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+          </div>
+          <div class="console" aria-label="Console output">
+            <div class="console-head">
+              <span>Console</span>
+              <button class="btn btn-ghost btn-sm" type="button" data-api="clear-log">Clear</button>
+            </div>
+            <ol class="console-log" data-api-log aria-live="polite"></ol>
+          </div>
+        </div>
 
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'copy-btn';
-      copyBtn.textContent = 'Copy';
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(source).then(() => {
-          copyBtn.textContent = 'Copied!';
-          copyBtn.classList.add('copied');
-          setTimeout(() => {
-            copyBtn.textContent = 'Copy';
-            copyBtn.classList.remove('copied');
-          }, 2000);
-        });
-      });
-      sourceBlock.appendChild(copyBtn);
-      example.appendChild(sourceBlock);
-    });
-  </script>
+        <div class="api-calls" data-api-calls>
+          <h3 class="api-group-title">Property</h3>
+          <button class="api-call" type="button" data-call="fen-get">
+            <code>board.fen</code>
+            <span>Read the current position</span>
+          </button>
+          <button class="api-call" type="button" data-call="fen-set">
+            <code>board.fen = "r1bqkb1r/…/RNB1K1NR"</code>
+            <span>Replace the position (Scholar's mate)</span>
+          </button>
+          <button class="api-call" type="button" data-call="fen-bad">
+            <code>board.fen = "8/8/8/8/8/8/8/8/8"</code>
+            <span>Nine ranks is malformed, so this throws and the board is unchanged</span>
+          </button>
+
+          <h3 class="api-group-title">Methods</h3>
+          <button class="api-call" type="button" data-call="move">
+            <code>board.move("e2", "e4")</code>
+            <span>Move whatever is on e2 to e4</span>
+          </button>
+          <button class="api-call" type="button" data-call="piece">
+            <code>board.piece("e1")</code>
+            <span>Returns the piece, or "" for an empty square</span>
+          </button>
+          <button class="api-call" type="button" data-call="put">
+            <code>board.put("d5", "Q")</code>
+            <span>Place a white queen on d5</span>
+          </button>
+          <button class="api-call" type="button" data-call="clear">
+            <code>board.clear("d5")</code>
+            <span>Empty a square</span>
+          </button>
+          <button class="api-call" type="button" data-call="bad-square">
+            <code>board.put("z9", "Q")</code>
+            <span>Squares must be a1–h8, so this throws</span>
+          </button>
+          <button class="api-call" type="button" data-call="clear-board">
+            <code>board.clearBoard()</code>
+            <span>Remove every piece</span>
+          </button>
+
+          <h3 class="api-group-title">Markup</h3>
+          <button class="api-call" type="button" data-call="text">
+            <code>board.textContent = "rnbqkbnr/…/RNBQKBNR"</code>
+            <span>Text content is observed, so this resets the board too</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="reference">
+        <table class="ref-table">
+          <caption>Attributes</caption>
+          <thead><tr><th scope="col">Attribute</th><th scope="col">Effect</th></tr></thead>
+          <tbody>
+            <tr><td><code>frame</code></td><td>Show file (a–h) and rank (1–8) labels around the board.</td></tr>
+            <tr><td><code>reverse</code></td><td>Flip the board so the black pieces are on the bottom.</td></tr>
+            <tr><td><code>unicode</code></td><td>Render pieces as Unicode glyphs instead of the default SVGs.</td></tr>
+          </tbody>
+        </table>
+        <table class="ref-table">
+          <caption>Pieces</caption>
+          <thead><tr><th scope="col">Letter</th><th scope="col">Piece</th></tr></thead>
+          <tbody>
+            <tr><td><code>K Q R B N P</code></td><td>White king, queen, rook, bishop, knight, pawn</td></tr>
+            <tr><td><code>k q r b n p</code></td><td>Black king, queen, rook, bishop, knight, pawn</td></tr>
+          </tbody>
+        </table>
+      </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── Sizing ───────────────────────── -->
+    <section class="section container" id="sizing">
+      <header class="section-head">
+        <h2>Sizing</h2>
+        <p class="section-lede">
+          The host is <code>display: inline-block</code> and every square is one <code>em</code>,
+          so a board goes wherever text goes and scales with <code>font-size</code>.
+        </p>
+      </header>
+      <div class="section-body">
+
+      <div class="sizing-grid">
+        <div class="sizing-prose">
+          <p>
+            A diagram can sit right in a sentence, like this
+            <chess-board class="board-inline" aria-label="Scholar's mate, inline">r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR</chess-board>
+            one, and the line height stretches to fit. Handy for annotations, commit messages rendered as HTML,
+            or a puzzle list where every row shows its position.
+          </p>
+          <div class="codeblock-wrap">
+            <pre class="codeblock"><code><span class="tok-sel">chess-board</span> {
+  <span class="tok-prop">font-size</span>: <span class="tok-num">14px</span>;
+  <span class="tok-prop">vertical-align</span>: middle;
+}</code></pre>
+            <button class="copy-btn" type="button" data-copy="chess-board {
+  font-size: 14px;
+  vertical-align: middle;
+}" aria-label="Copy">Copy</button>
+          </div>
+        </div>
+        <div class="sizing-row" aria-label="The same position at three sizes">
+          <figure class="size-sample">
+            <chess-board style="font-size: 12px" unicode>1K1k4/1P6/8/8/8/8/r7/2R5</chess-board>
+            <figcaption><code>12px</code></figcaption>
+          </figure>
+          <figure class="size-sample">
+            <chess-board style="font-size: 22px">1K1k4/1P6/8/8/8/8/r7/2R5</chess-board>
+            <figcaption><code>22px</code></figcaption>
+          </figure>
+          <figure class="size-sample">
+            <chess-board style="font-size: 34px" frame>1K1k4/1P6/8/8/8/8/r7/2R5</chess-board>
+            <figcaption><code>34px</code> with <code>frame</code></figcaption>
+          </figure>
+        </div>
+      </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>
+        <span class="brand-mark" aria-hidden="true">♞</span>
+        <strong>chess-board</strong> <span data-version></span>, MIT licensed.
+        Made by <a href="https://github.com/laat" rel="noopener">Sigurd Fosseng</a>.
+      </p>
+      <p class="footer-links">
+        <a href="https://github.com/laat/chess-board" rel="noopener">Source</a>
+        <a href="https://github.com/laat/chess-board/blob/master/changelog.md" rel="noopener">Changelog</a>
+        <a href="https://www.npmjs.com/package/chess-board" rel="noopener">npm</a>
+        <a href="https://github.com/laat/chess-board/issues" rel="noopener">Issues</a>
+      </p>
+    </div>
+  </footer>
 </body>
 </html>

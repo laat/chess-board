@@ -177,9 +177,11 @@ One-time setup:
 2. Create an API token at
    [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens):
    **Create Token → Custom token**, permission **Account → Cloudflare Pages →
-   Edit**, and limit it to the account that owns `laat.dev`.
-3. Copy the account ID from the **API** box on the right of the `laat.dev` zone
-   overview in the Cloudflare dashboard.
+   Edit**, limited to the one account. No domain on Cloudflare is needed.
+3. Copy the account ID: it is the 32-character hex segment in the dashboard
+   URL right after `dash.cloudflare.com/` once the account is selected, and
+   `curl -H "Authorization: Bearer $TOKEN" https://api.cloudflare.com/client/v4/accounts`
+   lists it too.
 4. In the GitHub repository go to **Settings → Environments → preview**
    (the first workflow run creates it) and add two **environment secrets**:
    `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Environment secrets

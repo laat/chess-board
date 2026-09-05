@@ -2,29 +2,86 @@
 Unreleased
 ==========
 
-* Malformed FEN in the element's text content is now reported with
-  `console.warn` and ignored, keeping the current position. Previously
-  `fen-chess-board` accepted anything; version 4 validates and throws, which
-  would have thrown out of `connectedCallback` and left the element blank.
-  The `fen` setter and `move()` still throw on bad input.
-* Skip `customElements.define` when `<chess-board>` is already registered, so
-  loading the module twice (two bundles, HMR) no longer throws
-* Parse each SVG piece once and clone it, instead of re-parsing the markup on
-  every render
-* Replace the deprecated `cellpadding` / `cellspacing` table attributes with CSS
-* Ship only the library declarations: `dist/chess-board.test.d.ts` is no
-  longer generated or published
-* Bundle `fen-chess-board@4`
-* Toolchain: TypeScript 7, Vite 8, Vitest 5, happy-dom 20, pnpm 12 with
-  supply-chain policies (`minimumReleaseAge`, `trustPolicy`,
-  `blockExoticSubdeps`, `strictDepBuilds`)
-* CI: pin every action to a commit SHA, least-privilege permissions,
-  `persist-credentials: false`, concurrency limits, Node 22/24 matrix,
-  dependency review, zizmor audit workflow, Dependabot for actions
-* Release: stage the package with `pnpm stage publish` over npm trusted
-  publishing (OIDC) with provenance; a maintainer promotes it with
-  `pnpm stage approve`
-* Preview deploys of the demo site to Cloudflare Pages for every pull request
+**Behaviour changes for users of the element**
+
+* Invalid input now throws instead of quietly producing a broken board. This
+  comes from the bundled `fen-chess-board@4`, which validates everything it is
+  given:
+  * `fen = ...` rejects malformed piece placement: more than eight ranks, a
+    rank with more than eight squares, or the digits `0` and `9`. The board is
+    left unchanged. Version 3 silently truncated or dropped such input.
+  * `piece()`, `put()`, `clear()` and `move()` throw `Invalid square` for
+    anything that is not `a1`–`h8`. Version 3 crashed with a `TypeError` or
+    corrupted the board.
+  * `put()` throws `Invalid piece` unless the piece is a single character that
+    is not FEN syntax (digits, `/`, space). Version 3 accepted `"QQ"` and
+    produced FEN nobody can parse.
+  * Anything after the first space in a FEN string (active colour, castling,
+    move counters) is still ignored, as before.
+* Malformed FEN in the element's **text content** is reported with
+  `console.warn` and ignored, and the board keeps its current position. Without
+  this, the validation above would have thrown out of `connectedCallback` or
+  the `MutationObserver` and left the element blank.
+* `move(square, square)` no longer clears the piece; moving onto the same
+  square is a no-op.
+* The published bundle targets Vite's `baseline-widely-available` browsers
+  (roughly Chrome/Edge 107, Firefox 104, Safari 16 and newer) and uses
+  `Object.hasOwn`. Version 2.0 targeted Chrome 87, Firefox 78 and Safari 14.
+
+**Fixed**
+
+* Importing the module twice (two bundles, HMR) no longer throws from
+  `customElements.define`; registration is skipped when `<chess-board>` is
+  already defined.
+* `dist/chess-board.test.d.ts` is no longer generated or published; the
+  package ships only the library declarations.
+
+**Changed**
+
+* Each SVG piece is parsed once into a `<template>` and cloned on render,
+  instead of re-parsing the markup for every changed square.
+* The deprecated `cellpadding` / `cellspacing` table attributes are replaced by
+  `border-spacing: 0`; rendering is unchanged.
+* `dist/chess-board.js.map` is shipped alongside the bundle.
+* `package.json` is exported as `./package.json`.
+* The `Rank` type is derived from the rank tuple like `File` already was; the
+  resulting union is identical.
+
+**Development**
+
+* Toolchain: TypeScript 7, Vite 8, Vitest 5, happy-dom 20, pnpm 12. Node 22.12
+  or newer is required to work on the repository (consumers are unaffected).
+* `tsconfig.json` is stricter (`ES2022`, `noUncheckedIndexedAccess`,
+  `verbatimModuleSyntax`, `isolatedModules`); `tsconfig.build.json` excludes
+  tests from declaration emit; new `pnpm typecheck` script.
+* pnpm settings moved from `package.json` to `pnpm-workspace.yaml` with
+  supply-chain policies: `minimumReleaseAge` (24 h, `fen-chess-board`
+  excluded), `trustPolicy: no-downgrade`, `blockExoticSubdeps`,
+  `strictDepBuilds`. The `esbuild` build allow-list is gone; nothing in the
+  tree needs build scripts any more.
+* Tests rewritten with helpers; new coverage for the text-content path,
+  invalid FEN through both the setter and markup, attribute toggling in both
+  directions, observer teardown on disconnect and element registration
+  (21 → 27 tests).
+* CI: every action pinned to a commit SHA, `permissions: {}` with documented
+  job-level grants, `persist-credentials: false`, concurrency groups,
+  timeouts, Node 22/24 matrix, typecheck step, dependency review on pull
+  requests. `pnpm/setup` replaces `pnpm/action-setup` + `actions/setup-node`.
+* New zizmor workflow audits the workflows themselves (pedantic persona,
+  SARIF to code scanning, weekly schedule). Dependabot keeps the pinned
+  actions and the wrangler lockfile current with a 7-day cooldown; the
+  library's own dependencies are bumped by hand because Dependabot does not
+  support pnpm 12.
+* Release: the Publish workflow checks the tag against `package.json`, runs
+  typecheck/test/build, then stages the package with `pnpm stage publish`
+  over npm trusted publishing (OIDC) with provenance. A maintainer promotes
+  it with `pnpm stage approve`. No npm token and no dependency cache in the
+  release job.
+* Every pull request from a branch in this repository gets a Cloudflare Pages
+  preview of the demo site, posted as a PR comment. wrangler is pinned by
+  `.github/cloudflare/package-lock.json`, separate from the library's lockfile.
+* Documentation: readme sections for development, preview deploys and the
+  staged release flow; changelog entries backfilled for 2.0.2 and 2.0.3.
 
 2.0.3 / 2026-04-14
 ==================

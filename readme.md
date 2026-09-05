@@ -193,9 +193,9 @@ The token can manage every Pages project in the account but nothing else
 and its dependencies are pinned by `.github/cloudflare/package-lock.json`,
 which Dependabot keeps current.
 
-Previews live at `https://<hash>.chess-board.pages.dev`, with a per-branch
-alias at `https://<branch>.chess-board.pages.dev`. Pull requests from forks are
-skipped because they cannot read the secrets.
+Previews live at `https://<hash>.chess-board-4mh.pages.dev`, with a per-branch
+alias at `https://<branch>.chess-board-4mh.pages.dev`. Pull requests from forks
+are skipped because they cannot read the secrets.
 
 ## Releasing
 

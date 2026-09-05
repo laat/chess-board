@@ -1,8 +1,10 @@
 # Dependabot keeps the SHA-pinned actions in .github/workflows current.
 #
-# npm dependencies are deliberately not listed: Dependabot only supports pnpm
-# up to v10 and this repository uses pnpm 12, so it could not regenerate the
-# lockfile. Bump them with `pnpm update --latest` instead.
+# The library's npm dependencies are deliberately not listed: Dependabot only
+# supports pnpm up to v10 and this repository uses pnpm 12, so it could not
+# regenerate pnpm-lock.yaml. Bump them with `pnpm update --latest` instead.
+# The wrangler pin under .github/cloudflare uses a plain npm lockfile, which
+# Dependabot does handle.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -16,3 +18,10 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /.github/cloudflare
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7

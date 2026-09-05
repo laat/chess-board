@@ -180,9 +180,16 @@ One-time setup:
    Edit**, and limit it to the account that owns `laat.dev`.
 3. Copy the account ID from the **API** box on the right of the `laat.dev` zone
    overview in the Cloudflare dashboard.
-4. In the GitHub repository go to **Settings → Secrets and variables →
-   Actions** and add two repository secrets: `CLOUDFLARE_API_TOKEN` and
-   `CLOUDFLARE_ACCOUNT_ID`.
+4. In the GitHub repository go to **Settings → Environments → preview**
+   (the first workflow run creates it) and add two **environment secrets**:
+   `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Environment secrets
+   are only readable by the preview job, not by the CI, publish or Pages
+   jobs.
+
+The token can manage every Pages project in the account but nothing else
+(no DNS, Workers or billing), so give it an expiry and rotate it. wrangler
+and its dependencies are pinned by `.github/cloudflare/package-lock.json`,
+which Dependabot keeps current.
 
 Previews live at `https://<hash>.chess-board.pages.dev`, with a per-branch
 alias at `https://<branch>.chess-board.pages.dev`. Pull requests from forks are

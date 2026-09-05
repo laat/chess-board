@@ -1,8 +1,9 @@
 # Deploys the demo site for every pull request as a Cloudflare Pages preview.
 #
 # One-time setup (see "Preview deploys" in readme.md): create the Pages project
-# `chess-board` and add the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID
-# repository secrets. Production stays on GitHub Pages (gh-pages.yml).
+# `chess-board` and add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as
+# secrets of the `preview` environment, so only this job can read them.
+# Production stays on GitHub Pages (gh-pages.yml).
 name: Preview
 
 on:
@@ -40,17 +41,20 @@ jobs:
           install: false
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:pages
+      # wrangler and every transitive dependency come from the committed
+      # .github/cloudflare/package-lock.json (integrity-checked by npm ci), so
+      # nothing is resolved from the registry at run time. wrangler-action
+      # sees the installed copy and skips its own install.
+      - run: npm ci
+        working-directory: .github/cloudflare
       - name: Deploy to Cloudflare Pages
         id: deploy
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # wrangler is installed into .github/cloudflare (see its .npmrc), not
-          # into the project, so it never touches pnpm-lock.yaml.
           workingDirectory: .github/cloudflare
           packageManager: npm
-          wranglerVersion: "4.129.0"
           command: >-
             pages deploy ../../_site
             --project-name=chess-board

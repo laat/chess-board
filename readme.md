@@ -163,6 +163,27 @@ q // ♛ black queen
 k // ♚ black king
 ```
 
+## Accessibility
+
+The element is exposed to assistive technology as an image (`role="img"`)
+whose accessible name describes the position in words, and the name is kept
+up to date on every change:
+
+```
+Chess position. White: king e1, queen d1, rooks a1 and h1, bishops c1 and f1,
+knights b1 and g1, pawns a2, b2, c2, d2, e2, f2, g2 and h2. Black: king e8, …
+```
+
+Set `aria-label` or `aria-labelledby` yourself to describe the board in your
+own words, and the element leaves it alone; remove it again to get the
+generated description back. Set `role` yourself to override the image role.
+
+```html
+<chess-board aria-label="Position after 17.Rd8#">
+  3R2k1/5ppp/8/8/8/8/5PPP/6K1
+</chess-board>
+```
+
 ## Development
 
 The repository uses [pnpm](https://pnpm.io) (the version is pinned in

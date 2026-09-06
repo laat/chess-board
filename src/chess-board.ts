@@ -26,6 +26,68 @@ const UNICODE_PIECES: Record<Piece, string> = {
   p: "\u265F",
 };
 
+const PIECE_NAMES: Record<Piece, string> = {
+  K: "king",
+  Q: "queen",
+  R: "rook",
+  B: "bishop",
+  N: "knight",
+  P: "pawn",
+  k: "king",
+  q: "queen",
+  r: "rook",
+  b: "bishop",
+  n: "knight",
+  p: "pawn",
+};
+
+const WHITE_PIECES: readonly WhitePiece[] = ["K", "Q", "R", "B", "N", "P"];
+const BLACK_PIECES: readonly BlackPiece[] = ["k", "q", "r", "b", "n", "p"];
+
+function joinSquares(squares: readonly string[]): string {
+  if (squares.length < 2) return squares.join("");
+  return `${squares.slice(0, -1).join(", ")} and ${squares.at(-1)}`;
+}
+
+/**
+ * Describe a position in words for the accessible name of the board:
+ * "Chess position. White: king e1, queen d1, rooks a1 and h1, ...
+ * Black: king e8, ..." Pieces are grouped by type and listed by file, then
+ * rank, so a pawn chain reads a2, b3, c4.
+ *
+ * @param board - The board as returned by FENBoard: row 0 is rank 8.
+ */
+function describePosition(board: readonly (readonly string[])[]): string {
+  const squares = new Map<Piece, string[]>();
+  for (const [f, file] of FILES.entries()) {
+    for (let r = RANKS.length - 1; r >= 0; r--) {
+      const piece = board[r]?.[f] ?? "";
+      if (!isPiece(piece)) continue;
+      const list = squares.get(piece) ?? [];
+      list.push(`${file}${RANKS[r]}`);
+      squares.set(piece, list);
+    }
+  }
+
+  const describeSide = (name: string, pieces: readonly Piece[]): string => {
+    const groups = pieces.flatMap((piece) => {
+      const list = squares.get(piece);
+      if (!list) return [];
+      const plural = list.length > 1 ? "s" : "";
+      return [`${PIECE_NAMES[piece]}${plural} ${joinSquares(list)}`];
+    });
+    return groups.length ? `${name}: ${groups.join(", ")}.` : "";
+  };
+
+  const sides = [
+    describeSide("White", WHITE_PIECES),
+    describeSide("Black", BLACK_PIECES),
+  ].filter(Boolean);
+  return ["Chess position.", ...(sides.length ? sides : ["Empty board."])].join(
+    " ",
+  );
+}
+
 // SVG piece definitions — viewBox 0 0 45 45, standard chess piece vectors
 const SVG_PIECES: Record<Piece, string> = {
   P: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" class="piece"><path d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 10.5,31.58 10.5,39.5 L 33.5,39.5 C 33.5,31.58 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 z" style="fill:#fff;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter"/></svg>`,
@@ -189,6 +251,8 @@ export class ChessBoardElement extends HTMLElement {
   private readonly _cells: HTMLTableCellElement[];
   private _observer: MutationObserver | null = null;
   private _lastUnicode = false;
+  /** The aria-label this element wrote last, to tell it from an author's. */
+  private _generatedLabel: string | null = null;
 
   // "reverse" and "frame" are handled purely by CSS :host() selectors
   // and do not require JS re-rendering.
@@ -209,6 +273,10 @@ export class ChessBoardElement extends HTMLElement {
     // empty at construction time — this is why we read it here and also
     // why the MutationObserver exists.
     this._applyTextContent();
+    // Assistive technology sees the board as one image described by its
+    // aria-label (see _updateLabel), unless the page gave it another role.
+    // Attributes may not be added in the constructor, hence here.
+    if (!this.hasAttribute("role")) this.setAttribute("role", "img");
     this._renderBoard();
 
     // connectedCallback may fire multiple times if the element is moved.
@@ -310,6 +378,23 @@ export class ChessBoardElement extends HTMLElement {
         cell.replaceChildren(createPieceElement(piece, useUnicode));
       }
     });
+
+    this._updateLabel(board);
+  }
+
+  /**
+   * Keep the accessible name in step with the position, unless the page
+   * supplies its own with aria-label or aria-labelledby. A label written
+   * here is recognised by its value, so an author can take over at any time
+   * by setting aria-label to something else, and hand back by removing it.
+   */
+  private _updateLabel(board: readonly (readonly string[])[]): void {
+    if (this.hasAttribute("aria-labelledby")) return;
+    const current = this.getAttribute("aria-label");
+    if (current !== null && current !== this._generatedLabel) return;
+    const label = describePosition(board);
+    if (label !== current) this.setAttribute("aria-label", label);
+    this._generatedLabel = label;
   }
 }
 

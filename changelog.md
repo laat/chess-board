@@ -1,3 +1,14 @@
+Unreleased
+==========
+
+**Added**
+
+* The board has a text alternative. The element gets `role="img"` and an
+  `aria-label` describing the position in words ("Chess position. White: king
+  e1, queen d1, …"), updated on every change, so a screen reader no longer
+  reads 64 blank table cells. An `aria-label`, `aria-labelledby` or `role`
+  set on the element by the page is left untouched. (#22)
+
 
 3.0.0 / 2026-09-05
 ==================

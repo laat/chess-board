@@ -299,6 +299,84 @@ describe("chess-board", () => {
     });
   });
 
+  describe("accessibility", () => {
+    const START_LABEL =
+      "Chess position. " +
+      "White: king e1, queen d1, rooks a1 and h1, bishops c1 and f1, " +
+      "knights b1 and g1, pawns a2, b2, c2, d2, e2, f2, g2 and h2. " +
+      "Black: king e8, queen d8, rooks a8 and h8, bishops c8 and f8, " +
+      "knights b8 and g8, pawns a7, b7, c7, d7, e7, f7, g7 and h7.";
+
+    it("exposes the board as an image described by the position", () => {
+      const el = createElement(START_FEN);
+      expect(el.getAttribute("role")).toBe("img");
+      expect(el.getAttribute("aria-label")).toBe(START_LABEL);
+    });
+
+    it("describes an empty board", () => {
+      const el = createElement();
+      expect(el.getAttribute("aria-label")).toBe(
+        "Chess position. Empty board.",
+      );
+    });
+
+    it("leaves out a side that has no pieces", () => {
+      const el = createElement("8/8/8/8/8/8/8/4K3");
+      expect(el.getAttribute("aria-label")).toBe(
+        "Chess position. White: king e1.",
+      );
+    });
+
+    it("updates the description on every change", async () => {
+      const el = createElement(START_FEN);
+      el.move("e2", "e4");
+      expect(el.getAttribute("aria-label")).toContain(
+        "pawns a2, b2, c2, d2, e4, f2, g2 and h2.",
+      );
+      el.clearBoard();
+      expect(el.getAttribute("aria-label")).toBe(
+        "Chess position. Empty board.",
+      );
+      el.textContent = SCHOLARS_MATE;
+      await flushObservers();
+      expect(el.getAttribute("aria-label")).toBe(
+        "Chess position. " +
+          "White: king e1, queen f7, rooks a1 and h1, bishops c1 and c4, " +
+          "knights b1 and g1, pawns a2, b2, c2, d2, e4, f2, g2 and h2. " +
+          "Black: king e8, queen d8, rooks a8 and h8, bishops c8 and f8, " +
+          "knights c6 and f6, pawns a7, b7, c7, d7, e5, g7 and h7.",
+      );
+    });
+
+    it("keeps a role and label supplied by the page", () => {
+      const el = createElement(START_FEN, {
+        role: "figure",
+        "aria-label": "Position after 17.Rd8#",
+      });
+      el.move("e2", "e4");
+      expect(el.getAttribute("role")).toBe("figure");
+      expect(el.getAttribute("aria-label")).toBe("Position after 17.Rd8#");
+    });
+
+    it("does not add a label when the page uses aria-labelledby", () => {
+      const el = createElement(START_FEN, { "aria-labelledby": "caption" });
+      expect(el.hasAttribute("aria-label")).toBe(false);
+    });
+
+    it("lets the page take over the label later, and hand it back", () => {
+      const el = createElement(START_FEN);
+      expect(el.getAttribute("aria-label")).toBe(START_LABEL);
+
+      el.setAttribute("aria-label", "Opening position");
+      el.move("e2", "e4");
+      expect(el.getAttribute("aria-label")).toBe("Opening position");
+
+      el.removeAttribute("aria-label");
+      el.move("e7", "e5");
+      expect(el.getAttribute("aria-label")).toContain("pawns a7, b7, c7, d7, e5");
+    });
+  });
+
   describe("square colors", () => {
     it("assigns correct light/dark classes", () => {
       const el = createElement(START_FEN);

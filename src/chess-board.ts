@@ -26,38 +26,71 @@ const UNICODE_PIECES: Record<Piece, string> = {
   p: "\u265F",
 };
 
-const PIECE_NAMES: Record<Piece, string> = {
-  K: "king",
-  Q: "queen",
-  R: "rook",
-  B: "bishop",
-  N: "knight",
-  P: "pawn",
-  k: "king",
-  q: "queen",
-  r: "rook",
-  b: "bishop",
-  n: "knight",
-  p: "pawn",
+/**
+ * The words the element uses for assistive technology. Replace
+ * `ChessBoardElement.strings` to translate them; boards pick the new words
+ * up on their next render.
+ */
+export interface ChessBoardStrings {
+  /** Colour names, capitalised: "White pawn", "White: king e1, ...". */
+  white: string;
+  black: string;
+  /** Piece names by type, singular and plural. */
+  pieces: Record<WhitePiece, readonly [singular: string, plural: string]>;
+  /** Opens the description of the position. */
+  position: string;
+  /** Describes a board without pieces. */
+  empty: string;
+  /** Joins the last two squares of a list: "a1 and h1". */
+  and: string;
+}
+
+const ENGLISH: ChessBoardStrings = {
+  white: "White",
+  black: "Black",
+  pieces: {
+    K: ["king", "kings"],
+    Q: ["queen", "queens"],
+    R: ["rook", "rooks"],
+    B: ["bishop", "bishops"],
+    N: ["knight", "knights"],
+    P: ["pawn", "pawns"],
+  },
+  position: "Chess position.",
+  empty: "Empty board.",
+  and: "and",
 };
 
 const WHITE_PIECES: readonly WhitePiece[] = ["K", "Q", "R", "B", "N", "P"];
 const BLACK_PIECES: readonly BlackPiece[] = ["k", "q", "r", "b", "n", "p"];
 
-function joinSquares(squares: readonly string[]): string {
+function pieceType(piece: Piece): WhitePiece {
+  return piece.toUpperCase() as WhitePiece;
+}
+
+/** The name of a piece for a square's text: "White pawn". */
+function pieceName(piece: Piece, strings: ChessBoardStrings): string {
+  const colour = piece === pieceType(piece) ? strings.white : strings.black;
+  return `${colour} ${strings.pieces[pieceType(piece)][0]}`;
+}
+
+function joinSquares(squares: readonly string[], and: string): string {
   if (squares.length < 2) return squares.join("");
-  return `${squares.slice(0, -1).join(", ")} and ${squares.at(-1)}`;
+  return `${squares.slice(0, -1).join(", ")} ${and} ${squares.at(-1)}`;
 }
 
 /**
- * Describe a position in words for the accessible name of the board:
+ * Describe a position in words for the caption of the board:
  * "Chess position. White: king e1, queen d1, rooks a1 and h1, ...
  * Black: king e8, ..." Pieces are grouped by type and listed by file, then
  * rank, so a pawn chain reads a2, b3, c4.
  *
  * @param board - The board as returned by FENBoard: row 0 is rank 8.
  */
-function describePosition(board: readonly (readonly string[])[]): string {
+function describePosition(
+  board: readonly (readonly string[])[],
+  strings: ChessBoardStrings,
+): string {
   const squares = new Map<Piece, string[]>();
   for (const [f, file] of FILES.entries()) {
     for (let r = RANKS.length - 1; r >= 0; r--) {
@@ -73,17 +106,18 @@ function describePosition(board: readonly (readonly string[])[]): string {
     const groups = pieces.flatMap((piece) => {
       const list = squares.get(piece);
       if (!list) return [];
-      const plural = list.length > 1 ? "s" : "";
-      return [`${PIECE_NAMES[piece]}${plural} ${joinSquares(list)}`];
+      const [singular, plural] = strings.pieces[pieceType(piece)];
+      const noun = list.length > 1 ? plural : singular;
+      return [`${noun} ${joinSquares(list, strings.and)}`];
     });
     return groups.length ? `${name}: ${groups.join(", ")}.` : "";
   };
 
   const sides = [
-    describeSide("White", WHITE_PIECES),
-    describeSide("Black", BLACK_PIECES),
+    describeSide(strings.white, WHITE_PIECES),
+    describeSide(strings.black, BLACK_PIECES),
   ].filter(Boolean);
-  return ["Chess position.", ...(sides.length ? sides : ["Empty board."])].join(
+  return [strings.position, ...(sides.length ? sides : [strings.empty])].join(
     " ",
   );
 }
@@ -119,39 +153,65 @@ const STYLES = `
 :host {
   display: inline-block;
 }
-table { border-spacing: 0; }
-.frame { display: none; }
+.chess-board {
+  border-spacing: 0;
+  position: relative;
+}
+td, th {
+  padding: 0;
+  text-align: center;
+  font-weight: normal;
+}
+/* Read by assistive technology, never seen: the caption, the file and rank
+   labels while the frame is hidden, and the name of the piece on a square. */
+caption, .frame > span, .name {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.frame {
+  width: 0; height: 0;
+  font-size: 40%;
+}
 :host([frame]) .frame {
   width: 1em; height: 1em;
-  display: table-cell;
-  font-size: 40%;
+}
+:host([frame]) .frame > span {
+  position: static;
+  width: auto; height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  white-space: normal;
 }
 :host([frame]) .frame.left,
 :host([frame]) .frame.right {
   vertical-align: middle;
   padding: 0.2em;
 }
-:host([frame]) .frame.top,
-:host([frame]) .frame.bottom {
-  text-align: center;
-}
-:host([reverse]) .board-frame {
+:host([reverse]) .chess-board {
   transform: rotate(180deg);
 }
 :host([reverse]) .frame {
   transform: rotate(180deg);
 }
-.chess-board {
-  border: 1px solid black;
-  border-collapse: collapse;
+.square {
+  width: 1em; height: 1em;
 }
 .light { background: #FFCE9E; }
 .dark  { background: #D18B47; }
-td {
-  width: 1em; height: 1em;
-  text-align: center;
-  padding: 0;
-}
+/* The border around the 8x8 board is drawn by its outermost squares, since
+   the table itself also holds the frame labels. Borders are not collapsed,
+   so each one is a plain part of its square's box. */
+tbody tr:first-child .square { border-top: 1px solid black; }
+tbody tr:last-child .square { border-bottom: 1px solid black; }
+.square:nth-child(2) { border-left: 1px solid black; }
+.square:nth-child(9) { border-right: 1px solid black; }
 .piece, .empty {
   width: 1em; height: 1em;
   display: block;
@@ -165,43 +225,39 @@ td {
 }
 `;
 
+// One table, so that assistive technology can walk it: the caption is the
+// description of the position, the files are column headers, the ranks are
+// row headers and each square holds the name of its piece. The labels on the
+// right and at the bottom repeat the headers and are hidden from it.
 function buildBoardHTML(): string {
   let html = `<style>${STYLES}</style>`;
-  html += `<table class="board-frame">`;
+  html += `<table class="chess-board"><caption></caption>`;
 
   // Top frame row
-  html += `<tr><td class="frame top left"></td>`;
-  for (const file of FILES) html += `<td class="frame top">${file}</td>`;
-  html += `<td class="frame top right"></td></tr>`;
+  html += `<thead><tr><td class="frame top left"></td>`;
+  for (const file of FILES) {
+    html += `<th scope="col" class="frame top"><span>${file}</span></th>`;
+  }
+  html += `<td class="frame top right"></td></tr></thead>`;
 
   // Board rows with side frames
-  for (const [ri, rank] of RANKS.entries()) {
-    html += `<tr>`;
-    html += `<td class="frame left">${rank}</td>`;
-
-    if (ri === 0) {
-      // First rank row contains the nested chess board table
-      html += `<td colspan="8" rowspan="8" class="board-wrap">`;
-      html += `<table class="chess-board">`;
-      for (const [r, boardRank] of RANKS.entries()) {
-        html += `<tr>`;
-        for (const [f, file] of FILES.entries()) {
-          const shade = (r + f) % 2 === 0 ? "light" : "dark";
-          html += `<td class="${file}${boardRank} ${shade}"><span class="empty" data-piece=""></span></td>`;
-        }
-        html += `</tr>`;
-      }
-      html += `</table></td>`;
+  html += `<tbody>`;
+  for (const [r, rank] of RANKS.entries()) {
+    html += `<tr><th scope="row" class="frame left"><span>${rank}</span></th>`;
+    for (const [f, file] of FILES.entries()) {
+      const shade = (r + f) % 2 === 0 ? "light" : "dark";
+      html += `<td class="square ${file}${rank} ${shade}"><span class="empty" data-piece=""></span></td>`;
     }
-
-    html += `<td class="frame right">${rank}</td>`;
-    html += `</tr>`;
+    html += `<td class="frame right" aria-hidden="true"><span>${rank}</span></td></tr>`;
   }
+  html += `</tbody>`;
 
   // Bottom frame row
-  html += `<tr><td class="frame bottom left"></td>`;
-  for (const file of FILES) html += `<td class="frame bottom">${file}</td>`;
-  html += `<td class="frame bottom right"></td></tr>`;
+  html += `<tfoot><tr aria-hidden="true"><td class="frame bottom left"></td>`;
+  for (const file of FILES) {
+    html += `<td class="frame bottom"><span>${file}</span></td>`;
+  }
+  html += `<td class="frame bottom right"></td></tr></tfoot>`;
 
   html += `</table>`;
   return html;
@@ -226,45 +282,62 @@ function svgPiece(piece: Piece): SVGElement {
   return template.cloneNode(true) as SVGElement;
 }
 
-function createPieceElement(pieceChar: string, unicode: boolean): Element {
+/**
+ * The contents of a square: the piece as a picture or glyph, hidden from
+ * assistive technology, followed by its name as hidden text. The first
+ * element carries data-piece so that rendering can tell what is on the
+ * square without parsing it.
+ */
+function createSquareContents(
+  pieceChar: string,
+  unicode: boolean,
+  strings: ChessBoardStrings,
+): Element[] {
   if (!isPiece(pieceChar)) {
     const span = document.createElement("span");
     span.className = "empty";
     span.setAttribute("data-piece", "");
-    return span;
+    return [span];
   }
+  let piece: Element;
   if (unicode) {
-    const span = document.createElement("span");
-    span.className = "piece";
-    span.setAttribute("data-piece", pieceChar);
-    span.textContent = UNICODE_PIECES[pieceChar];
-    return span;
+    piece = document.createElement("span");
+    piece.className = "piece";
+    piece.textContent = UNICODE_PIECES[pieceChar];
+  } else {
+    piece = svgPiece(pieceChar);
   }
-  const svg = svgPiece(pieceChar);
-  svg.setAttribute("data-piece", pieceChar);
-  return svg;
+  piece.setAttribute("data-piece", pieceChar);
+  piece.setAttribute("aria-hidden", "true");
+  const name = document.createElement("span");
+  name.className = "name";
+  name.textContent = pieceName(pieceChar, strings);
+  return [piece, name];
 }
 
 export class ChessBoardElement extends HTMLElement {
+  /** The words used for assistive technology; replace to translate. */
+  static strings: ChessBoardStrings = ENGLISH;
+
   private readonly _board = new FENBoard();
   /** The 64 board cells in row-major order: index 0 is a8, index 63 is h1. */
   private readonly _cells: HTMLTableCellElement[];
+  private readonly _caption: HTMLTableCaptionElement;
   private _observer: MutationObserver | null = null;
   private _lastUnicode = false;
-  /** The aria-label this element wrote last, to tell it from an author's. */
-  private _generatedLabel: string | null = null;
 
   // "reverse" and "frame" are handled purely by CSS :host() selectors
-  // and do not require JS re-rendering.
+  // and do not require JS re-rendering. "aria-label" replaces the caption.
   static get observedAttributes(): string[] {
-    return ["unicode"];
+    return ["unicode", "aria-label"];
   }
 
   constructor() {
     super();
     const shadow = this.attachShadow({ mode: "open" });
     shadow.innerHTML = buildBoardHTML();
-    this._cells = Array.from(shadow.querySelectorAll(".chess-board td"));
+    this._cells = Array.from(shadow.querySelectorAll(".square"));
+    this._caption = shadow.querySelector("caption") as HTMLTableCaptionElement;
   }
 
   connectedCallback(): void {
@@ -273,10 +346,6 @@ export class ChessBoardElement extends HTMLElement {
     // empty at construction time — this is why we read it here and also
     // why the MutationObserver exists.
     this._applyTextContent();
-    // Assistive technology sees the board as one image described by its
-    // aria-label (see _updateLabel), unless the page gave it another role.
-    // Attributes may not be added in the constructor, hence here.
-    if (!this.hasAttribute("role")) this.setAttribute("role", "img");
     this._renderBoard();
 
     // connectedCallback may fire multiple times if the element is moved.
@@ -306,6 +375,8 @@ export class ChessBoardElement extends HTMLElement {
   ): void {
     if (name === "unicode") {
       this._renderBoard();
+    } else if (name === "aria-label") {
+      this._updateCaption();
     }
   }
 
@@ -316,6 +387,15 @@ export class ChessBoardElement extends HTMLElement {
   set fen(value: string) {
     this._board.fen = value;
     this._renderBoard();
+  }
+
+  /**
+   * The description of the position that assistive technology reads as
+   * the caption of the board, in the words of `ChessBoardElement.strings`.
+   * An `aria-label` on the element replaces it.
+   */
+  get description(): string {
+    return describePosition(this._board.board, ChessBoardElement.strings);
   }
 
   piece(square: Square): PieceOrEmpty {
@@ -366,6 +446,7 @@ export class ChessBoardElement extends HTMLElement {
 
   private _renderBoard(): void {
     const board = this._board.board;
+    const strings = ChessBoardElement.strings;
     const useUnicode = this.hasAttribute("unicode");
     const modeChanged = useUnicode !== this._lastUnicode;
     this._lastUnicode = useUnicode;
@@ -375,26 +456,19 @@ export class ChessBoardElement extends HTMLElement {
       const currentPiece = cell.firstElementChild?.getAttribute("data-piece");
 
       if (piece !== currentPiece || modeChanged) {
-        cell.replaceChildren(createPieceElement(piece, useUnicode));
+        cell.replaceChildren(...createSquareContents(piece, useUnicode, strings));
       }
     });
 
-    this._updateLabel(board);
+    this._updateCaption();
   }
 
-  /**
-   * Keep the accessible name in step with the position, unless the page
-   * supplies its own with aria-label or aria-labelledby. A label written
-   * here is recognised by its value, so an author can take over at any time
-   * by setting aria-label to something else, and hand back by removing it.
-   */
-  private _updateLabel(board: readonly (readonly string[])[]): void {
-    if (this.hasAttribute("aria-labelledby")) return;
-    const current = this.getAttribute("aria-label");
-    if (current !== null && current !== this._generatedLabel) return;
-    const label = describePosition(board);
-    if (label !== current) this.setAttribute("aria-label", label);
-    this._generatedLabel = label;
+  /** The caption is the page's aria-label if it set one, else the description. */
+  private _updateCaption(): void {
+    const caption = this.getAttribute("aria-label") || this.description;
+    if (this._caption.textContent !== caption) {
+      this._caption.textContent = caption;
+    }
   }
 }
 

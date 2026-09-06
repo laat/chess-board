@@ -3,12 +3,23 @@ Unreleased
 
 **Added**
 
-* The board has a text alternative. The element gets `role="img"` and an
-  `aria-label` describing the position in words ("Chess position. White: king
-  e1, queen d1, …"), updated on every change, so a screen reader no longer
-  reads 64 blank table cells. An `aria-label`, `aria-labelledby` or `role`
-  set on the element by the page is left untouched. (#22)
+* The board is a table to assistive technology instead of 64 blank cells.
+  The caption describes the position in words ("Chess position. White: king
+  e1, queen d1, …"), the files and ranks are column and row headers whether
+  or not the frame is shown, and each square holds the name of its piece
+  ("White pawn") next to the picture, which is hidden. A screen reader hears
+  the whole position on entering the board and can walk it square by square.
+  An `aria-label` on the element replaces the caption with the page's own
+  words. The description is also exposed as the `description` property, and
+  the words can be translated by replacing `ChessBoardElement.strings`. (#22)
 
+**Changed**
+
+* The shadow tree is one table instead of a board table nested in a frame
+  table. The border around the board is drawn by its outermost squares, and
+  the frame labels are collapsed to nothing rather than removed when `frame`
+  is off, so that they stay available as headers. Rendering is unchanged
+  apart from sub-pixel positioning of the frame labels.
 
 3.0.0 / 2026-09-05
 ==================

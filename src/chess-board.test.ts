@@ -311,6 +311,40 @@ describe("chess-board", () => {
     });
   });
 
+  describe("styling hooks", () => {
+    function styles(el: ChessBoardElement): string {
+      return el.shadowRoot?.querySelector("style")?.textContent ?? "";
+    }
+
+    it("exposes the board and every square as parts", () => {
+      const el = createElement(START_FEN);
+      expect(getTable(el).getAttribute("part")).toBe("board");
+      expect(getCell(el, 0, 0).getAttribute("part")).toBe("square a8 light");
+      expect(getCell(el, 4, 3).getAttribute("part")).toBe("square d4 dark");
+      expect(getCell(el, 4, 4).getAttribute("part")).toBe("square e4 light");
+      expect(getCell(el, 7, 7).getAttribute("part")).toBe("square h1 light");
+      const squares = el.shadowRoot?.querySelectorAll("[part~='square']");
+      expect(squares?.length).toBe(64);
+    });
+
+    it("exposes the frame labels as parts", () => {
+      const el = createElement(START_FEN, { frame: "" });
+      const frames = el.shadowRoot?.querySelectorAll(".frame") ?? [];
+      expect(frames.length).toBeGreaterThan(0);
+      for (const frame of frames) {
+        expect(frame.getAttribute("part")).toBe("frame");
+      }
+    });
+
+    it("reads colours and the border from custom properties", () => {
+      const css = styles(createElement());
+      expect(css).toContain("var(--chess-board-light, #FFCE9E)");
+      expect(css).toContain("var(--chess-board-dark, #D18B47)");
+      expect(css).toContain("var(--chess-board-border, 1px solid black)");
+      expect(css).toContain("var(--chess-board-frame-font-size, 40%)");
+    });
+  });
+
   describe("diffing", () => {
     it("only updates changed cells", () => {
       const el = createElement(START_FEN);

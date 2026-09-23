@@ -57,7 +57,7 @@ files and tell the browser where the dependency lives with an import map:
 Types for the element, squares and pieces are exported from the package:
 
 ```ts
-import type { ChessBoardElement, Square, Piece } from "chess-board";
+import type { ChessBoardElement, ChessBoardStrings, Square, Piece } from "chess-board";
 ```
 
 ## Attributes
@@ -161,6 +161,62 @@ b // ♝ black bishop
 r // ♜ black rook
 q // ♛ black queen
 k // ♚ black king
+```
+
+## Accessibility
+
+To assistive technology the board is a table. Its caption describes the
+position in words, the files and ranks are column and row headers (also when
+`frame` is off and they are not shown), and each square holds the name of its
+piece. A screen reader announces the whole position on entering the board and
+can then walk it square by square with its table commands:
+
+```
+Chess position. White: king e1, queen d1, rooks a1 and h1, bishops c1 and f1,
+knights b1 and g1, pawns a2, b2, c2, d2, e2, f2, g2 and h2. Black: king e8, …
+```
+
+The same text is available as the `description` property.
+
+Set `aria-label` on the element to replace the caption with your own words,
+and remove it to get the generated description back:
+
+```html
+<chess-board aria-label="White to move and win">
+  8/8/8/8/4P3/8/8/4K3
+</chess-board>
+```
+
+Two limits to know about:
+
+- Only the piece placement is described. The element does not track the side
+  to move, so say it in your own `aria-label` when it matters.
+- Changes are not announced. `move()`, `fen` and the other methods update the
+  caption and the squares silently, as any table would. A game viewer should
+  announce moves itself, for example in an `aria-live` region.
+
+The words are English by default. Replace `ChessBoardElement.strings` to
+translate them; boards pick the new words up on their next render, so do it
+before the boards are created or set `fen` again afterwards:
+
+```ts
+import { ChessBoardElement } from "chess-board";
+
+ChessBoardElement.strings = {
+  white: "Hvit",
+  black: "Svart",
+  pieces: {
+    K: ["konge", "konger"],
+    Q: ["dronning", "dronninger"],
+    R: ["tårn", "tårn"],
+    B: ["løper", "løpere"],
+    N: ["springer", "springere"],
+    P: ["bonde", "bønder"],
+  },
+  position: "Sjakkstilling.",
+  empty: "Tomt brett.",
+  and: "og",
+};
 ```
 
 ## Development

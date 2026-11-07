@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
       # No dependency cache here: this job deploys with the Cloudflare token, so
       # a poisoned cache must not be able to reach it.
-      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3.1.1
+      - uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
         with:
           runtime: node@24
           install: false

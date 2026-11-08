@@ -92,6 +92,31 @@
     <chess-board unicode reverse frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
   </div>
 
+  <h2>Custom Colours</h2>
+  <p>The square colours and the border are CSS custom properties.</p>
+  <div class="example">
+    <style>
+      .green {
+        --chess-board-light: #eeeed2;
+        --chess-board-dark: #769656;
+        --chess-board-border: none;
+      }
+    </style>
+    <chess-board class="green">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
+  </div>
+
+  <h2>Highlighted Squares</h2>
+  <p>Every square is a <code>::part()</code> named after it, so a page can mark the last move.</p>
+  <div class="example">
+    <style>
+      .last-move::part(e2),
+      .last-move::part(e4) {
+        box-shadow: inset 0 0 0 0.15em #f0d13a;
+      }
+    </style>
+    <chess-board class="last-move">rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR</chess-board>
+  </div>
+
   <h2>JavaScript API</h2>
   <div class="example">
     <chess-board id="api-demo" frame>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</chess-board>
@@ -120,7 +145,14 @@
         }
       }
       const fen = board.textContent.trim();
-      const source = `<chess-board${attrs.join('')}>\n  ${fen}\n</chess-board>`;
+      let source = `<chess-board${attrs.join('')}>\n  ${fen}\n</chess-board>`;
+
+      // Examples that need CSS carry it in a <style>; show it with the markup.
+      const style = example.querySelector('style');
+      if (style) {
+        const css = style.textContent.replace(/^ {6}/gm, '').trim();
+        source = `<style>\n${css}\n</style>\n\n${source}`;
+      }
 
       const sourceBlock = document.createElement('div');
       sourceBlock.className = 'example-source';

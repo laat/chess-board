@@ -1,3 +1,19 @@
+Unreleased
+==========
+
+**Added**
+
+* The board can be themed from the page. The square colours, the board
+  border and the frame label size read the custom properties
+  `--chess-board-light`, `--chess-board-dark`, `--chess-board-border` and
+  `--chess-board-frame-font-size`, with the previous hard-coded values as
+  defaults, so nothing changes unless a page sets them.
+* Squares can be styled from the page with `::part()`: every cell carries
+  `part="square <name> <shade>"` (for example `square e4 light`), the 8×8
+  table is `part="board"` and the file and rank labels are `part="frame"`.
+  A game viewer can now highlight the last move with
+  `chess-board::part(e2), chess-board::part(e4) { … }`. (#21)
+
 
 3.0.0 / 2026-09-05
 ==================

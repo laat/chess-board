@@ -62,7 +62,7 @@ table { border-spacing: 0; }
 :host([frame]) .frame {
   width: 1em; height: 1em;
   display: table-cell;
-  font-size: 40%;
+  font-size: var(--chess-board-frame-font-size, 40%);
 }
 :host([frame]) .frame.left,
 :host([frame]) .frame.right {
@@ -80,11 +80,11 @@ table { border-spacing: 0; }
   transform: rotate(180deg);
 }
 .chess-board {
-  border: 1px solid black;
+  border: var(--chess-board-border, 1px solid black);
   border-collapse: collapse;
 }
-.light { background: #FFCE9E; }
-.dark  { background: #D18B47; }
+.light { background: var(--chess-board-light, #FFCE9E); }
+.dark  { background: var(--chess-board-dark, #D18B47); }
 td {
   width: 1em; height: 1em;
   text-align: center;
@@ -103,43 +103,51 @@ td {
 }
 `;
 
+// The page can reach into the shadow tree with ::part(): "board" is the
+// 8x8 table, every square carries "square", its name and its shade
+// (part="square e4 light"), and the frame labels carry "frame".
 function buildBoardHTML(): string {
   let html = `<style>${STYLES}</style>`;
   html += `<table class="board-frame">`;
 
   // Top frame row
-  html += `<tr><td class="frame top left"></td>`;
-  for (const file of FILES) html += `<td class="frame top">${file}</td>`;
-  html += `<td class="frame top right"></td></tr>`;
+  html += `<tr><td class="frame top left" part="frame"></td>`;
+  for (const file of FILES) {
+    html += `<td class="frame top" part="frame">${file}</td>`;
+  }
+  html += `<td class="frame top right" part="frame"></td></tr>`;
 
   // Board rows with side frames
   for (const [ri, rank] of RANKS.entries()) {
     html += `<tr>`;
-    html += `<td class="frame left">${rank}</td>`;
+    html += `<td class="frame left" part="frame">${rank}</td>`;
 
     if (ri === 0) {
       // First rank row contains the nested chess board table
       html += `<td colspan="8" rowspan="8" class="board-wrap">`;
-      html += `<table class="chess-board">`;
+      html += `<table class="chess-board" part="board">`;
       for (const [r, boardRank] of RANKS.entries()) {
         html += `<tr>`;
         for (const [f, file] of FILES.entries()) {
           const shade = (r + f) % 2 === 0 ? "light" : "dark";
-          html += `<td class="${file}${boardRank} ${shade}"><span class="empty" data-piece=""></span></td>`;
+          const square = `${file}${boardRank}`;
+          html += `<td class="${square} ${shade}" part="square ${square} ${shade}"><span class="empty" data-piece=""></span></td>`;
         }
         html += `</tr>`;
       }
       html += `</table></td>`;
     }
 
-    html += `<td class="frame right">${rank}</td>`;
+    html += `<td class="frame right" part="frame">${rank}</td>`;
     html += `</tr>`;
   }
 
   // Bottom frame row
-  html += `<tr><td class="frame bottom left"></td>`;
-  for (const file of FILES) html += `<td class="frame bottom">${file}</td>`;
-  html += `<td class="frame bottom right"></td></tr>`;
+  html += `<tr><td class="frame bottom left" part="frame"></td>`;
+  for (const file of FILES) {
+    html += `<td class="frame bottom" part="frame">${file}</td>`;
+  }
+  html += `<td class="frame bottom right" part="frame"></td></tr>`;
 
   html += `</table>`;
   return html;

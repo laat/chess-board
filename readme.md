@@ -142,6 +142,54 @@ Remove all pieces from the board.
 board.clearBoard();
 ```
 
+## Styling
+
+The board sizes itself from the element's `font-size`: one square is `1em`.
+Its colours can be changed with custom properties on the element (or any
+ancestor); the defaults are the values the board has always used.
+
+| Property                        | Default           | Applies to                     |
+| ------------------------------- | ----------------- | ------------------------------ |
+| `--chess-board-light`           | `#FFCE9E`         | Light squares                  |
+| `--chess-board-dark`            | `#D18B47`         | Dark squares                   |
+| `--chess-board-border`          | `1px solid black` | Border around the 8×8 board    |
+| `--chess-board-frame-font-size` | `40%`             | File and rank labels (`frame`) |
+
+```css
+chess-board {
+  font-size: 48px;
+  --chess-board-light: #eeeed2;
+  --chess-board-dark: #769656;
+  --chess-board-border: none;
+}
+```
+
+For anything else, the parts of the shadow tree can be styled with
+[`::part()`](https://developer.mozilla.org/docs/Web/CSS/::part). Every square
+carries the parts `square`, its own name and its shade, so a page can mark
+the last move or a square under discussion:
+
+| Part                    | Element                                                  |
+| ----------------------- | -------------------------------------------------------- |
+| `board`                 | The 8×8 table                                            |
+| `square`                | Every square                                             |
+| `a1` … `h8`             | One square                                               |
+| `light`, `dark`         | The squares of one shade                                 |
+| `frame`                 | The file and rank labels shown by the `frame` attribute  |
+
+```css
+chess-board::part(e2),
+chess-board::part(e4) {
+  box-shadow: inset 0 0 0 0.15em #f0d13a;
+}
+chess-board::part(frame) {
+  color: #666;
+}
+```
+
+Parts are per element, so highlight different squares on different boards
+with a class or id on the element as usual.
+
 ## Pieces
 
 Pieces use [Forsyth–Edwards Notation](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation):

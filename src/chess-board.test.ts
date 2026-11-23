@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "./chess-board";
-import type { ChessBoardElement } from "./chess-board";
+import { ChessBoardElement } from "./chess-board";
+import type { ChessBoardStrings } from "./chess-board";
 
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 const EMPTY_FEN = "8/8/8/8/8/8/8/8";
@@ -32,14 +33,22 @@ function getTable(el: ChessBoardElement): HTMLTableElement {
   return table;
 }
 
+/** The square in board row `row` (0 is rank 8) and column `col` (0 is the a-file). */
 function getCell(
   el: ChessBoardElement,
   row: number,
   col: number,
 ): HTMLTableCellElement {
-  const cell = getTable(el).rows[row]?.cells[col];
-  if (!cell) throw new Error(`no cell at ${row},${col}`);
+  // Each body row starts with the rank header. (happy-dom has no tBodies.)
+  const cell = getTable(el).querySelectorAll("tbody tr")[row]?.children[col + 1];
+  if (!(cell instanceof HTMLTableCellElement) || !cell.classList.contains("square")) {
+    throw new Error(`no square at ${row},${col}`);
+  }
   return cell;
+}
+
+function getCaption(el: ChessBoardElement): string {
+  return getTable(el).querySelector("caption")?.textContent ?? "";
 }
 
 function getPieceAt(
@@ -89,10 +98,12 @@ describe("chess-board", () => {
 
     it("creates an 8x8 board table in shadow DOM", () => {
       const table = getTable(createElement(START_FEN));
-      expect(table.rows.length).toBe(8);
-      for (const row of table.rows) {
-        expect(row.cells.length).toBe(8);
+      const rows = table.querySelectorAll("tbody tr");
+      expect(rows.length).toBe(8);
+      for (const row of rows) {
+        expect(row.querySelectorAll("td.square").length).toBe(8);
       }
+      expect(table.querySelectorAll("td.square").length).toBe(64);
     });
   });
 
@@ -296,6 +307,164 @@ describe("chess-board", () => {
       const el = createElement(START_FEN, { frame: "" });
       const frames = el.shadowRoot?.querySelectorAll(".frame") ?? [];
       expect(frames.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("accessibility", () => {
+    const START_LABEL =
+      "Chess position. " +
+      "White: king e1, queen d1, rooks a1 and h1, bishops c1 and f1, " +
+      "knights b1 and g1, pawns a2, b2, c2, d2, e2, f2, g2 and h2. " +
+      "Black: king e8, queen d8, rooks a8 and h8, bishops c8 and f8, " +
+      "knights b8 and g8, pawns a7, b7, c7, d7, e7, f7, g7 and h7.";
+
+    it("captions the table with a description of the position", () => {
+      const el = createElement(START_FEN);
+      expect(getCaption(el)).toBe(START_LABEL);
+      expect(el.description).toBe(START_LABEL);
+      expect(el.hasAttribute("role")).toBe(false);
+      expect(el.hasAttribute("aria-label")).toBe(false);
+    });
+
+    it("describes an empty board", () => {
+      const el = createElement();
+      expect(getCaption(el)).toBe("Chess position. Empty board.");
+    });
+
+    it("leaves out a side that has no pieces", () => {
+      const el = createElement("8/8/8/8/8/8/8/4K3");
+      expect(getCaption(el)).toBe("Chess position. White: king e1.");
+    });
+
+    it("pluralises a group of promoted pieces", () => {
+      const el = createElement("8/8/8/8/4Q3/8/8/3Q3Q");
+      expect(getCaption(el)).toBe(
+        "Chess position. White: queens d1, e4 and h1.",
+      );
+    });
+
+    it("labels the files and ranks as table headers", () => {
+      const table = getTable(createElement(START_FEN));
+      const files = Array.from(table.querySelectorAll("thead th[scope=col]"));
+      expect(files.map((th) => th.textContent)).toEqual([
+        "a", "b", "c", "d", "e", "f", "g", "h",
+      ]);
+      const ranks = Array.from(table.querySelectorAll("tbody th[scope=row]"));
+      expect(ranks.map((th) => th.textContent)).toEqual([
+        "8", "7", "6", "5", "4", "3", "2", "1",
+      ]);
+      // The duplicate labels on the right and at the bottom are decoration.
+      for (const cell of table.querySelectorAll("tbody .frame.right")) {
+        expect(cell.getAttribute("aria-hidden")).toBe("true");
+      }
+      expect(table.querySelector("tfoot tr")?.getAttribute("aria-hidden")).toBe(
+        "true",
+      );
+    });
+
+    it("names the piece on each square and hides the picture", () => {
+      const el = createElement(START_FEN);
+      expect(getCell(el, 0, 0).textContent).toBe("Black rook");
+      expect(getCell(el, 7, 4).textContent).toBe("White king");
+      expect(getCell(el, 3, 3).textContent).toBe("");
+      expect(getCell(el, 0, 0).querySelector("svg")?.getAttribute("aria-hidden"))
+        .toBe("true");
+
+      el.setAttribute("unicode", "");
+      expect(getCell(el, 0, 0).textContent).toBe("♜Black rook");
+      const glyph = getCell(el, 0, 0).querySelector("span.piece");
+      expect(glyph?.getAttribute("aria-hidden")).toBe("true");
+    });
+
+    it("updates the caption and the squares on every change", async () => {
+      const el = createElement(START_FEN);
+      el.move("e2", "e4");
+      expect(getCaption(el)).toContain("pawns a2, b2, c2, d2, e4, f2, g2 and h2.");
+      expect(getCell(el, 4, 4).textContent).toBe("White pawn");
+      expect(getCell(el, 6, 4).textContent).toBe("");
+      el.clearBoard();
+      expect(getCaption(el)).toBe("Chess position. Empty board.");
+      el.textContent = SCHOLARS_MATE;
+      await flushObservers();
+      expect(getCaption(el)).toBe(
+        "Chess position. " +
+          "White: king e1, queen f7, rooks a1 and h1, bishops c1 and c4, " +
+          "knights b1 and g1, pawns a2, b2, c2, d2, e4, f2, g2 and h2. " +
+          "Black: king e8, queen d8, rooks a8 and h8, bishops c8 and f8, " +
+          "knights c6 and f6, pawns a7, b7, c7, d7, e5, g7 and h7.",
+      );
+    });
+
+    it("is not changed by the reverse attribute", () => {
+      const el = createElement(START_FEN, { reverse: "" });
+      expect(getCaption(el)).toBe(START_LABEL);
+      expect(getCell(el, 0, 0).textContent).toBe("Black rook");
+    });
+
+    it("uses an aria-label from the page as the caption instead", () => {
+      const el = createElement(START_FEN, {
+        "aria-label": "Position after 17.Rd8#",
+      });
+      expect(getCaption(el)).toBe("Position after 17.Rd8#");
+      el.move("e2", "e4");
+      expect(getCaption(el)).toBe("Position after 17.Rd8#");
+      expect(el.description).toContain("e4");
+    });
+
+    it("follows the aria-label as it is set, changed and removed", () => {
+      const el = createElement(START_FEN);
+      el.setAttribute("aria-label", "Opening position");
+      expect(getCaption(el)).toBe("Opening position");
+      el.setAttribute("aria-label", "Before 1.e4");
+      expect(getCaption(el)).toBe("Before 1.e4");
+      el.removeAttribute("aria-label");
+      expect(getCaption(el)).toBe(START_LABEL);
+    });
+
+    it("treats an empty aria-label as no label", () => {
+      const el = createElement(START_FEN, { "aria-label": "" });
+      expect(getCaption(el)).toBe(START_LABEL);
+    });
+
+    it("keeps the caption across disconnect and reconnect", () => {
+      const el = createElement();
+      el.fen = START_FEN;
+      document.body.removeChild(el);
+      el.move("e2", "e4");
+      document.body.appendChild(el);
+      expect(getCaption(el)).toContain("pawns a2, b2, c2, d2, e4, f2, g2 and h2.");
+      expect(getCell(el, 4, 4).textContent).toBe("White pawn");
+    });
+
+    it("can be translated by replacing the strings", () => {
+      const english = ChessBoardElement.strings;
+      const norwegian: ChessBoardStrings = {
+        white: "Hvit",
+        black: "Svart",
+        pieces: {
+          K: ["konge", "konger"],
+          Q: ["dronning", "dronninger"],
+          R: ["tårn", "tårn"],
+          B: ["løper", "løpere"],
+          N: ["springer", "springere"],
+          P: ["bonde", "bønder"],
+        },
+        position: "Sjakkstilling.",
+        empty: "Tomt brett.",
+        and: "og",
+      };
+      try {
+        ChessBoardElement.strings = norwegian;
+        const el = createElement("8/8/8/8/8/8/8/R3K2R");
+        expect(getCaption(el)).toBe(
+          "Sjakkstilling. Hvit: konge e1, tårn a1 og h1.",
+        );
+        expect(getCell(el, 7, 0).textContent).toBe("Hvit tårn");
+        el.clearBoard();
+        expect(getCaption(el)).toBe("Sjakkstilling. Tomt brett.");
+      } finally {
+        ChessBoardElement.strings = english;
+      }
     });
   });
 
